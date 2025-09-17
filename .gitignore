@@ -1,0 +1,51 @@
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Next.js
+.next/
+out/
+
+# Build output
+/dist/
+/build/
+
+# Environment variables
+.env
+.env.*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+
+# Misc
+*.swp
+*.swo
+*.tmp
+*.bak
+
+# Public uploads (if any)
+public/uploads/
+
+# Database dumps
+*.sql
+*.sqlite
+
+# Ignore lock files if using only one package manager
+# Uncomment the one you don't use
+# yarn.lock
+# package-lock.json
+# pnpm-lock.yaml
