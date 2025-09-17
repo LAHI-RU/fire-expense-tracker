@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 
 const navItems = [
+  { name: "Dashboard", href: "/dashboard", icon: <FaProjectDiagram /> },
   { name: "Employees", href: "/employees", icon: <FaUsers /> },
   { name: "Expenses", href: "/expenses", icon: <FaMoneyBillWave /> },
   { name: "Incomes", href: "/incomes", icon: <FaWallet /> },

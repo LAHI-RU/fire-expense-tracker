@@ -111,25 +111,35 @@ export async function GET() {
       ORDER BY total_paid DESC
     `)
 
-    // Get recent activities
-    const recentActivities = await Database.query(`
-      SELECT * FROM (
-        SELECT 'expense' as type, description as title, amount, expense_date as date, p.name as project_name
-        FROM expenses e
-        LEFT JOIN projects p ON e.project_id = p.id
-        UNION ALL
-        SELECT 'income' as type, description as title, amount, payment_date as date, p.name as project_name
-        FROM incomes i
-        LEFT JOIN projects p ON i.project_id = p.id
-        UNION ALL
-        SELECT 'salary' as type, CONCAT('Salary payment to ', emp.full_name) as title, amount, payment_date as date, p.name as project_name
-        FROM salary_payments sp
-        LEFT JOIN employees emp ON sp.employee_id = emp.id
-        LEFT JOIN projects p ON sp.project_id = p.id
-      ) activities
-      ORDER BY date DESC
-      LIMIT 10
-    `)
+    // Get recent expenses
+    const recentExpenses = await Database.query(`
+      SELECT e.id, e.description, e.amount, e.expense_date, ec.name as category, emp.full_name as employee, p.name as project
+      FROM expenses e
+      LEFT JOIN expense_categories ec ON e.category_id = ec.id
+      LEFT JOIN employees emp ON e.employee_id = emp.id
+      LEFT JOIN projects p ON e.project_id = p.id
+      ORDER BY e.expense_date DESC, e.created_at DESC
+      LIMIT 5
+    `);
+
+    // Get recent incomes
+    const recentIncomes = await Database.query(`
+      SELECT i.id, i.description, i.amount, i.payment_date, i.payment_method, i.payment_status, p.name as project
+      FROM incomes i
+      LEFT JOIN projects p ON i.project_id = p.id
+      ORDER BY i.payment_date DESC, i.created_at DESC
+      LIMIT 5
+    `);
+
+    // Get recent salary payments
+    const recentSalaryPayments = await Database.query(`
+      SELECT sp.id, emp.full_name as employee, sp.amount, sp.payment_date, sp.payment_type, p.name as project
+      FROM salary_payments sp
+      LEFT JOIN employees emp ON sp.employee_id = emp.id
+      LEFT JOIN projects p ON sp.project_id = p.id
+      ORDER BY sp.payment_date DESC, sp.created_at DESC
+      LIMIT 5
+    `);
 
     return NextResponse.json({
       projectStats,
@@ -138,7 +148,9 @@ export async function GET() {
       projectProfitability,
       expenseCategories,
       employeeSalaries,
-      recentActivities,
+      recentExpenses,
+      recentIncomes,
+      recentSalaryPayments,
     })
   } catch (error) {
     console.error("Error fetching analytics:", error)
