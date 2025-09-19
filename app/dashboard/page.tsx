@@ -48,61 +48,74 @@ export default function DashboardPage() {
   // Key Stats
   // Charts and Recent Activities
   return (
-    <div className="container p-responsive space-y-8">
-      {/* Welcome Section */}
-      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-        <div>
-          <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2">
-            Welcome to Your Dashboard
-          </h1>
-          <p className="text-muted-foreground text-lg">
-            Get a quick overview of your business performance and recent
-            activities.
-          </p>
+    <>
+      <div className="container p-responsive space-y-8">
+        {/* Welcome Section */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2">
+              Welcome to Your Dashboard
+            </h1>
+            <p className="text-muted-foreground text-lg">
+              Get a quick overview of your business performance and recent
+              activities.
+            </p>
+          </div>
+          <img
+            src="/placeholder-logo.png"
+            alt="Logo"
+            className="h-16 w-16 object-contain rounded-full shadow"
+          />
         </div>
-        <img
-          src="/placeholder-logo.png"
-          alt="Logo"
-          className="h-16 w-16 object-contain rounded-full shadow"
+
+        {/* Key Stats */}
+        <DashboardStats
+          projectStats={data.projectStats}
+          financialOverview={data.financialOverview}
+          employeeCount={data.employeeSalaries?.length || 0}
+          totalProfit={
+            (data.financialOverview?.find(
+              (item: any) => item.type === "incomes"
+            )?.total || 0) -
+            (data.financialOverview?.find(
+              (item: any) => item.type === "expenses"
+            )?.total || 0)
+          }
         />
-      </div>
 
-      {/* Key Stats */}
-      <DashboardStats
-        projectStats={data.projectStats}
-        financialOverview={data.financialOverview}
-        employeeCount={data.employeeSalaries?.length || 0}
-        totalProfit={
-          (data.financialOverview?.find((item: any) => item.type === "incomes")
-            ?.total || 0) -
-          (data.financialOverview?.find((item: any) => item.type === "expenses")
-            ?.total || 0)
-        }
-      />
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <Card>
-          <CardContent>
-            <h2 className="text-xl font-semibold mb-4 text-blue-800">
-              Monthly Trends
-            </h2>
-            <AnalyticsCharts
-              monthlyTrends={data.monthlyTrends}
-              expenseCategories={data.expenseCategories}
-              projectProfitability={data.projectProfitability}
-            />
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent>
-            <h2 className="text-xl font-semibold mb-4 text-green-800">
-              Recent Activities
-            </h2>
-            <RecentActivities activities={data.recentActivities} />
-          </CardContent>
-        </Card>
+        {/* Charts Section */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <Card>
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-4 text-blue-800">
+                Monthly Trends
+              </h2>
+              <AnalyticsCharts
+                monthlyTrends={data.monthlyTrends}
+                expenseCategories={data.expenseCategories}
+                projectProfitability={data.projectProfitability}
+              />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-4 text-green-800">
+                Recent Activities
+              </h2>
+              <RecentActivities activities={data.recentActivities} />
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </div>
+      {/* Floating Help & Guide Button */}
+      <a
+        href="/user-guide"
+        className="fixed bottom-6 right-6 z-50 bg-gradient-to-r from-blue-600 to-cyan-500 text-white rounded-full shadow-xl px-5 py-3 flex items-center gap-2 hover:from-blue-700 hover:to-cyan-600 transition text-lg font-semibold"
+        aria-label="Help & Guide"
+        style={{ pointerEvents: "auto" }}
+      >
+        <span>💡Help</span>
+      </a>
+    </>
   );
 }

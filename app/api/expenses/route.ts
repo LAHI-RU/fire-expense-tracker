@@ -52,23 +52,34 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const body = await request.json()
-    const { project_id, category_id, employee_id, description, amount, expense_date, receipt_url, notes, created_by } =
-      body
+    const body = await request.json();
+    // Sanitize all parameters: replace undefined with null
+    const sanitize = (v: any) => v === undefined ? null : v;
+    const params = [
+      sanitize(body.project_id),
+      sanitize(body.category_id),
+      sanitize(body.employee_id),
+      sanitize(body.description),
+      sanitize(body.amount),
+      sanitize(body.expense_date),
+      sanitize(body.receipt_url),
+      sanitize(body.notes),
+      sanitize(body.created_by)
+    ];
 
     const result = await Database.query(
       `INSERT INTO expenses (project_id, category_id, employee_id, description, amount, expense_date, receipt_url, notes, created_by) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [project_id, category_id, employee_id, description, amount, expense_date, receipt_url, notes, created_by],
-    )
+      params,
+    );
 
     return NextResponse.json({
       success: true,
       expenseId: (result as any).insertId,
       message: "Expense created successfully",
-    })
+    });
   } catch (error) {
-    console.error("Error creating expense:", error)
-    return NextResponse.json({ error: "Failed to create expense" }, { status: 500 })
+    console.error("Error creating expense:", error);
+    return NextResponse.json({ error: "Failed to create expense" }, { status: 500 });
   }
 }
