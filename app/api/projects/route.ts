@@ -38,20 +38,23 @@ export async function POST(request: NextRequest) {
       created_by,
     } = body
 
+    // Convert undefined to null for SQL
+    const safeParams = [
+      name ?? null,
+      client_name ?? null,
+      client_contact ?? null,
+      description ?? null,
+      status ?? "planning",
+      start_date ?? null,
+      end_date ?? null,
+      estimated_budget ?? null,
+      created_by ?? null,
+    ];
+
     const result = await Database.query(
       `INSERT INTO projects (name, client_name, client_contact, description, status, start_date, end_date, estimated_budget, created_by) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        name,
-        client_name,
-        client_contact,
-        description,
-        status || "planning",
-        start_date,
-        end_date,
-        estimated_budget,
-        created_by,
-      ],
+      safeParams,
     )
 
     return NextResponse.json({

@@ -40,10 +40,23 @@ export async function POST(request: NextRequest) {
       is_active = true,
     } = body
 
+    // Convert undefined to null for SQL
+    const safeParams = [
+      employee_code ?? null,
+      full_name ?? null,
+      position ?? null,
+      hourly_rate ?? null,
+      monthly_salary ?? null,
+      phone ?? null,
+      address ?? null,
+      hire_date ?? null,
+      is_active ?? null,
+    ];
+
     const result = await Database.query(
       `INSERT INTO employees (employee_code, full_name, position, hourly_rate, monthly_salary, phone, address, hire_date, is_active) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [employee_code, full_name, position, hourly_rate, monthly_salary, phone, address, hire_date, is_active],
+      safeParams,
     )
 
     return NextResponse.json({

@@ -58,12 +58,12 @@ export default function HomePage() {
           </Card>
         </Link>
 
-        <Link href="/analytics">
+        <Link href="/dashboard">
           <Card className="hover:shadow-md transition-shadow cursor-pointer">
             <CardHeader className="pb-3">
               <CardTitle className="flex items-center gap-2 text-lg">
                 <BarChart3 className="h-5 w-5 text-primary" />
-                Analytics
+                Dashboard
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -126,8 +126,8 @@ export default function HomePage() {
             <Link href="/projects">
               <Button>Start with Projects</Button>
             </Link>
-            <Link href="/analytics">
-              <Button variant="outline">View Analytics</Button>
+            <Link href="/dashboard">
+              <Button variant="outline">View Dashboard</Button>
             </Link>
           </div>
         </CardContent>

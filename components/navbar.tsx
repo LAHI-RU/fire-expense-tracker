@@ -8,16 +8,18 @@ import {
   FaMoneyBillWave,
   FaWallet,
   FaProjectDiagram,
+  FaTachometerAlt,
+  FaFolderOpen,
   FaBars,
   FaTimes,
 } from "react-icons/fa";
 
 const navItems = [
-  { name: "Dashboard", href: "/dashboard", icon: <FaProjectDiagram /> },
+  { name: "Dashboard", href: "/dashboard", icon: <FaTachometerAlt /> },
   { name: "Employees", href: "/employees", icon: <FaUsers /> },
   { name: "Expenses", href: "/expenses", icon: <FaMoneyBillWave /> },
   { name: "Incomes", href: "/incomes", icon: <FaWallet /> },
-  { name: "Projects", href: "/projects", icon: <FaProjectDiagram /> },
+  { name: "Projects", href: "/projects", icon: <FaFolderOpen /> },
 ];
 
 export default function Navbar() {
@@ -25,7 +27,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <nav className="bg-gradient-to-r from-blue-700 via-blue-900 to-indigo-800 shadow-lg px-4 py-3">
+    <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-blue-700 via-blue-900 to-indigo-800 shadow-lg px-4 py-3">
       <div className="container flex items-center justify-between">
         <div className="flex items-center gap-3">
           <img
