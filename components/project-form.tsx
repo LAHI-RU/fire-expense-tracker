@@ -136,7 +136,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading }: ProjectF
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="estimated_budget">Estimated Budget ($)</Label>
+            <Label htmlFor="estimated_budget">Estimated Budget (Rs.)</Label>
             <Input
               id="estimated_budget"
               type="number"

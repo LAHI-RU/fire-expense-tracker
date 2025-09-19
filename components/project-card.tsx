@@ -92,7 +92,7 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           {project.estimated_budget && (
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">${project.estimated_budget.toLocaleString()}</span>
+              <span className="font-medium">Rs.{project.estimated_budget.toLocaleString()}</span>
             </div>
           )}
         </div>
@@ -102,16 +102,16 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             <div className="grid grid-cols-3 gap-2 text-xs">
               <div className="text-center">
                 <div className="text-muted-foreground">Expenses</div>
-                <div className="font-medium text-red-600">${(project.total_expenses || 0).toLocaleString()}</div>
+                <div className="font-medium text-red-600">Rs.{(project.total_expenses || 0).toLocaleString()}</div>
               </div>
               <div className="text-center">
                 <div className="text-muted-foreground">Income</div>
-                <div className="font-medium text-green-600">${(project.total_income || 0).toLocaleString()}</div>
+                <div className="font-medium text-green-600">Rs.{(project.total_income || 0).toLocaleString()}</div>
               </div>
               <div className="text-center">
                 <div className="text-muted-foreground">Profit</div>
                 <div className={`font-medium ${profit >= 0 ? "text-green-600" : "text-red-600"}`}>
-                  ${profit.toLocaleString()}
+                  Rs.{profit.toLocaleString()}
                 </div>
               </div>
             </div>

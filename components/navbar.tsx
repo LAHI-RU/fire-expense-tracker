@@ -27,9 +27,16 @@ export default function Navbar() {
   return (
     <nav className="bg-gradient-to-r from-blue-700 via-blue-900 to-indigo-800 shadow-lg px-4 py-3">
       <div className="container flex items-center justify-between">
-        <span className="text-white font-bold text-xl tracking-wide">
-          FIRE Expense Tracker
-        </span>
+        <div className="flex items-center gap-3">
+          <img
+            src="/logo.jpg" // Change to your actual logo file name
+            alt="Company Logo"
+            className="h-10 w-10 object-contain"
+          />
+          <span className="text-white font-bold text-xl tracking-wide">
+            North Central Engineering
+          </span>
+        </div>
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (

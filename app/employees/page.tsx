@@ -6,15 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Plus,
-  Search,
-  Edit,
-  UserX,
-  DollarSign,
-  Phone,
-  Calendar,
-} from "lucide-react";
+import { Plus, Search, Edit, UserX, Phone, Calendar } from "lucide-react";
 import { EmployeeForm } from "@/components/employee-form";
 import { SalaryPaymentForm } from "@/components/salary-payment-form";
 import type { Employee, SalaryPayment } from "@/lib/mysql";
@@ -203,7 +195,6 @@ export default function EmployeesPage() {
             variant="outline"
             className="gap-2"
           >
-            <DollarSign className="h-4 w-4" />
             Record Payment
           </Button>
           <Button onClick={() => setShowEmployeeForm(true)} className="gap-2">
@@ -358,7 +349,7 @@ export default function EmployeesPage() {
                           Monthly Salary
                         </div>
                         <div className="font-medium">
-                          ${employee.monthly_salary.toLocaleString()}
+                          Rs.{employee.monthly_salary.toLocaleString()}
                         </div>
                       </div>
                     )}
@@ -367,7 +358,7 @@ export default function EmployeesPage() {
                       <div>
                         <div className="text-muted-foreground">Hourly Rate</div>
                         <div className="font-medium">
-                          ${employee.hourly_rate}/hr
+                          Rs.{employee.hourly_rate}/hr
                         </div>
                       </div>
                     )}
@@ -408,7 +399,7 @@ export default function EmployeesPage() {
                               - {payment.payment_type.replace("_", " ")}
                             </span>
                             <span className="font-medium">
-                              ${Number(payment.amount).toLocaleString()}
+                              Rs.{Number(payment.amount).toLocaleString()}
                             </span>
                           </div>
                         ))}

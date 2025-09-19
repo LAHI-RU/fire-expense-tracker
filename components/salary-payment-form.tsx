@@ -184,12 +184,12 @@ export function SalaryPaymentForm({ onSubmit, onCancel, isLoading }: SalaryPayme
                 )}
                 {selectedEmployee.monthly_salary && (
                   <div>
-                    <strong>Monthly Salary:</strong> ${selectedEmployee.monthly_salary.toLocaleString()}
+                    <strong>Monthly Salary:</strong> Rs.{selectedEmployee.monthly_salary.toLocaleString()}
                   </div>
                 )}
                 {selectedEmployee.hourly_rate && (
                   <div>
-                    <strong>Hourly Rate:</strong> ${selectedEmployee.hourly_rate}/hour
+                    <strong>Hourly Rate:</strong> Rs.{selectedEmployee.hourly_rate}/hour
                   </div>
                 )}
               </div>
@@ -198,7 +198,7 @@ export function SalaryPaymentForm({ onSubmit, onCancel, isLoading }: SalaryPayme
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ($) *</Label>
+              <Label htmlFor="amount">Amount (Rs.) *</Label>
               <Input
                 id="amount"
                 type="number"

@@ -135,7 +135,7 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ($) *</Label>
+              <Label htmlFor="amount">Amount (Rs.) *</Label>
               <VoiceInput
                 id="amount"
                 type="number"

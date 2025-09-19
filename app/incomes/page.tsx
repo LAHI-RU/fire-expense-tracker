@@ -175,7 +175,7 @@ export default function IncomesPage() {
               <DollarSign className="h-5 w-5 text-green-600" />
               <div>
                 <div className="text-2xl font-bold text-green-600">
-                  ${totalIncomes.toLocaleString()}
+                  Rs.{totalIncomes.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Expected
@@ -191,7 +191,7 @@ export default function IncomesPage() {
               <DollarSign className="h-5 w-5 text-primary" />
               <div>
                 <div className="text-2xl font-bold text-primary">
-                  ${receivedIncomes.toLocaleString()}
+                  Rs.{receivedIncomes.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Actually Received
@@ -280,7 +280,7 @@ export default function IncomesPage() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-2xl font-bold text-green-600">
-                        ${Number(income.amount).toLocaleString()}
+                        Rs.{Number(income.amount).toLocaleString()}
                       </div>
                     </div>
 

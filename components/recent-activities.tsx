@@ -73,7 +73,7 @@ export function RecentActivities({ activities }: RecentActivitiesProps) {
                   <p
                     className={`text-sm font-semibold ${activity.type === "income" ? "text-green-600" : activity.type === "expense" ? "text-red-600" : "text-blue-600"}`}
                   >
-                    ${Number(activity.amount).toLocaleString()}
+                    Rs.{Number(activity.amount).toLocaleString()}
                   </p>
                 </div>
               </div>

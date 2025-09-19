@@ -168,7 +168,7 @@ export default function ExpensesPage() {
               <DollarSign className="h-5 w-5 text-red-600" />
               <div>
                 <div className="text-2xl font-bold text-red-600">
-                  ${totalExpenses.toLocaleString()}
+                  Rs.{totalExpenses.toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Expenses
@@ -252,7 +252,7 @@ export default function ExpensesPage() {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-2xl font-bold text-red-600">
-                        ${Number(expense.amount).toLocaleString()}
+                        Rs.{Number(expense.amount).toLocaleString()}
                       </div>
                       {expense.receipt_url && (
                         <a

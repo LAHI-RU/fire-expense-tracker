@@ -101,7 +101,7 @@ export function IncomeForm({ income, onSubmit, onCancel, isLoading }: IncomeForm
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="amount">Amount ($) *</Label>
+              <Label htmlFor="amount">Amount (Rs.) *</Label>
               <VoiceInput
                 id="amount"
                 type="number"

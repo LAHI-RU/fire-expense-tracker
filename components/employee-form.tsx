@@ -92,7 +92,7 @@ export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: Employ
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="hourly_rate">Hourly Rate ($)</Label>
+              <Label htmlFor="hourly_rate">Hourly Rate (Rs.)</Label>
               <Input
                 id="hourly_rate"
                 type="number"
@@ -104,7 +104,7 @@ export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: Employ
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="monthly_salary">Monthly Salary ($)</Label>
+              <Label htmlFor="monthly_salary">Monthly Salary (Rs.)</Label>
               <Input
                 id="monthly_salary"
                 type="number"
