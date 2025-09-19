@@ -1,55 +1,55 @@
 // Projects management page with professional layout
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Plus, Search } from "lucide-react"
-import { ProjectCard } from "@/components/project-card"
-import { ProjectForm } from "@/components/project-form"
-import type { Project } from "@/lib/mysql"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Plus, Search } from "lucide-react";
+import { ProjectCard } from "@/components/project-card";
+import { ProjectForm } from "@/components/project-form";
+import type { Project } from "@/lib/mysql";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState<Project[]>([])
-  const [filteredProjects, setFilteredProjects] = useState<Project[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingProject, setEditingProject] = useState<Project | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState("all")
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("all");
 
   // Fetch projects
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`/api/projects?status=${statusFilter}`)
-      const data = await response.json()
-      setProjects(data.projects || [])
+      const response = await fetch(`/api/projects?status=${statusFilter}`);
+      const data = await response.json();
+      setProjects(data.projects || []);
     } catch (error) {
-      console.error("Error fetching projects:", error)
+      console.error("Error fetching projects:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Filter projects based on search and status
   useEffect(() => {
-    let filtered = projects
+    let filtered = projects;
 
     if (searchTerm) {
       filtered = filtered.filter(
         (project) =>
           project.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.client_name.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+          project.client_name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
     }
 
-    setFilteredProjects(filtered)
-  }, [projects, searchTerm])
+    setFilteredProjects(filtered);
+  }, [projects, searchTerm]);
 
   useEffect(() => {
-    fetchProjects()
-  }, [statusFilter])
+    fetchProjects();
+  }, [statusFilter]);
 
   const handleCreateProject = async (projectData: Partial<Project>) => {
     try {
@@ -57,51 +57,51 @@ export default function ProjectsPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...projectData, created_by: 1 }), // TODO: Get from auth
-      })
+      });
 
       if (response.ok) {
-        setShowForm(false)
-        fetchProjects()
+        setShowForm(false);
+        fetchProjects();
       }
     } catch (error) {
-      console.error("Error creating project:", error)
+      console.error("Error creating project:", error);
     }
-  }
+  };
 
   const handleUpdateProject = async (projectData: Partial<Project>) => {
-    if (!editingProject) return
+    if (!editingProject) return;
 
     try {
       const response = await fetch(`/api/projects/${editingProject.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(projectData),
-      })
+      });
 
       if (response.ok) {
-        setEditingProject(null)
-        fetchProjects()
+        setEditingProject(null);
+        fetchProjects();
       }
     } catch (error) {
-      console.error("Error updating project:", error)
+      console.error("Error updating project:", error);
     }
-  }
+  };
 
   const handleDeleteProject = async (projectId: number) => {
-    if (!confirm("Are you sure you want to delete this project?")) return
+    if (!confirm("Are you sure you want to delete this project?")) return;
 
     try {
       const response = await fetch(`/api/projects/${projectId}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        fetchProjects()
+        fetchProjects();
       }
     } catch (error) {
-      console.error("Error deleting project:", error)
+      console.error("Error deleting project:", error);
     }
-  }
+  };
 
   const statusCounts = {
     all: projects.length,
@@ -109,7 +109,7 @@ export default function ProjectsPage() {
     ongoing: projects.filter((p) => p.status === "ongoing").length,
     completed: projects.filter((p) => p.status === "completed").length,
     "on-hold": projects.filter((p) => p.status === "on-hold").length,
-  }
+  };
 
   if (showForm || editingProject) {
     return (
@@ -118,12 +118,12 @@ export default function ProjectsPage() {
           project={editingProject || undefined}
           onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
           onCancel={() => {
-            setShowForm(false)
-            setEditingProject(null)
+            setShowForm(false);
+            setEditingProject(null);
           }}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -132,7 +132,9 @@ export default function ProjectsPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Projects</h1>
-          <p className="text-muted-foreground">Manage your fire installation projects</p>
+          <p className="text-muted-foreground">
+            Manage your fire installation projects
+          </p>
         </div>
         <Button onClick={() => setShowForm(true)} className="gap-2">
           <Plus className="h-4 w-4" />
@@ -145,7 +147,9 @@ export default function ProjectsPage() {
         {Object.entries(statusCounts).map(([status, count]) => (
           <Card
             key={status}
-            className={`cursor-pointer transition-colors ${statusFilter === status ? "ring-2 ring-primary" : ""}`}
+            className={`cursor-pointer transition-colors ${
+              statusFilter === status ? "ring-2 ring-primary" : ""
+            }`}
             onClick={() => setStatusFilter(status)}
           >
             <CardContent className="p-4 text-center">
@@ -188,10 +192,15 @@ export default function ProjectsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} onEdit={setEditingProject} onDelete={handleDeleteProject} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onEdit={setEditingProject}
+              onDelete={handleDeleteProject}
+            />
           ))}
         </div>
       )}
     </div>
-  )
+  );
 }

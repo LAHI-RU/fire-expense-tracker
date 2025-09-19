@@ -37,7 +37,9 @@ export default function Navbar() {
               key={item.name}
               href={item.href}
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-white hover:bg-blue-600 ${
-                pathname.startsWith(item.href) ? "bg-blue-600 font-semibold" : ""
+                pathname.startsWith(item.href)
+                  ? "bg-blue-600 font-semibold"
+                  : ""
               }`}
             >
               {item.icon}
@@ -62,7 +64,9 @@ export default function Navbar() {
               key={item.name}
               href={item.href}
               className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-white hover:bg-blue-600 ${
-                pathname.startsWith(item.href) ? "bg-blue-600 font-semibold" : ""
+                pathname.startsWith(item.href)
+                  ? "bg-blue-600 font-semibold"
+                  : ""
               }`}
               onClick={() => setMenuOpen(false)}
             >

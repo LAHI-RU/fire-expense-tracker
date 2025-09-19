@@ -1,56 +1,70 @@
 // Expenses management page
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Plus, Search, Edit, Trash2, Receipt, Calendar, DollarSign } from "lucide-react"
-import { ExpenseForm } from "@/components/expense-form"
-import { VoiceHelpDialog } from "@/components/voice-help-dialog"
-import type { Expense } from "@/lib/mysql"
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Plus,
+  Search,
+  Edit,
+  Trash2,
+  Receipt,
+  Calendar,
+  DollarSign,
+} from "lucide-react";
+import { ExpenseForm } from "@/components/expense-form";
+import { VoiceHelpDialog } from "@/components/voice-help-dialog";
+import type { Expense } from "@/lib/mysql";
 
 export default function ExpensesPage() {
-  const [expenses, setExpenses] = useState<any[]>([])
-  const [filteredExpenses, setFilteredExpenses] = useState<any[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [showForm, setShowForm] = useState(false)
-  const [editingExpense, setEditingExpense] = useState<Expense | null>(null)
-  const [searchTerm, setSearchTerm] = useState("")
+  const [expenses, setExpenses] = useState<any[]>([]);
+  const [filteredExpenses, setFilteredExpenses] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [editingExpense, setEditingExpense] = useState<Expense | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // Fetch expenses
   const fetchExpenses = async () => {
     try {
-      const response = await fetch("/api/expenses")
-      const data = await response.json()
-      setExpenses(data.expenses || [])
+      const response = await fetch("/api/expenses");
+      const data = await response.json();
+      setExpenses(data.expenses || []);
     } catch (error) {
-      console.error("Error fetching expenses:", error)
+      console.error("Error fetching expenses:", error);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Filter expenses based on search
   useEffect(() => {
-    let filtered = expenses
+    let filtered = expenses;
 
     if (searchTerm) {
       filtered = filtered.filter(
         (expense) =>
-          expense.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          expense.project_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          expense.category_name?.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
+          expense.description
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          expense.project_name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          expense.category_name
+            ?.toLowerCase()
+            .includes(searchTerm.toLowerCase())
+      );
     }
 
-    setFilteredExpenses(filtered)
-  }, [expenses, searchTerm])
+    setFilteredExpenses(filtered);
+  }, [expenses, searchTerm]);
 
   useEffect(() => {
-    fetchExpenses()
-  }, [])
+    fetchExpenses();
+  }, []);
 
   const handleCreateExpense = async (expenseData: Partial<Expense>) => {
     try {
@@ -58,53 +72,56 @@ export default function ExpensesPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...expenseData, created_by: 1 }), // TODO: Get from auth
-      })
+      });
 
       if (response.ok) {
-        setShowForm(false)
-        fetchExpenses()
+        setShowForm(false);
+        fetchExpenses();
       }
     } catch (error) {
-      console.error("Error creating expense:", error)
+      console.error("Error creating expense:", error);
     }
-  }
+  };
 
   const handleUpdateExpense = async (expenseData: Partial<Expense>) => {
-    if (!editingExpense) return
+    if (!editingExpense) return;
 
     try {
       const response = await fetch(`/api/expenses/${editingExpense.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(expenseData),
-      })
+      });
 
       if (response.ok) {
-        setEditingExpense(null)
-        fetchExpenses()
+        setEditingExpense(null);
+        fetchExpenses();
       }
     } catch (error) {
-      console.error("Error updating expense:", error)
+      console.error("Error updating expense:", error);
     }
-  }
+  };
 
   const handleDeleteExpense = async (expenseId: number) => {
-    if (!confirm("Are you sure you want to delete this expense?")) return
+    if (!confirm("Are you sure you want to delete this expense?")) return;
 
     try {
       const response = await fetch(`/api/expenses/${expenseId}`, {
         method: "DELETE",
-      })
+      });
 
       if (response.ok) {
-        fetchExpenses()
+        fetchExpenses();
       }
     } catch (error) {
-      console.error("Error deleting expense:", error)
+      console.error("Error deleting expense:", error);
     }
-  }
+  };
 
-  const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0)
+  const totalExpenses = expenses.reduce(
+    (sum, expense) => sum + Number(expense.amount),
+    0
+  );
 
   if (showForm || editingExpense) {
     return (
@@ -116,12 +133,12 @@ export default function ExpensesPage() {
           expense={editingExpense || undefined}
           onSubmit={editingExpense ? handleUpdateExpense : handleCreateExpense}
           onCancel={() => {
-            setShowForm(false)
-            setEditingExpense(null)
+            setShowForm(false);
+            setEditingExpense(null);
           }}
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -130,7 +147,9 @@ export default function ExpensesPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-foreground">Expenses</h1>
-          <p className="text-muted-foreground">Track project expenses and costs</p>
+          <p className="text-muted-foreground">
+            Track project expenses and costs
+          </p>
         </div>
         <div className="flex gap-2">
           <VoiceHelpDialog />
@@ -148,12 +167,18 @@ export default function ExpensesPage() {
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-red-600" />
               <div>
-                <div className="text-2xl font-bold text-red-600">${totalExpenses.toLocaleString()}</div>
-                <div className="text-sm text-muted-foreground">Total Expenses</div>
+                <div className="text-2xl font-bold text-red-600">
+                  ${totalExpenses.toLocaleString()}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Total Expenses
+                </div>
               </div>
             </div>
             <div className="text-muted-foreground">•</div>
-            <div className="text-sm text-muted-foreground">{expenses.length} expense records</div>
+            <div className="text-sm text-muted-foreground">
+              {expenses.length} expense records
+            </div>
           </div>
         </CardContent>
       </Card>
@@ -186,12 +211,17 @@ export default function ExpensesPage() {
       ) : (
         <div className="space-y-4">
           {filteredExpenses.map((expense) => (
-            <Card key={expense.id} className="hover:shadow-md transition-shadow">
+            <Card
+              key={expense.id}
+              className="hover:shadow-md transition-shadow"
+            >
               <CardContent className="p-6">
                 <div className="flex items-start justify-between">
                   <div className="space-y-2 flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-semibold text-lg">{expense.description}</h3>
+                      <h3 className="font-semibold text-lg">
+                        {expense.description}
+                      </h3>
                       {expense.category_name && (
                         <Badge variant="secondary" className="text-xs">
                           {expense.category_name}
@@ -204,16 +234,26 @@ export default function ExpensesPage() {
                         <Calendar className="h-4 w-4" />
                         {new Date(expense.expense_date).toLocaleDateString()}
                       </div>
-                      {expense.project_name && <div>Project: {expense.project_name}</div>}
-                      {expense.employee_name && <div>Employee: {expense.employee_name}</div>}
+                      {expense.project_name && (
+                        <div>Project: {expense.project_name}</div>
+                      )}
+                      {expense.employee_name && (
+                        <div>Employee: {expense.employee_name}</div>
+                      )}
                     </div>
 
-                    {expense.notes && <p className="text-sm text-muted-foreground">{expense.notes}</p>}
+                    {expense.notes && (
+                      <p className="text-sm text-muted-foreground">
+                        {expense.notes}
+                      </p>
+                    )}
                   </div>
 
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-red-600">${Number(expense.amount).toLocaleString()}</div>
+                      <div className="text-2xl font-bold text-red-600">
+                        ${Number(expense.amount).toLocaleString()}
+                      </div>
                       {expense.receipt_url && (
                         <a
                           href={expense.receipt_url}
@@ -253,5 +293,5 @@ export default function ExpensesPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
