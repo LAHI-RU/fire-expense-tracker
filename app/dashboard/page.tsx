@@ -1,20 +1,13 @@
 "use client";
-import React, { useEffect, useState } from "react";
 
-interface AnalyticsData {
-  projectStats: any[];
-  financialOverview: any[];
-  monthlyTrends: any[];
-  projectProfitability: any[];
-  expenseCategories: any[];
-  employeeSalaries: any[];
-  recentExpenses: any[];
-  recentIncomes: any[];
-  recentSalaryPayments: any[];
-}
+import React, { useState, useEffect } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { AnalyticsCharts } from "@/components/analytics-charts";
+import DashboardStats from "@/components/dashboard-stats";
+import { RecentActivities } from "@/components/recent-activities";
 
 export default function DashboardPage() {
-  const [data, setData] = useState<AnalyticsData | null>(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,201 +24,84 @@ export default function DashboardPage() {
       });
   }, []);
 
-  if (loading)
-    return <div className="p-8 text-center">Loading dashboard...</div>;
-  if (error) return <div className="p-8 text-center text-red-600">{error}</div>;
+  if (loading) {
+    return (
+      <div className="container p-responsive flex flex-col items-center justify-center min-h-[60vh]">
+        <span className="animate-spin text-4xl text-blue-700 mb-4">⏳</span>
+        <h2 className="text-xl font-semibold text-muted-foreground">
+          Loading dashboard...
+        </h2>
+      </div>
+    );
+  }
+  if (error) {
+    return (
+      <div className="container p-responsive flex flex-col items-center justify-center min-h-[60vh]">
+        <span className="text-4xl text-red-600 mb-4">⚠️</span>
+        <h2 className="text-xl font-semibold text-red-600">{error}</h2>
+      </div>
+    );
+  }
   if (!data) return null;
 
-  const projectStats = Array.isArray(data.projectStats)
-    ? data.projectStats
-    : [];
-  const financialOverview = Array.isArray(data.financialOverview)
-    ? data.financialOverview
-    : [];
-  const recentExpenses = Array.isArray(data.recentExpenses)
-    ? data.recentExpenses
-    : [];
-  const recentIncomes = Array.isArray(data.recentIncomes)
-    ? data.recentIncomes
-    : [];
-  const recentSalaryPayments = Array.isArray(data.recentSalaryPayments)
-    ? data.recentSalaryPayments
-    : [];
-  const expenseCategories = Array.isArray(data.expenseCategories)
-    ? data.expenseCategories
-    : [];
-  const employeeSalaries = Array.isArray(data.employeeSalaries)
-    ? data.employeeSalaries
-    : [];
-
+  // Welcome Section
+  // Key Stats
+  // Charts and Recent Activities
   return (
-    <div className="container p-responsive">
-      <h1 className="text-3xl md:text-4xl font-bold mb-6 text-blue-900 text-responsive">
-        Dashboard
-      </h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Project Stats
-          </h2>
-          <ul>
-            {projectStats.map((stat, i) => (
-              <li key={i} className="mb-2 text-responsive">
-                {stat.status}: <b>{stat.count}</b> (Budget: Rs.
-                {stat.total_budget})
-              </li>
-            ))}
-            {projectStats.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No data available
-              </li>
-            )}
-          </ul>
+    <div className="container p-responsive space-y-8">
+      {/* Welcome Section */}
+      <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
+        <div>
+          <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2">
+            Welcome to Your Dashboard
+          </h1>
+          <p className="text-muted-foreground text-lg">
+            Get a quick overview of your business performance and recent
+            activities.
+          </p>
         </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Financial Overview
-          </h2>
-          <ul>
-            {financialOverview.map((item, i) => (
-              <li key={i} className="mb-2 text-responsive">
-                {item.type}: <b>Rs.{item.total}</b> ({item.count} records)
-              </li>
-            ))}
-            {financialOverview.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No data available
-              </li>
-            )}
-          </ul>
-        </div>
+        <img
+          src="/placeholder-logo.png"
+          alt="Logo"
+          className="h-16 w-16 object-contain rounded-full shadow"
+        />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Recent Expenses
-          </h2>
-          <ul>
-            {recentExpenses.map((exp, i) => (
-              <li key={i} className="mb-4 border-b pb-2 text-responsive">
-                <div>
-                  <div className="font-bold text-blue-700 text-responsive">
-                    {exp.description}
-                  </div>
-                  <div className="text-sm text-gray-600 text-responsive">
-                    Amount:{" "}
-                    <span className="font-semibold">Rs.{exp.amount}</span>
-                  </div>
-                  <div className="text-xs text-gray-500 text-responsive">
-                    Date: {exp.expense_date} | Category: {exp.category} |
-                    Employee: {exp.employee} | Project: {exp.project}
-                  </div>
-                </div>
-              </li>
-            ))}
-            {recentExpenses.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No recent expenses
-              </li>
-            )}
-          </ul>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Recent Incomes
-          </h2>
-          <ul>
-            {recentIncomes.map((inc, i) => (
-              <li key={i} className="mb-4 border-b pb-2 text-responsive">
-                <div>
-                  <div className="font-bold text-green-700 text-responsive">
-                    {inc.description}
-                  </div>
-                  <div className="text-sm text-gray-600 text-responsive">
-                    Amount:{" "}
-                    <span className="font-semibold">Rs.{inc.amount}</span>
-                  </div>
-                  <div className="text-xs text-gray-500 text-responsive">
-                    Date: {inc.payment_date} | Method: {inc.payment_method} |
-                    Status: {inc.payment_status} | Project: {inc.project}
-                  </div>
-                </div>
-              </li>
-            ))}
-            {recentIncomes.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No recent incomes
-              </li>
-            )}
-          </ul>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Recent Salary Payments
-          </h2>
-          <ul>
-            {recentSalaryPayments.map((sal, i) => (
-              <li key={i} className="mb-4 border-b pb-2 text-responsive">
-                <div>
-                  <div className="font-bold text-indigo-700 text-responsive">
-                    {sal.employee}
-                  </div>
-                  <div className="text-sm text-gray-600 text-responsive">
-                    Amount:{" "}
-                    <span className="font-semibold">Rs.{sal.amount}</span>
-                  </div>
-                  <div className="text-xs text-gray-500 text-responsive">
-                    Date: {sal.payment_date} | Type: {sal.payment_type} |
-                    Project: {sal.project}
-                  </div>
-                </div>
-              </li>
-            ))}
-            {recentSalaryPayments.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No recent salary payments
-              </li>
-            )}
-          </ul>
-        </div>
-      </div>
+
+      {/* Key Stats */}
+      <DashboardStats
+        projectStats={data.projectStats}
+        financialOverview={data.financialOverview}
+        employeeCount={data.employeeSalaries?.length || 0}
+        totalProfit={
+          (data.financialOverview?.find((item: any) => item.type === "incomes")
+            ?.total || 0) -
+          (data.financialOverview?.find((item: any) => item.type === "expenses")
+            ?.total || 0)
+        }
+      />
+
+      {/* Charts Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Expense Categories
-          </h2>
-          <ul>
-            {expenseCategories.map((cat, i) => (
-              <li key={i} className="mb-2 text-responsive">
-                {cat.category}: <b>Rs.{cat.total}</b> ({cat.count} expenses)
-              </li>
-            ))}
-            {expenseCategories.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No data available
-              </li>
-            )}
-          </ul>
-        </div>
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-xl md:text-2xl font-semibold mb-4 text-responsive">
-            Employee Salaries
-          </h2>
-          <ul>
-            {employeeSalaries.map((emp, i) => (
-              <li key={i} className="mb-2 text-responsive">
-                {emp.full_name} ({emp.employee_code}):{" "}
-                <b>Rs.{emp.monthly_salary}</b> Paid: Rs.{emp.total_paid} (
-                {emp.payment_count} payments)
-              </li>
-            ))}
-            {employeeSalaries.length === 0 && (
-              <li className="text-gray-500 text-responsive">
-                No data available
-              </li>
-            )}
-          </ul>
-        </div>
+        <Card>
+          <CardContent>
+            <h2 className="text-xl font-semibold mb-4 text-blue-800">
+              Monthly Trends
+            </h2>
+            <AnalyticsCharts
+              monthlyTrends={data.monthlyTrends}
+              expenseCategories={data.expenseCategories}
+              projectProfitability={data.projectProfitability}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent>
+            <h2 className="text-xl font-semibold mb-4 text-green-800">
+              Recent Activities
+            </h2>
+            <RecentActivities activities={data.recentActivities} />
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

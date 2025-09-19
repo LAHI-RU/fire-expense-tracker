@@ -46,10 +46,10 @@ export function DashboardStats({ projectStats, financialOverview, employeeCount,
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-green-100 rounded-lg">
-                  <div className="text-2xl font-bold text-green-600">Rs.{Number(totalIncome).toLocaleString()}</div>
+              <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">${Number(totalIncome).toLocaleString()}</div>
+              <div className="text-2xl font-bold text-green-600">Rs.{Number(totalIncome).toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Total Income</div>
               <div className="text-xs text-green-600 mt-1">Revenue generated</div>
             </div>
@@ -62,10 +62,10 @@ export function DashboardStats({ projectStats, financialOverview, employeeCount,
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-red-100 rounded-lg">
-                  <div className="text-2xl font-bold text-red-600">Rs.{Number(totalExpenses).toLocaleString()}</div>
+              <TrendingDown className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-red-600">${Number(totalExpenses).toLocaleString()}</div>
+              <div className="text-2xl font-bold text-red-600">Rs.{Number(totalExpenses).toLocaleString()}</div>
               <div className="text-sm text-muted-foreground">Total Expenses</div>
               <div className="text-xs text-red-600 mt-1">Business costs</div>
             </div>
@@ -78,11 +78,15 @@ export function DashboardStats({ projectStats, financialOverview, employeeCount,
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
             <div className={`p-2 rounded-lg ${totalProfit >= 0 ? "bg-green-100" : "bg-red-100"}`}>
+              {totalProfit >= 0 ? (
+                <TrendingUp className="h-6 w-6 text-green-600" />
+              ) : (
+                <TrendingDown className="h-6 w-6 text-red-600" />
+              )}
             </div>
-                  <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
             <div>
               <div className={`text-2xl font-bold ${totalProfit >= 0 ? "text-green-600" : "text-red-600"}`}>
-                ${Math.abs(totalProfit).toLocaleString()}
+                Rs.{Math.abs(totalProfit).toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">Net Profit</div>
               <div className={`text-xs mt-1 ${profitMargin >= 0 ? "text-green-600" : "text-red-600"}`}>
@@ -175,3 +179,5 @@ export function DashboardStats({ projectStats, financialOverview, employeeCount,
     </div>
   )
 }
+
+export default DashboardStats;
