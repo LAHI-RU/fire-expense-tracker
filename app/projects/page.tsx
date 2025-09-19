@@ -113,7 +113,7 @@ export default function ProjectsPage() {
 
   if (showForm || editingProject) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <ProjectForm
           project={editingProject || undefined}
           onSubmit={editingProject ? handleUpdateProject : handleCreateProject}
@@ -127,7 +127,7 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container p-responsive space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

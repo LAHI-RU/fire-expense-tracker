@@ -108,7 +108,7 @@ export default function ExpensesPage() {
 
   if (showForm || editingExpense) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <div className="flex justify-end mb-4">
           <VoiceHelpDialog />
         </div>
@@ -125,7 +125,7 @@ export default function ExpensesPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container p-responsive space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

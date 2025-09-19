@@ -21,7 +21,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
         <Navbar />
-        <main className="max-w-6xl mx-auto mt-6">
+        <main className="container p-responsive mt-6">
           {children}
         </main>
         <Analytics />

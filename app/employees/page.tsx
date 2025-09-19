@@ -161,7 +161,7 @@ export default function EmployeesPage() {
 
   if (showEmployeeForm || editingEmployee) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <EmployeeForm
           employee={editingEmployee || undefined}
           onSubmit={
@@ -178,7 +178,7 @@ export default function EmployeesPage() {
 
   if (showPaymentForm) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <SalaryPaymentForm
           onSubmit={handleRecordPayment}
           onCancel={() => setShowPaymentForm(false)}
@@ -188,7 +188,7 @@ export default function EmployeesPage() {
   }
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container p-responsive space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>

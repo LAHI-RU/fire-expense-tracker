@@ -29,7 +29,7 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <div className="text-center py-8">
           <div className="text-muted-foreground">Loading analytics...</div>
         </div>
@@ -39,7 +39,7 @@ export default function AnalyticsPage() {
 
   if (!analyticsData) {
     return (
-      <div className="container mx-auto py-6">
+      <div className="container p-responsive">
         <div className="text-center py-8">
           <div className="text-muted-foreground">Failed to load analytics data</div>
         </div>
@@ -53,7 +53,7 @@ export default function AnalyticsPage() {
   const employeeCount = analyticsData.employeeSalaries.length
 
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container p-responsive space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-3xl font-bold text-foreground">Analytics Dashboard</h1>
