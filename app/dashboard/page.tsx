@@ -53,7 +53,7 @@ export default function DashboardPage() {
         {/* Welcome Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
           <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2">
+            <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2 ">
               Welcome to Your Dashboard
             </h1>
             <p className="text-muted-foreground text-lg">

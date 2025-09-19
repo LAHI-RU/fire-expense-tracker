@@ -35,7 +35,7 @@ export default function Navbar() {
             alt="Company Logo"
             className="h-10 w-10 object-contain"
           />
-          <span className="text-white font-bold text-xl tracking-wide">
+          <span className="text-white font-bold text-3xl tracking-wide">
             North Central Engineering
           </span>
         </div>
