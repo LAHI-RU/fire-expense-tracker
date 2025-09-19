@@ -1,6 +1,6 @@
 // API routes for analytics and dashboard data
-import { NextResponse } from "next/server"
-import { Database } from "@/lib/mysql"
+import { NextResponse } from "next/server";
+import { Database } from "@/lib/mysql";
 
 export async function GET() {
   try {
@@ -12,7 +12,7 @@ export async function GET() {
         SUM(estimated_budget) as total_budget
       FROM projects 
       GROUP BY status
-    `)
+    `);
 
     // Get financial overview
     const financialOverview = await Database.query(`
@@ -27,7 +27,7 @@ export async function GET() {
         SUM(amount) as total,
         COUNT(*) as count
       FROM incomes
-    `)
+    `);
 
     // Get monthly financial trends (last 12 months)
     const monthlyTrends = await Database.query(`
@@ -50,7 +50,7 @@ export async function GET() {
       GROUP BY DATE_FORMAT(payment_date, '%Y-%m')
       
       ORDER BY month
-    `)
+    `);
 
     // Get project profitability
     const projectProfitability = await Database.query(`
@@ -75,7 +75,7 @@ export async function GET() {
         GROUP BY project_id
       ) incomes ON p.id = incomes.project_id
       ORDER BY profit DESC
-    `)
+    `);
 
     // Get expense categories breakdown
     const expenseCategories = await Database.query(`
@@ -87,7 +87,7 @@ export async function GET() {
       LEFT JOIN expense_categories ec ON e.category_id = ec.id
       GROUP BY ec.id, ec.name
       ORDER BY total DESC
-    `)
+    `);
 
     // Get employee salary overview
     const employeeSalaries = await Database.query(`
@@ -109,7 +109,7 @@ export async function GET() {
       ) payments ON e.id = payments.employee_id
       WHERE e.is_active = TRUE
       ORDER BY total_paid DESC
-    `)
+    `);
 
     // Get recent expenses
     const recentExpenses = await Database.query(`
@@ -151,9 +151,9 @@ export async function GET() {
       recentExpenses,
       recentIncomes,
       recentSalaryPayments,
-    })
+    });
   } catch (error) {
-    console.error("Error fetching analytics:", error)
-    return NextResponse.json({ error: "Failed to fetch analytics data" }, { status: 500 })
+    console.error("Error fetching analytics:", error);
+    return NextResponse.json({ error: "Failed to fetch analytics data" }, { status: 500 });
   }
 }
