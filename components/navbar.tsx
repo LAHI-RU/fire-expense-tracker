@@ -29,16 +29,19 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-blue-700 via-blue-900 to-indigo-800 shadow-lg px-4 py-6">
       <div className="container flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <img
-            src="/logo.jpg" // Change to your actual logo file name
-            alt="Company Logo"
-            className="h-10 w-10 object-contain"
-          />
-          <span className="text-white font-bold text-3xl tracking-wide">
-            North Central Engineering
-          </span>
-        </div>
+        <Link href="/dashboard">
+          <div className="flex items-center gap-3">
+            <img
+              src="/logo.jpg"
+              alt="Company Logo"
+              className="h-10 w-10 object-contain"
+            />
+
+            <span className="text-white font-bold text-3xl tracking-wide cursor-pointer hover:opacity-70 transition duration-300 px-2 rounded">
+              North Central Engineering
+            </span>
+          </div>
+        </Link>
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-6">
           {navItems.map((item) => (

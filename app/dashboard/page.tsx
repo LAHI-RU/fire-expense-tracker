@@ -62,7 +62,7 @@ export default function DashboardPage() {
             </p>
           </div>
           <img
-            src="/placeholder-logo.png"
+            src="/logo.jpg"
             alt="Logo"
             className="h-16 w-16 object-contain rounded-full shadow"
           />
