@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { smoothScrollTo } from "@/lib/ui-effects";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
@@ -36,23 +37,28 @@ export default function Navbar() {
               alt="Company Logo"
               className="h-10 w-10 object-contain"
             />
-
             <span className="text-white font-bold text-3xl tracking-wide cursor-pointer hover:opacity-70 transition duration-300 px-2 rounded">
               North Central Engineering
             </span>
           </div>
         </Link>
         {/* Desktop Nav */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex gap-2 items-center">
           {navItems.map((item) => (
             <Link
               key={item.name}
               href={item.href}
-              className={`flex items-center gap-2 px-3 py-2 rounded-md transition-colors duration-200 text-white hover:bg-blue-600 ${
-                pathname.startsWith(item.href)
-                  ? "bg-blue-600 font-semibold"
-                  : ""
+              className={`flex items-center gap-2 px-3 py-2 rounded-md font-semibold transition-colors duration-200 hover:bg-blue-800 focus:bg-blue-900 ${
+                pathname === item.href
+                  ? "bg-blue-900 text-white"
+                  : "text-blue-200"
               }`}
+              onClick={(e) => {
+                if (item.href.startsWith("#")) {
+                  e.preventDefault();
+                  smoothScrollTo(item.href.replace("#", ""), 80);
+                }
+              }}
             >
               {item.icon}
               <span>{item.name}</span>

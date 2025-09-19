@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
 // Project card component with professional status indicators
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Calendar, DollarSign, User, Edit, Trash2 } from "lucide-react"
-import type { Project } from "@/lib/mysql"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Calendar, DollarSign, User, Edit, Trash2 } from "lucide-react";
+import type { Project } from "@/lib/mysql";
 
 interface ProjectCardProps {
   project: Project & {
-    total_expenses?: number
-    total_income?: number
-    profit?: number
-  }
-  onEdit: (project: Project) => void
-  onDelete: (projectId: number) => void
+    total_expenses?: number;
+    total_income?: number;
+    profit?: number;
+  };
+  onEdit: (project: Project) => void;
+  onDelete: (projectId: number) => void;
 }
 
 const statusConfig = {
@@ -38,18 +38,20 @@ const statusConfig = {
     className: "bg-red-100 text-red-800 hover:bg-red-200",
     dotColor: "bg-red-500",
   },
-}
+};
 
 export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
-  const status = statusConfig[project.status] || statusConfig.planning
-  const profit = (project.total_income || 0) - (project.total_expenses || 0)
+  const status = statusConfig[project.status] || statusConfig.planning;
+  const profit = (project.total_income || 0) - (project.total_expenses || 0);
 
   return (
-    <Card className="hover:shadow-md transition-shadow duration-200">
+    <Card className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="space-y-1">
-            <CardTitle className="text-lg font-semibold text-card-foreground">{project.name}</CardTitle>
+            <CardTitle className="text-lg font-semibold text-card-foreground">
+              {project.name}
+            </CardTitle>
             <div className="flex items-center gap-2">
               <div className={`w-2 h-2 rounded-full ${status.dotColor}`} />
               <Badge variant="secondary" className={status.className}>
@@ -58,7 +60,12 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             </div>
           </div>
           <div className="flex gap-1">
-            <Button variant="ghost" size="sm" onClick={() => onEdit(project)} className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(project)}
+              className="h-8 w-8 p-0"
+            >
               <Edit className="h-4 w-4" />
             </Button>
             <Button
@@ -79,20 +86,28 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
           <span>{project.client_name}</span>
         </div>
 
-        {project.description && <p className="text-sm text-muted-foreground line-clamp-2">{project.description}</p>}
+        {project.description && (
+          <p className="text-sm text-muted-foreground line-clamp-2">
+            {project.description}
+          </p>
+        )}
 
         <div className="grid grid-cols-2 gap-4 text-sm">
           {project.start_date && (
             <div className="flex items-center gap-2">
               <Calendar className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">{new Date(project.start_date).toLocaleDateString()}</span>
+              <span className="text-muted-foreground">
+                {new Date(project.start_date).toLocaleDateString()}
+              </span>
             </div>
           )}
 
           {project.estimated_budget && (
             <div className="flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-muted-foreground" />
-              <span className="font-medium">Rs.{project.estimated_budget.toLocaleString()}</span>
+              <span className="font-medium">
+                Rs.{project.estimated_budget.toLocaleString()}
+              </span>
             </div>
           )}
         </div>
@@ -102,15 +117,23 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
             <div className="grid grid-cols-3 gap-2 text-xs">
               <div className="text-center">
                 <div className="text-muted-foreground">Expenses</div>
-                <div className="font-medium text-red-600">Rs.{(project.total_expenses || 0).toLocaleString()}</div>
+                <div className="font-medium text-red-600">
+                  Rs.{(project.total_expenses || 0).toLocaleString()}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-muted-foreground">Income</div>
-                <div className="font-medium text-green-600">Rs.{(project.total_income || 0).toLocaleString()}</div>
+                <div className="font-medium text-green-600">
+                  Rs.{(project.total_income || 0).toLocaleString()}
+                </div>
               </div>
               <div className="text-center">
                 <div className="text-muted-foreground">Profit</div>
-                <div className={`font-medium ${profit >= 0 ? "text-green-600" : "text-red-600"}`}>
+                <div
+                  className={`font-medium ${
+                    profit >= 0 ? "text-green-600" : "text-red-600"
+                  }`}
+                >
                   Rs.{profit.toLocaleString()}
                 </div>
               </div>
@@ -119,5 +142,5 @@ export function ProjectCard({ project, onEdit, onDelete }: ProjectCardProps) {
         )}
       </CardContent>
     </Card>
-  )
+  );
 }
