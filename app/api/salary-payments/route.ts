@@ -46,7 +46,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const { employee_id, project_id, amount, payment_date, payment_type, notes, created_by } = body
+    // Sanitize all parameters: replace undefined with null
+    const sanitize = (v: any) => v === undefined ? null : v
+    const employee_id = sanitize(body.employee_id)
+    const project_id = sanitize(body.project_id)
+    const amount = sanitize(body.amount)
+    const payment_date = sanitize(body.payment_date)
+    const payment_type = sanitize(body.payment_type)
+    const notes = sanitize(body.notes)
+    const created_by = sanitize(body.created_by)
 
     const paymentDateObj = new Date(payment_date)
     const payment_month = paymentDateObj.getMonth() + 1

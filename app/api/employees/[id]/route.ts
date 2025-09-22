@@ -23,8 +23,19 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     const employeeId = params.id
     const body = await request.json()
-    const { employee_code, full_name, position, hourly_rate, monthly_salary, phone, address, hire_date, is_active } =
-      body
+    // Sanitize: replace undefined with null for SQL
+    const sanitize = (v: any) => v === undefined ? null : v
+    const {
+      employee_code,
+      full_name,
+      position,
+      hourly_rate,
+      monthly_salary,
+      phone,
+      address,
+      hire_date,
+      is_active
+    } = body
 
     await Database.query(
       `UPDATE employees SET 
@@ -33,15 +44,15 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
        updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
       [
-        employee_code,
-        full_name,
-        position,
-        hourly_rate,
-        monthly_salary,
-        phone,
-        address,
-        hire_date,
-        is_active,
+        sanitize(employee_code),
+        sanitize(full_name),
+        sanitize(position),
+        sanitize(hourly_rate),
+        sanitize(monthly_salary),
+        sanitize(phone),
+        sanitize(address),
+        sanitize(hire_date),
+        sanitize(is_active),
         employeeId,
       ],
     )

@@ -6,7 +6,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     const expenseId = params.id
     const body = await request.json()
-    const { project_id, category_id, employee_id, description, amount, expense_date, receipt_url, notes } = body
+    // Sanitize: replace undefined with null for SQL
+    const sanitize = (v: any) => v === undefined ? null : v
+    const {
+      project_id,
+      category_id,
+      employee_id,
+      description,
+      amount,
+      expense_date,
+      receipt_url,
+      notes
+    } = body
 
     await Database.query(
       `UPDATE expenses SET 
@@ -14,7 +25,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
        amount = ?, expense_date = ?, receipt_url = ?, notes = ?, 
        updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
-      [project_id, category_id, employee_id, description, amount, expense_date, receipt_url, notes, expenseId],
+      [
+        sanitize(project_id),
+        sanitize(category_id),
+        sanitize(employee_id),
+        sanitize(description),
+        sanitize(amount),
+        sanitize(expense_date),
+        sanitize(receipt_url),
+        sanitize(notes),
+        expenseId
+      ],
     )
 
     return NextResponse.json({ success: true, message: "Expense updated successfully" })

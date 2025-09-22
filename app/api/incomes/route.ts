@@ -51,32 +51,24 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const {
-      project_id,
-      description,
-      amount,
-      payment_date,
-      payment_method,
-      payment_status,
-      invoice_number,
-      notes,
-      created_by,
-    } = body
+    // Sanitize all parameters: replace undefined with null
+    const sanitize = (v: any) => v === undefined ? null : v
+    const params = [
+      sanitize(body.project_id),
+      sanitize(body.description),
+      sanitize(body.amount),
+      sanitize(body.payment_date),
+      sanitize(body.payment_method),
+      sanitize(body.payment_status),
+      sanitize(body.invoice_number),
+      sanitize(body.notes),
+      sanitize(body.created_by)
+    ]
 
     const result = await Database.query(
       `INSERT INTO incomes (project_id, description, amount, payment_date, payment_method, payment_status, invoice_number, notes, created_by) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        project_id,
-        description,
-        amount,
-        payment_date,
-        payment_method,
-        payment_status,
-        invoice_number,
-        notes,
-        created_by,
-      ],
+      params,
     )
 
     return NextResponse.json({

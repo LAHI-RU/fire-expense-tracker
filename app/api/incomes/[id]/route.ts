@@ -6,8 +6,18 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
   try {
     const incomeId = params.id
     const body = await request.json()
-    const { project_id, description, amount, payment_date, payment_method, payment_status, invoice_number, notes } =
-      body
+    // Sanitize: replace undefined with null for SQL
+    const sanitize = (v: any) => v === undefined ? null : v
+    const {
+      project_id,
+      description,
+      amount,
+      payment_date,
+      payment_method,
+      payment_status,
+      invoice_number,
+      notes
+    } = body
 
     await Database.query(
       `UPDATE incomes SET 
@@ -15,7 +25,17 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
        payment_method = ?, payment_status = ?, invoice_number = ?, notes = ?, 
        updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
-      [project_id, description, amount, payment_date, payment_method, payment_status, invoice_number, notes, incomeId],
+      [
+        sanitize(project_id),
+        sanitize(description),
+        sanitize(amount),
+        sanitize(payment_date),
+        sanitize(payment_method),
+        sanitize(payment_status),
+        sanitize(invoice_number),
+        sanitize(notes),
+        incomeId
+      ],
     )
 
     return NextResponse.json({ success: true, message: "Income updated successfully" })
