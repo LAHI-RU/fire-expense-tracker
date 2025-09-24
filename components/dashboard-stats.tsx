@@ -1,3 +1,4 @@
+// Dashboard statistics cards
 "use client";
 
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,29 +24,19 @@ export function DashboardStats({
   employeeCount,
   totalProfit,
 }: DashboardStatsProps) {
-  // Always use safeProjectStats for all calculations
-  const safeProjectStats = Array.isArray(projectStats) ? projectStats : [];
-  const ongoingProjects =
-    safeProjectStats.find((stat) => stat.status === "ongoing")?.count || 0;
-  const completedProjects =
-    safeProjectStats.find((stat) => stat.status === "completed")?.count || 0;
-  const onHoldProjects =
-    safeProjectStats.find((stat) => stat.status === "on-hold")?.count || 0;
-  const planningProjects =
-    safeProjectStats.find((stat) => stat.status === "planning")?.count || 0;
-
-  const totalProjects = safeProjectStats.reduce(
-    (sum, stat) => sum + Number(stat.count ?? stat.total ?? 0),
+  const totalProjects = projectStats.reduce(
+    (sum, stat) => sum + Number(stat.count),
     0
   );
+  const ongoingProjects =
+    projectStats.find((stat) => stat.status === "ongoing")?.count || 0;
+  const completedProjects =
+    projectStats.find((stat) => stat.status === "completed")?.count || 0;
 
-  const safeFinancialOverview = Array.isArray(financialOverview)
-    ? financialOverview
-    : [];
   const totalExpenses =
-    safeFinancialOverview.find((item) => item.type === "expenses")?.total || 0;
+    financialOverview.find((item) => item.type === "expenses")?.total || 0;
   const totalIncome =
-    safeFinancialOverview.find((item) => item.type === "incomes")?.total || 0;
+    financialOverview.find((item) => item.type === "incomes")?.total || 0;
 
   const profitMargin =
     totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
@@ -179,7 +170,8 @@ export function DashboardStats({
             </div>
             <div>
               <div className="text-2xl font-bold text-amber-600">
-                {onHoldProjects}
+                {projectStats.find((stat) => stat.status === "on-hold")
+                  ?.count || 0}
               </div>
               <div className="text-sm text-muted-foreground">
                 On Hold Projects
@@ -255,7 +247,8 @@ export function DashboardStats({
             </div>
             <div>
               <div className="text-2xl font-bold text-purple-600">
-                {planningProjects}
+                {projectStats.find((stat) => stat.status === "planning")
+                  ?.count || 0}
               </div>
               <div className="text-sm text-muted-foreground">
                 Planning Projects
