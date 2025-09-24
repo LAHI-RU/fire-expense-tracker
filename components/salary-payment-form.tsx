@@ -127,7 +127,7 @@ export function SalaryPaymentForm({ onSubmit, onCancel, isLoading }: SalaryPayme
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">Record Salary Payment</CardTitle>
+        <CardTitle className="text-xl font-semibold text-center">Record Salary Payment</CardTitle>
       </CardHeader>
 
       <CardContent>

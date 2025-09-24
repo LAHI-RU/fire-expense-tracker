@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    const {
+    let {
       employee_code,
       full_name,
       position,
@@ -39,6 +39,20 @@ export async function POST(request: NextRequest) {
       hire_date,
       is_active = true,
     } = body
+
+    // Auto-generate employee_code if not provided
+    if (!employee_code) {
+      // Get latest employee_code
+      const rows = await Database.query("SELECT employee_code FROM employees ORDER BY id DESC LIMIT 1") as any[];
+      let nextNum = 1;
+      if (Array.isArray(rows) && rows.length > 0 && rows[0]?.employee_code) {
+        const match = (rows[0].employee_code as string).match(/EMP(\d+)/);
+        if (match) {
+          nextNum = parseInt(match[1], 10) + 1;
+        }
+      }
+      employee_code = `EMP-${nextNum.toString().padStart(2, "0")}`;
+    }
 
     // Convert undefined to null for SQL
     const safeParams = [
@@ -62,6 +76,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       employeeId: (result as any).insertId,
+      employee_code,
       message: "Employee created successfully",
     })
   } catch (error) {
