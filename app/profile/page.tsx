@@ -92,7 +92,7 @@ export default function ProfilePage() {
         </div>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <Label htmlFor="oldPassword">Current Password</Label>
+            <Label htmlFor="oldPassword" className="ml-1 mb-2">Current Password</Label>
             <Input
               id="oldPassword"
               type="password"
@@ -102,7 +102,7 @@ export default function ProfilePage() {
             />
           </div>
           <div>
-            <Label htmlFor="newPassword">New Password</Label>
+            <Label htmlFor="newPassword" className="ml-1 mb-2">New Password</Label>
             <Input
               id="newPassword"
               type="password"

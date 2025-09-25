@@ -117,7 +117,7 @@ export default function Navbar() {
                 <div className="absolute right-0 mt-2 w-64 bg-white rounded-lg shadow-lg z-50 p-4">
                   <div className="flex flex-col items-center gap-2">
                     <FaRegUser className="text-4xl text-blue-700 mb-2" />
-                    <div className="font-bold text-lg">
+                    <div className="font-bold text-sm">
                       {user && user.email ? user.email : "No user"}
                     </div>
                     <div className="text-xs text-blue-600 font-semibold">
