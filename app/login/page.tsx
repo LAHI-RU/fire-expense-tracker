@@ -49,18 +49,37 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" value={form.email} onChange={e => handleChange("email", e.target.value)} required />
+            <Input
+              id="email"
+              type="email"
+              value={form.email}
+              onChange={(e) => handleChange("email", e.target.value)}
+              required
+            />
           </div>
           <div>
             <Label htmlFor="password">Password</Label>
-            <Input id="password" type="password" value={form.password} onChange={e => handleChange("password", e.target.value)} required />
+            <Input
+              id="password"
+              type="password"
+              value={form.password}
+              onChange={(e) => handleChange("password", e.target.value)}
+              required
+            />
           </div>
           {error && <div className="text-red-600 text-sm">{error}</div>}
-          <Button type="submit" disabled={loading} className="w-full">{loading ? "Logging in..." : "Login"}</Button>
+          <Button type="submit" disabled={loading} className="w-full">
+            {loading ? "Logging in..." : "Login"}
+          </Button>
         </form>
         <div className="mt-6 text-center">
           <span className="text-muted-foreground">Don't have an account?</span>
-          <a href="/register" className="ml-2 text-blue-600 hover:underline font-semibold">Register</a>
+          <a
+            href="/register"
+            className="ml-2 text-blue-600 hover:underline font-semibold"
+          >
+            Register
+          </a>
         </div>
       </CardContent>
     </Card>

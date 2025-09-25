@@ -110,7 +110,10 @@ export default function Navbar() {
           ))}
           {/* Logout Icon Mobile */}
           <button
-            onClick={() => { setMenuOpen(false); handleLogout(); }}
+            onClick={() => {
+              setMenuOpen(false);
+              handleLogout();
+            }}
             className="mt-2 flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-red-200 hover:bg-red-700 transition-colors duration-200 w-full"
             title="Logout"
           >
