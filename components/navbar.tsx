@@ -13,6 +13,7 @@ import {
   FaFolderOpen,
   FaBars,
   FaTimes,
+  FaSignOutAlt,
 } from "react-icons/fa";
 
 const navItems = [
@@ -26,6 +27,12 @@ const navItems = [
 export default function Navbar() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleLogout = async () => {
+    // Remove JWT cookie by setting it expired
+    document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    window.location.href = "/login";
+  };
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-gradient-to-r from-blue-700 via-blue-900 to-indigo-800 shadow-lg px-4 py-6">
@@ -64,6 +71,15 @@ export default function Navbar() {
               <span>{item.name}</span>
             </Link>
           ))}
+          {/* Logout Icon */}
+          <button
+            onClick={handleLogout}
+            className="ml-4 flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-red-200 hover:bg-red-700 transition-colors duration-200"
+            title="Logout"
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span className="hidden md:inline">Logout</span>
+          </button>
         </div>
         {/* Mobile Hamburger */}
         <button
@@ -92,6 +108,15 @@ export default function Navbar() {
               <span>{item.name}</span>
             </Link>
           ))}
+          {/* Logout Icon Mobile */}
+          <button
+            onClick={() => { setMenuOpen(false); handleLogout(); }}
+            className="mt-2 flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-red-200 hover:bg-red-700 transition-colors duration-200 w-full"
+            title="Logout"
+          >
+            <FaSignOutAlt className="text-xl" />
+            <span className="">Logout</span>
+          </button>
         </div>
       )}
     </nav>

@@ -1,3 +1,26 @@
+// Get user info from JWT cookie (client-side)
+export function getUserFromCookie(): null | { id: number; email: string; role: string } {
+  if (typeof document === "undefined") return null;
+  const match = document.cookie.match(/token=([^;]+)/);
+  if (!match) return null;
+  try {
+    return jwt.decode(match[1]) as { id: number; email: string; role: string };
+  } catch {
+    return null;
+  }
+}
+
+// Redirect to login if not authenticated (client-side)
+export function requireAuth(): { id: number; email: string; role: string } | null {
+  const user = getUserFromCookie();
+  if (!user) {
+    if (typeof window !== "undefined") {
+      window.location.href = "/login";
+    }
+    return null;
+  }
+  return user;
+}
 // Authentication utilities for MySQL backend
 import bcrypt from "bcryptjs"
 import jwt from "jsonwebtoken"
