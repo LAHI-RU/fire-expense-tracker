@@ -29,7 +29,8 @@ export default function LoginPage() {
       });
       const data = await res.json();
       if (res.ok) {
-        router.push("/");
+        // Force a full page reload to ensure cookie is available
+        window.location.href = "/dashboard";
       } else {
         setError(data.error || "Login failed");
       }
@@ -41,47 +42,65 @@ export default function LoginPage() {
   };
 
   return (
-    <Card className="max-w-md mx-auto mt-10">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              type="email"
-              value={form.email}
-              onChange={(e) => handleChange("email", e.target.value)}
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-700 via-indigo-800 to-blue-900">
+      <Card className="max-w-md w-full mx-auto shadow-2xl border-0 rounded-2xl bg-white/90">
+        <CardHeader className="flex flex-col items-center gap-2 pt-8 pb-4">
+          <img
+            src="/logo.jpg"
+            alt="Logo"
+            className="h-16 w-16 rounded-full shadow-lg mb-2"
+          />
+          <CardTitle className="text-2xl font-bold text-blue-900">
+            Sign In
+          </CardTitle>
+          <span className="text-muted-foreground text-sm">
+            Welcome back! Please login to continue.
+          </span>
+        </CardHeader>
+        <CardContent className="pt-2 pb-8">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={form.email}
+                onChange={(e) => handleChange("email", e.target.value)}
+                required
+                className="bg-white/80"
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={form.password}
+                onChange={(e) => handleChange("password", e.target.value)}
+                required
+                className="bg-white/80"
+              />
+            </div>
+            {error && (
+              <div className="text-red-600 text-sm text-center">{error}</div>
+            )}
+            <Button type="submit" disabled={loading} className="w-full mt-2">
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
+          <div className="mt-6 text-center">
+            <span className="text-muted-foreground">
+              Don't have an account?
+            </span>
+            <a
+              href="/register"
+              className="ml-2 text-blue-600 hover:underline font-semibold"
+            >
+              Register
+            </a>
           </div>
-          <div>
-            <Label htmlFor="password">Password</Label>
-            <Input
-              id="password"
-              type="password"
-              value={form.password}
-              onChange={(e) => handleChange("password", e.target.value)}
-              required
-            />
-          </div>
-          {error && <div className="text-red-600 text-sm">{error}</div>}
-          <Button type="submit" disabled={loading} className="w-full">
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </form>
-        <div className="mt-6 text-center">
-          <span className="text-muted-foreground">Don't have an account?</span>
-          <a
-            href="/register"
-            className="ml-2 text-blue-600 hover:underline font-semibold"
-          >
-            Register
-          </a>
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   );
 }

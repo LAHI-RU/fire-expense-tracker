@@ -16,7 +16,7 @@ export async function POST(request: Request) {
     // Hash password
     const hash = await bcrypt.hash(password, 10);
     await Database.query(
-      "INSERT INTO users (email, full_name, password, role, created_at) VALUES (?, ?, ?, ?, NOW())",
+      "INSERT INTO users (email, full_name, password_hash, role, created_at) VALUES (?, ?, ?, ?, NOW())",
       [email, full_name, hash, role]
     );
     return NextResponse.json({ success: true });

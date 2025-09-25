@@ -1,5 +1,6 @@
-// Expenses management page
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Expenses management page
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,10 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Expense } from "@/lib/mysql";
 
 export default function ExpensesPage() {
+  useEffect(() => {
+    const user = typeof window !== "undefined" ? requireAuth() : null;
+    if (!user) return;
+  }, []);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);

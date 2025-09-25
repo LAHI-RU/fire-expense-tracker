@@ -15,17 +15,21 @@ export async function POST(request: Request) {
     if (!Array.isArray(users) || users.length === 0) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
-    const user = users[0] as any;
-    const valid = await bcrypt.compare(password, user.password);
+  const user = users[0] as any;
+  const valid = await bcrypt.compare(password, user.password_hash);
     if (!valid) {
       return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
     }
     // Create JWT
     const token = jwt.sign({ id: user.id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: "7d" });
-    // Set cookie
+    // Set cookie with SameSite=Lax for reliable navigation
+    // Secure only in production
+    const isProd = process.env.NODE_ENV === "production";
+    let cookie = `token=${token}; Path=/; Max-Age=604800; SameSite=Lax`;
+    if (isProd) cookie += "; Secure";
     return NextResponse.json({ success: true }, {
       headers: {
-        "Set-Cookie": `token=${token}; Path=/; HttpOnly; SameSite=Lax; Max-Age=604800`,
+        "Set-Cookie": cookie,
       },
     });
   } catch (error) {

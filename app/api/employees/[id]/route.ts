@@ -29,7 +29,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
       employee_code,
       full_name,
       position,
-      hourly_rate,
+      daily_rate,
       monthly_salary,
       phone,
       address,
@@ -39,7 +39,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
 
     await Database.query(
       `UPDATE employees SET 
-       employee_code = ?, full_name = ?, position = ?, hourly_rate = ?, 
+       employee_code = ?, full_name = ?, position = ?, daily_rate = ?, 
        monthly_salary = ?, phone = ?, address = ?, hire_date = ?, is_active = ?, 
        updated_at = CURRENT_TIMESTAMP 
        WHERE id = ?`,
@@ -47,7 +47,7 @@ export async function PUT(request: NextRequest, { params }: { params: { id: stri
         sanitize(employee_code),
         sanitize(full_name),
         sanitize(position),
-        sanitize(hourly_rate),
+        sanitize(daily_rate),
         sanitize(monthly_salary),
         sanitize(phone),
         sanitize(address),

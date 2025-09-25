@@ -1,5 +1,6 @@
-// Projects management page with professional layout
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Projects management page with professional layout
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,10 @@ import { ProjectForm } from "@/components/project-form";
 import type { Project } from "@/lib/mysql";
 
 export default function ProjectsPage() {
+  useEffect(() => {
+    const user = typeof window !== "undefined" ? requireAuth() : null;
+    if (!user) return;
+  }, []);
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);

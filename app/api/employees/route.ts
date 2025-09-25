@@ -42,15 +42,19 @@ export async function POST(request: NextRequest) {
 
     // Auto-generate employee_code if not provided
     if (!employee_code) {
-      // Get latest employee_code
-      const rows = await Database.query("SELECT employee_code FROM employees ORDER BY id DESC LIMIT 1") as any[];
-      let nextNum = 1;
-      if (Array.isArray(rows) && rows.length > 0 && rows[0]?.employee_code) {
-        const match = (rows[0].employee_code as string).match(/EMP(\d+)/);
-        if (match) {
-          nextNum = parseInt(match[1], 10) + 1;
+      // Get all employee_codes and find the highest number
+      const rows = await Database.query("SELECT employee_code FROM employees") as any[];
+      let maxNum = 0;
+      if (Array.isArray(rows)) {
+        for (const row of rows) {
+          const match = (row.employee_code as string).match(/EMP-(\d+)/);
+          if (match) {
+            const num = parseInt(match[1], 10);
+            if (num > maxNum) maxNum = num;
+          }
         }
       }
+      const nextNum = maxNum + 1;
       employee_code = `EMP-${nextNum.toString().padStart(2, "0")}`;
     }
 

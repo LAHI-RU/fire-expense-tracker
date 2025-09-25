@@ -1,5 +1,6 @@
-// Employees management page
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Employees management page
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -12,6 +13,14 @@ import { SalaryPaymentForm } from "@/components/salary-payment-form";
 import type { Employee, SalaryPayment } from "@/lib/mysql";
 
 export default function EmployeesPage() {
+  useEffect(() => {
+    const user = typeof window !== "undefined" ? requireAuth() : null;
+    if (!user) {
+      // Optionally show a loading spinner or message before redirect
+      // window.location.href = "/login"; // requireAuth already handles redirect
+      return;
+    }
+  }, []);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [salaryPayments, setSalaryPayments] = useState<any[]>([]);
