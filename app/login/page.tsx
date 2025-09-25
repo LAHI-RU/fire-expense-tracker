@@ -60,7 +60,7 @@ export default function LoginPage() {
         <CardContent className="pt-2 pb-8">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="ml-1 mb-2">Email</Label>
               <Input
                 id="email"
                 type="email"
@@ -71,7 +71,7 @@ export default function LoginPage() {
               />
             </div>
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="ml-1 mb-2">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -84,7 +84,7 @@ export default function LoginPage() {
             {error && (
               <div className="text-red-600 text-sm text-center">{error}</div>
             )}
-            <Button type="submit" disabled={loading} className="w-full mt-2">
+            <Button type="submit" disabled={loading} className="w-24 mt-8 mx-auto block">
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
