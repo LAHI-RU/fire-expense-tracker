@@ -354,11 +354,11 @@ export default function EmployeesPage() {
                       </div>
                     )}
 
-                    {employee.hourly_rate && (
+                    {employee.daily_rate && (
                       <div>
-                        <div className="text-muted-foreground">Hourly Rate</div>
+                        <div className="text-muted-foreground">Daily Rate</div>
                         <div className="font-medium">
-                          Rs.{employee.hourly_rate}/hr
+                          Rs.{employee.daily_rate.toLocaleString()}/day
                         </div>
                       </div>
                     )}

@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
       employee_code,
       full_name,
       position,
-      hourly_rate,
+      daily_rate,
       monthly_salary,
       phone,
       address,
@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
       employee_code ?? null,
       full_name ?? null,
       position ?? null,
-      hourly_rate ?? null,
+      daily_rate ?? null,
       monthly_salary ?? null,
       phone ?? null,
       address ?? null,
@@ -68,7 +68,7 @@ export async function POST(request: NextRequest) {
     ];
 
     const result = await Database.query(
-      `INSERT INTO employees (employee_code, full_name, position, hourly_rate, monthly_salary, phone, address, hire_date, is_active) 
+      `INSERT INTO employees (employee_code, full_name, position, daily_rate, monthly_salary, phone, address, hire_date, is_active) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       safeParams,
     )

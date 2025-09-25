@@ -84,7 +84,7 @@ export interface Employee {
   employee_code: string
   full_name: string
   position?: string
-  hourly_rate?: number
+  daily_rate?: number
   monthly_salary?: number
   phone?: string
   address?: string

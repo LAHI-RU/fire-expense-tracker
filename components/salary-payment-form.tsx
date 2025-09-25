@@ -187,9 +187,9 @@ export function SalaryPaymentForm({ onSubmit, onCancel, isLoading }: SalaryPayme
                     <strong>Monthly Salary:</strong> Rs.{selectedEmployee.monthly_salary.toLocaleString()}
                   </div>
                 )}
-                {selectedEmployee.hourly_rate && (
+                {selectedEmployee.daily_rate && (
                   <div>
-                    <strong>Hourly Rate:</strong> Rs.{selectedEmployee.hourly_rate}/hour
+                    <strong>Daily Rate:</strong> Rs.{selectedEmployee.daily_rate.toLocaleString()}/day
                   </div>
                 )}
               </div>

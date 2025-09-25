@@ -27,7 +27,7 @@ export function EmployeeForm({
   const [formData, setFormData] = useState({
     full_name: employee?.full_name || "",
     position: employee?.position || "",
-    hourly_rate: employee?.hourly_rate?.toString() || "",
+    daily_rate: (employee as any)?.daily_rate?.toString() || "",
     monthly_salary: employee?.monthly_salary?.toString() || "",
     phone: employee?.phone || "",
     address: employee?.address || "",
@@ -41,8 +41,8 @@ export function EmployeeForm({
     e.preventDefault();
     const dataToSend = {
       ...formData,
-      hourly_rate: formData.hourly_rate
-        ? Number.parseFloat(formData.hourly_rate)
+      daily_rate: formData.daily_rate
+        ? Number.parseFloat(formData.daily_rate)
         : undefined,
       monthly_salary: formData.monthly_salary
         ? Number.parseFloat(formData.monthly_salary)
@@ -109,14 +109,14 @@ export function EmployeeForm({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="hourly_rate">Hourly Rate (Rs.)</Label>
+              <Label htmlFor="daily_rate">Daily Rate (Rs.)</Label>
               <Input
-                id="hourly_rate"
+                id="daily_rate"
                 type="number"
                 step="0.01"
-                value={formData.hourly_rate}
-                onChange={(e) => handleChange("hourly_rate", e.target.value)}
-                placeholder="25.00"
+                value={formData.daily_rate}
+                onChange={(e) => handleChange("daily_rate", e.target.value)}
+                placeholder="2500.00"
               />
             </div>
 
@@ -128,19 +128,29 @@ export function EmployeeForm({
                 step="0.01"
                 value={formData.monthly_salary}
                 onChange={(e) => handleChange("monthly_salary", e.target.value)}
-                placeholder="4000.00"
+                placeholder="40000.00"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Phone (10 digits)</Label>
               <Input
                 id="phone"
+                type="tel"
                 value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                placeholder="+1234567890"
+                onChange={(e) => {
+                  // Only allow digits, max 10
+                  const val = e.target.value
+                    .replace(/[^0-9]/g, "")
+                    .slice(0, 10);
+                  handleChange("phone", val);
+                }}
+                placeholder="0771234567"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                required
               />
             </div>
 
