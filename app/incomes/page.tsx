@@ -21,10 +21,11 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Income } from "@/lib/mysql";
 
 export default function IncomesPage() {
+  // Get the logged-in user
+  const user = typeof window !== "undefined" ? requireAuth() : null;
   useEffect(() => {
-    const user = typeof window !== "undefined" ? requireAuth() : null;
     if (!user) return;
-  }, []);
+  }, [user]);
   const [incomes, setIncomes] = useState<any[]>([]);
   const [filteredIncomes, setFilteredIncomes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -70,11 +71,15 @@ export default function IncomesPage() {
   }, []);
 
   const handleCreateIncome = async (incomeData: Partial<Income>) => {
+    if (!user) {
+      alert("You must be logged in to add income records.");
+      return;
+    }
     try {
       const response = await fetch("/api/incomes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...incomeData, created_by: 1 }), // TODO: Get from auth
+        body: JSON.stringify({ ...incomeData, created_by: user.id }),
       });
 
       if (response.ok) {
