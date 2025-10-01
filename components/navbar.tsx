@@ -105,7 +105,7 @@ export default function Navbar() {
           ))}
           {/* Modern Avatar/Profile Dropdown */}
           {(user || jwtError) && (
-            <div className="relative ml-4">
+            <div className="relative ml-10">
               <button
                 onClick={handleProfile}
                 className="flex items-center justify-center w-10 h-10 rounded-full bg-blue-100 hover:bg-blue-200 transition-colors duration-200 shadow"
