@@ -1,73 +1,90 @@
 // Employee creation and editing form
-"use client"
+"use client";
 
-import type React from "react"
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { Employee } from "@/lib/mysql"
+import type React from "react";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import type { Employee } from "@/lib/mysql";
 
 interface EmployeeFormProps {
-  employee?: Employee
-  onSubmit: (employeeData: Partial<Employee>) => void
-  onCancel: () => void
-  isLoading?: boolean
+  employee?: Employee;
+  onSubmit: (employeeData: Partial<Employee>) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
-export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: EmployeeFormProps) {
+export function EmployeeForm({
+  employee,
+  onSubmit,
+  onCancel,
+  isLoading,
+}: EmployeeFormProps) {
   const [formData, setFormData] = useState({
-    employee_code: employee?.employee_code || "",
     full_name: employee?.full_name || "",
     position: employee?.position || "",
-    hourly_rate: employee?.hourly_rate?.toString() || "",
+    daily_rate: (employee as any)?.daily_rate?.toString() || "",
     monthly_salary: employee?.monthly_salary?.toString() || "",
     phone: employee?.phone || "",
     address: employee?.address || "",
-    hire_date: employee?.hire_date ? new Date(employee.hire_date).toISOString().split("T")[0] : "",
+    hire_date: employee?.hire_date
+      ? new Date(employee.hire_date).toISOString().split("T")[0]
+      : "",
     is_active: employee?.is_active ?? true,
-  })
+  });
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    onSubmit({
+    e.preventDefault();
+    const dataToSend = {
       ...formData,
-      hourly_rate: formData.hourly_rate ? Number.parseFloat(formData.hourly_rate) : undefined,
-      monthly_salary: formData.monthly_salary ? Number.parseFloat(formData.monthly_salary) : undefined,
-      hire_date: formData.hire_date || undefined,
+      daily_rate: formData.daily_rate
+        ? Number.parseFloat(formData.daily_rate)
+        : undefined,
+      monthly_salary: formData.monthly_salary
+        ? Number.parseFloat(formData.monthly_salary)
+        : undefined,
+      hire_date: formData.hire_date ? new Date(formData.hire_date) : undefined,
       address: formData.address || undefined,
       phone: formData.phone || undefined,
       position: formData.position || undefined,
-    })
-  }
+    };
+    // Only include employee_code if editing
+    if (employee?.employee_code) {
+      (dataToSend as any).employee_code = employee.employee_code;
+    }
+    onSubmit(dataToSend);
+  };
 
   const handleChange = (field: string, value: string | boolean) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">{employee ? "Edit Employee" : "Add New Employee"}</CardTitle>
+        <CardTitle className="text-xl font-semibold text-center">
+          {employee ? "Edit Employee" : "Add New Employee"}
+        </CardTitle>
       </CardHeader>
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="employee_code">Employee Code *</Label>
-              <Input
-                id="employee_code"
-                value={formData.employee_code}
-                onChange={(e) => handleChange("employee_code", e.target.value)}
-                placeholder="EMP001"
-                required
-              />
-            </div>
-
+            {employee?.employee_code && (
+              <div className="space-y-2">
+                <Label htmlFor="employee_code">Employee Code</Label>
+                <Input
+                  id="employee_code"
+                  value={employee.employee_code}
+                  readOnly
+                  className="bg-gray-200 cursor-not-allowed text-gray-400"
+                />
+              </div>
+            )}
             <div className="space-y-2">
               <Label htmlFor="full_name">Full Name *</Label>
               <Input
@@ -92,14 +109,14 @@ export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: Employ
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="hourly_rate">Hourly Rate (Rs.)</Label>
+              <Label htmlFor="daily_rate">Daily Rate (Rs.)</Label>
               <Input
-                id="hourly_rate"
+                id="daily_rate"
                 type="number"
                 step="0.01"
-                value={formData.hourly_rate}
-                onChange={(e) => handleChange("hourly_rate", e.target.value)}
-                placeholder="25.00"
+                value={formData.daily_rate}
+                onChange={(e) => handleChange("daily_rate", e.target.value)}
+                placeholder="2500.00"
               />
             </div>
 
@@ -111,19 +128,29 @@ export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: Employ
                 step="0.01"
                 value={formData.monthly_salary}
                 onChange={(e) => handleChange("monthly_salary", e.target.value)}
-                placeholder="4000.00"
+                placeholder="40000.00"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Phone (10 digits)</Label>
               <Input
                 id="phone"
+                type="tel"
                 value={formData.phone}
-                onChange={(e) => handleChange("phone", e.target.value)}
-                placeholder="+1234567890"
+                onChange={(e) => {
+                  // Only allow digits, max 10
+                  const val = e.target.value
+                    .replace(/[^0-9]/g, "")
+                    .slice(0, 10);
+                  handleChange("phone", val);
+                }}
+                placeholder="0771234567"
+                pattern="[0-9]{10}"
+                maxLength={10}
+                required
               />
             </div>
 
@@ -160,14 +187,23 @@ export function EmployeeForm({ employee, onSubmit, onCancel, isLoading }: Employ
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Saving..." : employee ? "Update Employee" : "Add Employee"}
+              {isLoading
+                ? "Saving..."
+                : employee
+                ? "Update Employee"
+                : "Add Employee"}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 bg-transparent">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="flex-1 bg-transparent"
+            >
               Cancel
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import DashboardStats from "@/components/dashboard-stats";
 import { RecentActivities } from "@/components/recent-activities";
+import { requireAuth } from "@/lib/auth-client";
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
@@ -12,6 +13,10 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Check authentication
+    const user = typeof window !== "undefined" ? requireAuth() : null;
+    if (!user) return; // requireAuth will redirect if not logged in
+
     fetch("/api/analytics")
       .then((res) => res.json())
       .then((json) => {

@@ -1,5 +1,6 @@
-// Projects management page with professional layout
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Projects management page with professional layout
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,11 @@ import { ProjectForm } from "@/components/project-form";
 import type { Project } from "@/lib/mysql";
 
 export default function ProjectsPage() {
+  // Get the logged-in user
+  const user = typeof window !== "undefined" ? requireAuth() : null;
+  useEffect(() => {
+    if (!user) return;
+  }, [user]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [filteredProjects, setFilteredProjects] = useState<Project[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -52,11 +58,15 @@ export default function ProjectsPage() {
   }, [statusFilter]);
 
   const handleCreateProject = async (projectData: Partial<Project>) => {
+    if (!user) {
+      alert("You must be logged in to create a project.");
+      return;
+    }
     try {
       const response = await fetch("/api/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...projectData, created_by: 1 }), // TODO: Get from auth
+        body: JSON.stringify({ ...projectData, created_by: user.id }),
       });
 
       if (response.ok) {

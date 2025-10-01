@@ -1,8 +1,8 @@
 // Help dialog for voice input features
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,12 +10,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { HelpCircle, Mic, Volume2, MicOff } from "lucide-react"
+} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { HelpCircle, Mic, Volume2, MicOff } from "lucide-react";
 
 export function VoiceHelpDialog() {
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -25,13 +25,15 @@ export function VoiceHelpDialog() {
           Voice Help
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Voice Input Guide</DialogTitle>
-          <DialogDescription>Learn how to use voice input for faster data entry</DialogDescription>
+          <DialogDescription>
+            Learn how to use voice input for faster data entry
+          </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-2">
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -41,11 +43,13 @@ export function VoiceHelpDialog() {
             </CardHeader>
             <CardContent className="space-y-2">
               <p className="text-sm">
-                Click the microphone button next to any text field to start voice input. Your browser will ask for
-                microphone permission the first time.
+                Click the microphone button next to any text field to start
+                voice input. Your browser will ask for microphone permission the
+                first time.
               </p>
               <p className="text-sm">
-                <strong>Note:</strong> Voice input works best in Chrome, Edge, and Safari browsers.
+                <strong>Note:</strong> Voice input works best in Chrome, Edge,
+                and Safari browsers.
               </p>
             </CardContent>
           </Card>
@@ -60,7 +64,8 @@ export function VoiceHelpDialog() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">
-                  Click the microphone button to start listening. The button will turn red when active.
+                  Click the microphone button to start listening. The button
+                  will turn red when active.
                 </p>
               </CardContent>
             </Card>
@@ -74,7 +79,8 @@ export function VoiceHelpDialog() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">
-                  Click the button again to stop recording. Your speech will be converted to text automatically.
+                  Click the button again to stop recording. Your speech will be
+                  converted to text automatically.
                 </p>
               </CardContent>
             </Card>
@@ -88,7 +94,8 @@ export function VoiceHelpDialog() {
               </CardHeader>
               <CardContent>
                 <p className="text-xs text-muted-foreground">
-                  When text is successfully added, the button will turn green to confirm.
+                  When text is successfully added, the button will turn green to
+                  confirm.
                 </p>
               </CardContent>
             </Card>
@@ -102,21 +109,24 @@ export function VoiceHelpDialog() {
               <div>
                 <h4 className="font-medium text-sm">For Descriptions:</h4>
                 <p className="text-xs text-muted-foreground">
-                  Speak clearly: "Fire extinguisher installation at main office building"
+                  Speak clearly: "Fire extinguisher installation at main office
+                  building"
                 </p>
               </div>
 
               <div>
                 <h4 className="font-medium text-sm">For Amounts:</h4>
                 <p className="text-xs text-muted-foreground">
-                  Say numbers clearly: "One thousand five hundred" or "Fifteen hundred dollars"
+                  Say numbers clearly: "One thousand five hundred" or "Fifteen
+                  hundred dollars"
                 </p>
               </div>
 
               <div>
                 <h4 className="font-medium text-sm">For Notes:</h4>
                 <p className="text-xs text-muted-foreground">
-                  Add context: "Payment received from client via bank transfer on completion"
+                  Add context: "Payment received from client via bank transfer
+                  on completion"
                 </p>
               </div>
 
@@ -138,5 +148,5 @@ export function VoiceHelpDialog() {
         </div>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

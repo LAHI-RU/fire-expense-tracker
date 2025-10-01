@@ -1,5 +1,6 @@
-// Incomes management page
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Incomes management page
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,11 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Income } from "@/lib/mysql";
 
 export default function IncomesPage() {
+  // Get the logged-in user
+  const user = typeof window !== "undefined" ? requireAuth() : null;
+  useEffect(() => {
+    if (!user) return;
+  }, [user]);
   const [incomes, setIncomes] = useState<any[]>([]);
   const [filteredIncomes, setFilteredIncomes] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -65,11 +71,15 @@ export default function IncomesPage() {
   }, []);
 
   const handleCreateIncome = async (incomeData: Partial<Income>) => {
+    if (!user) {
+      alert("You must be logged in to add income records.");
+      return;
+    }
     try {
       const response = await fetch("/api/incomes", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...incomeData, created_by: 1 }), // TODO: Get from auth
+        body: JSON.stringify({ ...incomeData, created_by: user.id }),
       });
 
       if (response.ok) {
@@ -129,6 +139,13 @@ export default function IncomesPage() {
     received: { label: "Received", className: "bg-green-100 text-green-800" },
     partial: { label: "Partial", className: "bg-blue-100 text-blue-800" },
   };
+
+  function getStatusConfig(payment_status: string) {
+    return (
+      statusConfig[payment_status as keyof typeof statusConfig] ||
+      statusConfig["pending"]
+    );
+  }
 
   if (showForm || editingIncome) {
     return (
@@ -241,10 +258,10 @@ export default function IncomesPage() {
                       <Badge
                         variant="secondary"
                         className={
-                          statusConfig[income.payment_status]?.className
+                          getStatusConfig(income.payment_status).className
                         }
                       >
-                        {statusConfig[income.payment_status]?.label}
+                        {getStatusConfig(income.payment_status).label}
                       </Badge>
                     </div>
 

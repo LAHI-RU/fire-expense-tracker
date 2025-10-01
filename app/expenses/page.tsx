@@ -1,5 +1,6 @@
-// Expenses management page
 "use client";
+import { requireAuth } from "@/lib/auth-client";
+// Expenses management page
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
@@ -20,6 +21,11 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Expense } from "@/lib/mysql";
 
 export default function ExpensesPage() {
+  // Get the logged-in user
+  const user = typeof window !== "undefined" ? requireAuth() : null;
+  useEffect(() => {
+    if (!user) return;
+  }, [user]);
   const [expenses, setExpenses] = useState<any[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -67,11 +73,15 @@ export default function ExpensesPage() {
   }, []);
 
   const handleCreateExpense = async (expenseData: Partial<Expense>) => {
+    if (!user) {
+      alert("You must be logged in to add expenses.");
+      return;
+    }
     try {
       const response = await fetch("/api/expenses", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...expenseData, created_by: 1 }), // TODO: Get from auth
+        body: JSON.stringify({ ...expenseData, created_by: user.id }),
       });
 
       if (response.ok) {
