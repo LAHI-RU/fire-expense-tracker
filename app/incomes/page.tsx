@@ -8,6 +8,21 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Plus,
   Search,
   Edit,
@@ -15,6 +30,10 @@ import {
   Calendar,
   DollarSign,
   FileText,
+  Grid3X3,
+  LayoutList,
+  ArrowUpDown,
+  Download,
 } from "lucide-react";
 import { IncomeForm } from "@/components/income-form";
 import { VoiceHelpDialog } from "@/components/voice-help-dialog";
@@ -32,6 +51,11 @@ export default function IncomesPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingIncome, setEditingIncome] = useState<Income | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [sortBy, setSortBy] = useState<
+    "date" | "amount" | "project" | "status"
+  >("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
 
   // Fetch incomes
   const fetchIncomes = async () => {
@@ -46,7 +70,7 @@ export default function IncomesPage() {
     }
   };
 
-  // Filter incomes based on search
+  // Filter and sort incomes
   useEffect(() => {
     let filtered = incomes;
 
@@ -63,8 +87,41 @@ export default function IncomesPage() {
       );
     }
 
+    // Sort incomes
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+
+      switch (sortBy) {
+        case "date":
+          aValue = new Date(a.payment_date).getTime();
+          bValue = new Date(b.payment_date).getTime();
+          break;
+        case "amount":
+          aValue = Number(a.amount);
+          bValue = Number(b.amount);
+          break;
+        case "project":
+          aValue = a.project_name || "";
+          bValue = b.project_name || "";
+          break;
+        case "status":
+          aValue = a.payment_status;
+          bValue = b.payment_status;
+          break;
+        default:
+          aValue = a.id;
+          bValue = b.id;
+      }
+
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
+
     setFilteredIncomes(filtered);
-  }, [incomes, searchTerm]);
+  }, [incomes, searchTerm, sortBy, sortOrder]);
 
   useEffect(() => {
     fetchIncomes();
@@ -147,6 +204,34 @@ export default function IncomesPage() {
     );
   }
 
+  const handleSort = (column: "date" | "amount" | "project" | "status") => {
+    if (sortBy === column) {
+      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+    } else {
+      setSortBy(column);
+      setSortOrder("desc");
+    }
+  };
+
+  const paymentMethodConfig = {
+    cash: { label: "Cash", className: "bg-green-100 text-green-800" },
+    bank_transfer: {
+      label: "Bank Transfer",
+      className: "bg-blue-100 text-blue-800",
+    },
+    check: { label: "Check", className: "bg-purple-100 text-purple-800" },
+    card: { label: "Card", className: "bg-orange-100 text-orange-800" },
+  };
+
+  const getPaymentMethodConfig = (method: string) => {
+    return (
+      paymentMethodConfig[method as keyof typeof paymentMethodConfig] || {
+        label: method.replace("_", " "),
+        className: "bg-gray-100 text-gray-800",
+      }
+    );
+  };
+
   if (showForm || editingIncome) {
     return (
       <div className="container p-responsive">
@@ -176,6 +261,26 @@ export default function IncomesPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <div className="flex rounded-lg border">
+            <Button
+              variant={viewMode === "table" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className="rounded-r-none"
+            >
+              <Grid3X3 className="h-4 w-4" />
+              Table
+            </Button>
+            <Button
+              variant={viewMode === "cards" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("cards")}
+              className="rounded-l-none"
+            >
+              <LayoutList className="h-4 w-4" />
+              Cards
+            </Button>
+          </div>
           <VoiceHelpDialog />
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -219,15 +324,33 @@ export default function IncomesPage() {
         </Card>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search income records, projects, or invoices..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search and Controls */}
+      <div className="flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search income records, projects, or invoices..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        {viewMode === "table" && (
+          <Select
+            value={sortBy}
+            onValueChange={(value: any) => setSortBy(value)}
+          >
+            <SelectTrigger className="w-40">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="amount">Amount</SelectItem>
+              <SelectItem value="project">Project</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+            </SelectContent>
+          </Select>
+        )}
       </div>
 
       {/* Income List */}
@@ -242,6 +365,181 @@ export default function IncomesPage() {
             <Button onClick={() => setShowForm(true)} className="mt-4">
               Add your first income record
             </Button>
+          </CardContent>
+        </Card>
+      ) : viewMode === "table" ? (
+        <Card>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow className="bg-muted/50">
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => handleSort("date")}
+                  >
+                    <div className="flex items-center gap-1 font-bold">
+                      Date
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => handleSort("project")}
+                  >
+                    <div className="flex items-center gap-1 font-bold">
+                      Project
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-bold">Description</TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors text-right"
+                    onClick={() => handleSort("amount")}
+                  >
+                    <div className="flex items-center gap-1 justify-end font-bold">
+                      Amount
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-bold">Payment Method</TableHead>
+                  <TableHead
+                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    onClick={() => handleSort("status")}
+                  >
+                    <div className="flex items-center gap-1 font-bold">
+                      Status
+                      <ArrowUpDown className="h-3 w-3" />
+                    </div>
+                  </TableHead>
+                  <TableHead className="font-bold">Invoice</TableHead>
+                  <TableHead className="font-bold">Actions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {filteredIncomes.map((income, index) => (
+                  <TableRow
+                    key={income.id}
+                    className={`hover:bg-muted/50 transition-colors ${
+                      index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                    }`}
+                  >
+                    <TableCell className="font-medium">
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-4 w-4 text-muted-foreground" />
+                        {new Date(income.payment_date).toLocaleDateString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="font-medium text-sm">
+                        {income.project_name || "N/A"}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-xs">
+                        <div className="font-medium truncate">
+                          {income.description}
+                        </div>
+                        {income.notes && (
+                          <div className="text-xs text-muted-foreground truncate mt-1">
+                            {income.notes}
+                          </div>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="font-bold text-green-600">
+                        Rs.{Number(income.amount).toLocaleString()}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          getPaymentMethodConfig(income.payment_method)
+                            .className
+                        }
+                      >
+                        {getPaymentMethodConfig(income.payment_method).label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Badge
+                        variant="secondary"
+                        className={
+                          getStatusConfig(income.payment_status).className
+                        }
+                      >
+                        {getStatusConfig(income.payment_status).label}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {income.invoice_number ? (
+                        <div className="flex items-center gap-1 text-sm">
+                          <FileText className="h-3 w-3 text-muted-foreground" />
+                          {income.invoice_number}
+                        </div>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingIncome(income)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteIncome(income.id)}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+
+            {/* Table Summary Row */}
+            <div className="border-t bg-muted/30 p-4">
+              <div className="flex justify-between items-center font-semibold">
+                <span>Total ({filteredIncomes.length} records)</span>
+                <div className="flex gap-8">
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground">
+                      Expected
+                    </div>
+                    <div className="text-green-600">
+                      Rs.
+                      {filteredIncomes
+                        .reduce((sum, income) => sum + Number(income.amount), 0)
+                        .toLocaleString()}
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-sm text-muted-foreground">
+                      Received
+                    </div>
+                    <div className="text-primary">
+                      Rs.
+                      {filteredIncomes
+                        .filter(
+                          (income) => income.payment_status === "received"
+                        )
+                        .reduce((sum, income) => sum + Number(income.amount), 0)
+                        .toLocaleString()}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ) : (
