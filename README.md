@@ -15,6 +15,7 @@ A professional business management system for tracking expenses, incomes, employ
 ## 📋 About
 
 Fire Expense Tracker is a comprehensive business management application that helps organizations:
+
 - Track and manage expenses across projects
 - Monitor income and payments
 - Manage employee information and salaries
@@ -46,12 +47,14 @@ Fire Expense Tracker is a comprehensive business management application that hel
 ### Installation
 
 1. **Install dependencies:**
+
    ```bash
    pnpm install
    ```
 
 2. **Setup environment variables:**
    Create `.env.local` file:
+
    ```env
    DB_HOST=localhost
    DB_USER=root
@@ -61,12 +64,14 @@ Fire Expense Tracker is a comprehensive business management application that hel
 
 3. **Setup database:**
    Run SQL scripts in order:
+
    - `scripts/01-create-database-schema.sql`
    - `scripts/02-seed-initial-data.sql`
    - `scripts/03-create-users-table.sql`
    - `scripts/04-make-incomes-project-id-nullable.sql`
 
 4. **Start development server:**
+
    ```bash
    pnpm dev
    ```
@@ -100,6 +105,7 @@ fire-expense-tracker/
 ## ✨ Key Features
 
 ### 💼 Dashboard
+
 - Real-time financial overview
 - Monthly trends visualization
 - Top expense categories
@@ -107,6 +113,7 @@ fire-expense-tracker/
 - Recent activities tracking
 
 ### 💰 Income Management
+
 - Track project payments
 - Filter by status (pending/received)
 - Support for incomes without projects
@@ -114,6 +121,7 @@ fire-expense-tracker/
 - Export and analysis tools
 
 ### 💸 Expense Management
+
 - Categorized expense tracking
 - Project-wise expense allocation
 - Employee expense records
@@ -121,18 +129,21 @@ fire-expense-tracker/
 - Advanced filtering and search
 
 ### 👥 Employee Management
+
 - Employee profiles and details
 - Salary management
 - Project assignments
 - Performance tracking
 
 ### 📊 Project Management
+
 - Project creation and tracking
 - Budget monitoring
 - Income vs expense analysis
 - Status management
 
 ### 🎤 Voice Input
+
 - Voice-enabled form inputs
 - Hands-free data entry
 - Improved accessibility
@@ -167,6 +178,7 @@ Both platforms offer generous free tiers perfect for production use.
 ## 📞 Support
 
 For support or questions about this project, contact the developer:
+
 - **Developer:** LAHI-RU
 - **Project Type:** Private Client Project
 
@@ -179,6 +191,7 @@ For support or questions about this project, contact the developer:
 This software is privately developed for a specific client and is not open source. All rights are reserved.
 
 **No part of this software may be:**
+
 - Used without explicit authorization
 - Copied or reproduced
 - Modified or distributed
