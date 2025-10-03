@@ -407,7 +407,7 @@ export default function IncomesPage() {
               <TableHeader>
                 <TableRow className="bg-muted/50">
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                     onClick={() => handleSort("date")}
                   >
                     <div className="flex items-center gap-1 font-bold">
@@ -416,7 +416,7 @@ export default function IncomesPage() {
                     </div>
                   </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                     onClick={() => handleSort("project")}
                   >
                     <div className="flex items-center gap-1 font-bold">
@@ -424,9 +424,11 @@ export default function IncomesPage() {
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
-                  <TableHead className="font-bold">Description</TableHead>
+                  <TableHead className="font-bold border-r border-border/50">
+                    Description
+                  </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors text-right"
+                    className="cursor-pointer hover:bg-muted/80 transition-colors text-right border-r border-border/50"
                     onClick={() => handleSort("amount")}
                   >
                     <div className="flex items-center gap-1 justify-end font-bold">
@@ -434,9 +436,11 @@ export default function IncomesPage() {
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
-                  <TableHead className="font-bold">Payment Method</TableHead>
+                  <TableHead className="font-bold border-r border-border/50">
+                    Payment Method
+                  </TableHead>
                   <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors"
+                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                     onClick={() => handleSort("status")}
                   >
                     <div className="flex items-center gap-1 font-bold">
@@ -444,7 +448,9 @@ export default function IncomesPage() {
                       <ArrowUpDown className="h-3 w-3" />
                     </div>
                   </TableHead>
-                  <TableHead className="font-bold">Invoice</TableHead>
+                  <TableHead className="font-bold border-r border-border/50">
+                    Invoice
+                  </TableHead>
                   <TableHead className="font-bold">Actions</TableHead>
                 </TableRow>
               </TableHeader>
@@ -456,18 +462,18 @@ export default function IncomesPage() {
                       index % 2 === 0 ? "bg-background" : "bg-muted/20"
                     }`}
                   >
-                    <TableCell className="font-medium">
+                    <TableCell className="font-medium border-r border-border/50">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4 text-muted-foreground" />
                         {new Date(income.payment_date).toLocaleDateString()}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <div className="font-medium text-sm">
                         {income.project_name || "N/A"}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <div className="max-w-xs">
                         <div className="font-medium truncate">
                           {income.description}
@@ -479,12 +485,12 @@ export default function IncomesPage() {
                         )}
                       </div>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-right border-r border-border/50">
                       <div className="font-bold text-green-600">
                         Rs.{Number(income.amount).toLocaleString()}
                       </div>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <Badge
                         variant="secondary"
                         className={
@@ -495,7 +501,7 @@ export default function IncomesPage() {
                         {getPaymentMethodConfig(income.payment_method).label}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       <Badge
                         variant="secondary"
                         className={
@@ -505,7 +511,7 @@ export default function IncomesPage() {
                         {getStatusConfig(income.payment_status).label}
                       </Badge>
                     </TableCell>
-                    <TableCell>
+                    <TableCell className="border-r border-border/50">
                       {income.invoice_number ? (
                         <div className="flex items-center gap-1 text-sm">
                           <FileText className="h-3 w-3 text-muted-foreground" />

@@ -376,7 +376,7 @@ export default function ExpensesPage() {
               <thead className="bg-muted/50">
                 <tr>
                   <th
-                    className="cursor-pointer px-4 py-2"
+                    className="cursor-pointer px-4 py-2 border-r border-border/50"
                     onClick={() => {
                       setSortBy("date");
                       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -385,7 +385,7 @@ export default function ExpensesPage() {
                     Date
                   </th>
                   <th
-                    className="cursor-pointer px-4 py-2"
+                    className="cursor-pointer px-4 py-2 border-r border-border/50"
                     onClick={() => {
                       setSortBy("project");
                       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -394,7 +394,7 @@ export default function ExpensesPage() {
                     Project
                   </th>
                   <th
-                    className="cursor-pointer px-4 py-2"
+                    className="cursor-pointer px-4 py-2 border-r border-border/50"
                     onClick={() => {
                       setSortBy("category");
                       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -403,7 +403,7 @@ export default function ExpensesPage() {
                     Category
                   </th>
                   <th
-                    className="cursor-pointer px-4 py-2"
+                    className="cursor-pointer px-4 py-2 border-r border-border/50"
                     onClick={() => {
                       setSortBy("employee");
                       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -411,9 +411,11 @@ export default function ExpensesPage() {
                   >
                     Employee
                   </th>
-                  <th className="px-4 py-2">Description</th>
+                  <th className="px-4 py-2 border-r border-border/50">
+                    Description
+                  </th>
                   <th
-                    className="cursor-pointer px-4 py-2 text-right"
+                    className="cursor-pointer px-4 py-2 text-right border-r border-border/50"
                     onClick={() => {
                       setSortBy("amount");
                       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -421,7 +423,9 @@ export default function ExpensesPage() {
                   >
                     Amount
                   </th>
-                  <th className="px-4 py-2">Receipt</th>
+                  <th className="px-4 py-2 border-r border-border/50">
+                    Receipt
+                  </th>
                   <th className="px-4 py-2">Actions</th>
                 </tr>
               </thead>
@@ -433,19 +437,19 @@ export default function ExpensesPage() {
                       index % 2 === 0 ? "bg-background" : "bg-muted/20"
                     }
                   >
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 border-r border-border/50">
                       {new Date(expense.expense_date).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 border-r border-border/50">
                       {expense.project_name || "N/A"}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 border-r border-border/50">
                       {expense.category_name || "N/A"}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 border-r border-border/50">
                       {expense.employee_name || "N/A"}
                     </td>
-                    <td className="px-4 py-2 max-w-xs">
+                    <td className="px-4 py-2 max-w-xs border-r border-border/50">
                       <span className="font-medium truncate">
                         {expense.description}
                       </span>
@@ -455,10 +459,10 @@ export default function ExpensesPage() {
                         </div>
                       )}
                     </td>
-                    <td className="px-4 py-2 text-right text-red-600 font-bold">
+                    <td className="px-4 py-2 text-right text-red-600 font-bold border-r border-border/50">
                       Rs.{Number(expense.amount).toLocaleString()}
                     </td>
-                    <td className="px-4 py-2">
+                    <td className="px-4 py-2 border-r border-border/50">
                       {expense.receipt_url ? (
                         <a
                           href={expense.receipt_url}
