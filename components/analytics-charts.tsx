@@ -60,18 +60,21 @@ export function AnalyticsCharts({
     return acc;
   }, []);
 
-  // Process expense categories for pie chart
-  const processedCategories = safeExpenseCategories.map((cat) => ({
-    name: cat.category || "Uncategorized",
-    value: Number(cat.total),
-    count: cat.count,
-  }));
+  // Process expense categories for pie chart - top 5 only
+  const processedCategories = safeExpenseCategories
+    .map((cat) => ({
+      name: cat.category || "Uncategorized",
+      value: Number(cat.total),
+      count: cat.count,
+    }))
+    .sort((a, b) => b.value - a.value)
+    .slice(0, 5);
 
-  // Process top profitable projects
-  const topProjects = safeProjectProfitability.slice(0, 8).map((project) => ({
+  // Process top 5 profitable projects
+  const topProjects = safeProjectProfitability.slice(0, 5).map((project) => ({
     name:
-      project.name && project.name.length > 20
-        ? project.name.substring(0, 20) + "..."
+      project.name && project.name.length > 25
+        ? project.name.substring(0, 25) + "..."
         : project.name,
     profit: Number(project.profit),
     expenses: Number(project.total_expenses),
@@ -83,18 +86,65 @@ export function AnalyticsCharts({
       {/* Monthly Financial Trends */}
       <Card className="lg:col-span-2">
         <CardHeader>
-          <CardTitle>Monthly Financial Trends</CardTitle>
+          <CardTitle>Monthly Trends</CardTitle>
         </CardHeader>
         <CardContent>
+          <div className="grid grid-cols-3 gap-4 mb-4">
+            <div className="flex flex-col items-center p-3 bg-green-50 rounded-lg">
+              <span className="text-xs text-muted-foreground mb-1">
+                Total Income
+              </span>
+              <span className="text-xl font-bold text-green-600">
+                Rs.
+                {processedTrends
+                  .reduce((sum, m) => sum + (m.income || 0), 0)
+                  .toLocaleString()}
+              </span>
+            </div>
+            <div className="flex flex-col items-center p-3 bg-red-50 rounded-lg">
+              <span className="text-xs text-muted-foreground mb-1">
+                Total Expenses
+              </span>
+              <span className="text-xl font-bold text-red-600">
+                Rs.
+                {processedTrends
+                  .reduce((sum, m) => sum + (m.expense || 0), 0)
+                  .toLocaleString()}
+              </span>
+            </div>
+            <div className="flex flex-col items-center p-3 bg-blue-50 rounded-lg">
+              <span className="text-xs text-muted-foreground mb-1">
+                Net Profit
+              </span>
+              <span
+                className={`text-xl font-bold ${
+                  processedTrends.reduce((sum, m) => sum + (m.income || 0), 0) -
+                    processedTrends.reduce(
+                      (sum, m) => sum + (m.expense || 0),
+                      0
+                    ) >=
+                  0
+                    ? "text-blue-600"
+                    : "text-red-600"
+                }`}
+              >
+                Rs.
+                {(
+                  processedTrends.reduce((sum, m) => sum + (m.income || 0), 0) -
+                  processedTrends.reduce((sum, m) => sum + (m.expense || 0), 0)
+                ).toLocaleString()}
+              </span>
+            </div>
+          </div>
           <ResponsiveContainer width="100%" height={300}>
             <LineChart data={processedTrends}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip
-                formatter={(value) => [
-                  `$${Number(value).toLocaleString()}`,
-                  "",
+                formatter={(value, name) => [
+                  `Rs.${Number(value).toLocaleString()}`,
+                  name === "income" ? "Income" : "Expenses",
                 ]}
               />
               <Line
@@ -119,20 +169,18 @@ export function AnalyticsCharts({
       {/* Expense Categories */}
       <Card>
         <CardHeader>
-          <CardTitle>Expense Categories</CardTitle>
+          <CardTitle>Top 5 Expense Categories</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
+          <ResponsiveContainer width="100%" height={250}>
             <PieChart>
               <Pie
                 data={processedCategories}
                 cx="50%"
                 cy="50%"
                 labelLine={false}
-                label={({ name, percent }) =>
-                  `${name} ${(percent * 100).toFixed(0)}%`
-                }
-                outerRadius={80}
+                label={false}
+                outerRadius={90}
                 fill="#8884d8"
                 dataKey="value"
               >
@@ -144,36 +192,68 @@ export function AnalyticsCharts({
                 ))}
               </Pie>
               <Tooltip
-                formatter={(value) => [
-                  `$${Number(value).toLocaleString()}`,
-                  "Amount",
-                ]}
+                formatter={(value) => [`Rs.${Number(value).toLocaleString()}`]}
               />
             </PieChart>
           </ResponsiveContainer>
+
+          {/* Category Legend */}
+          <div className="mt-4 space-y-2">
+            {processedCategories.map((cat, index) => (
+              <div
+                key={index}
+                className="flex items-center justify-between p-2 bg-muted/30 rounded"
+              >
+                <div className="flex items-center gap-2">
+                  <div
+                    className="w-4 h-4 rounded"
+                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                  ></div>
+                  <span className="font-medium text-sm">{cat.name}</span>
+                </div>
+                <span className="font-bold text-sm">
+                  Rs.{cat.value.toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
         </CardContent>
       </Card>
 
       {/* Project Profitability */}
       <Card>
         <CardHeader>
-          <CardTitle>Project Profitability</CardTitle>
+          <CardTitle>Top 5 Most Profitable Projects</CardTitle>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={topProjects} layout="horizontal">
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis type="number" />
-              <YAxis dataKey="name" type="category" width={100} />
-              <Tooltip
-                formatter={(value) => [
-                  `$${Number(value).toLocaleString()}`,
-                  "",
-                ]}
-              />
-              <Bar dataKey="profit" fill="#164e63" name="Profit" />
-            </BarChart>
-          </ResponsiveContainer>
+          <div className="space-y-3">
+            {topProjects.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No projects
+              </div>
+            ) : (
+              topProjects.map((project, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition"
+                >
+                  <div className="font-medium text-sm truncate">
+                    {project.name}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span
+                      className={`font-bold text-lg ${
+                        project.profit >= 0 ? "text-green-600" : "text-red-600"
+                      }`}
+                    >
+                      {project.profit >= 0 ? "+" : ""}Rs.
+                      {project.profit.toLocaleString()}
+                    </span>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>

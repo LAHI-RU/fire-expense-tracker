@@ -38,40 +38,62 @@ export function RecentActivities({ activities }: RecentActivitiesProps) {
     }
   };
 
+  // Summary stats
+  const totalIncome = activities
+    .filter((a) => a.type === "income")
+    .reduce((sum, a) => sum + Number(a.amount), 0);
+  const totalExpense = activities
+    .filter((a) => a.type === "expense")
+    .reduce((sum, a) => sum + Number(a.amount), 0);
+  const totalSalary = activities
+    .filter((a) => a.type === "salary")
+    .reduce((sum, a) => sum + Number(a.amount), 0);
   return (
     <Card>
       <CardHeader>
         <CardTitle>Recent Activities</CardTitle>
+        <div className="flex gap-6 mt-2 text-sm">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-600"></div>
+            <span className="font-bold text-green-600">
+              Rs.{totalIncome.toLocaleString()}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-600"></div>
+            <span className="font-bold text-red-600">
+              Rs.{totalExpense.toLocaleString()}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-600"></div>
+            <span className="font-bold text-blue-600">
+              Rs.{totalSalary.toLocaleString()}
+            </span>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {activities.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               No recent activities
             </div>
           ) : (
-            activities.map((activity, index) => (
+            activities.slice(0, 8).map((activity, index) => (
               <div
                 key={index}
-                className="flex items-center gap-4 p-3 rounded-lg border border-border"
+                className="flex items-center gap-3 p-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition"
               >
                 <div className="flex-shrink-0">
                   {getActivityIcon(activity.type)}
                 </div>
-
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <p className="text-sm font-medium text-foreground truncate">
                       {activity.title}
                     </p>
-                    <Badge
-                      variant="secondary"
-                      className={getActivityColor(activity.type)}
-                    >
-                      {activity.type}
-                    </Badge>
                   </div>
-
                   <div className="flex items-center gap-2 mt-1">
                     <p className="text-xs text-muted-foreground">
                       {new Date(activity.date).toLocaleDateString()}
@@ -79,17 +101,16 @@ export function RecentActivities({ activities }: RecentActivitiesProps) {
                     {activity.project_name && (
                       <>
                         <span className="text-xs text-muted-foreground">•</span>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground truncate">
                           {activity.project_name}
                         </p>
                       </>
                     )}
                   </div>
                 </div>
-
-                <div className="flex-shrink-0">
+                <div className="flex items-center gap-2 flex-shrink-0">
                   <p
-                    className={`text-sm font-semibold ${
+                    className={`text-base font-bold ${
                       activity.type === "income"
                         ? "text-green-600"
                         : activity.type === "expense"

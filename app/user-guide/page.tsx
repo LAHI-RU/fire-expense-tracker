@@ -7,7 +7,7 @@ export default function UserGuidePage() {
       <Card className="shadow-2xl border-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-blue-900 text-3xl font-extrabold">
-            <span className="inline-block text-2xl">�</span> Customer Help Guide
+            <span className="inline-block text-2xl">📘</span> User Guide
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 text-base text-blue-900">
