@@ -40,6 +40,9 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Income } from "@/lib/mysql";
 
 export default function IncomesPage() {
+  const [filterStatus, setFilterStatus] = useState<
+    "all" | "pending" | "received"
+  >("all");
   // Get the logged-in user
   const user = typeof window !== "undefined" ? requireAuth() : null;
   useEffect(() => {
@@ -74,6 +77,17 @@ export default function IncomesPage() {
   useEffect(() => {
     let filtered = incomes;
 
+    // Filter by status
+    if (filterStatus === "pending") {
+      filtered = filtered.filter(
+        (income) => income.payment_status === "pending"
+      );
+    } else if (filterStatus === "received") {
+      filtered = filtered.filter(
+        (income) => income.payment_status === "received"
+      );
+    }
+
     if (searchTerm) {
       filtered = filtered.filter(
         (income) =>
@@ -90,7 +104,6 @@ export default function IncomesPage() {
     // Sort incomes
     filtered.sort((a, b) => {
       let aValue, bValue;
-
       switch (sortBy) {
         case "date":
           aValue = new Date(a.payment_date).getTime();
@@ -112,16 +125,14 @@ export default function IncomesPage() {
           aValue = a.id;
           bValue = b.id;
       }
-
       if (sortOrder === "asc") {
         return aValue > bValue ? 1 : -1;
       } else {
         return aValue < bValue ? 1 : -1;
       }
     });
-
     setFilteredIncomes(filtered);
-  }, [incomes, searchTerm, sortBy, sortOrder]);
+  }, [incomes, searchTerm, sortBy, sortOrder, filterStatus]);
 
   useEffect(() => {
     fetchIncomes();
@@ -184,7 +195,8 @@ export default function IncomesPage() {
   };
 
   const totalIncomes = incomes.reduce(
-    (sum, income) => sum + Number(income.amount),
+    (sum, income) =>
+      income.payment_status === "pending" ? sum + Number(income.amount) : sum,
     0
   );
   const receivedIncomes = incomes
@@ -336,20 +348,37 @@ export default function IncomesPage() {
           />
         </div>
         {viewMode === "table" && (
-          <Select
-            value={sortBy}
-            onValueChange={(value: any) => setSortBy(value)}
-          >
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Sort by" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="date">Date</SelectItem>
-              <SelectItem value="amount">Amount</SelectItem>
-              <SelectItem value="project">Project</SelectItem>
-              <SelectItem value="status">Status</SelectItem>
-            </SelectContent>
-          </Select>
+          <>
+            <Select
+              value={filterStatus}
+              onValueChange={(value) =>
+                setFilterStatus(value as "all" | "pending" | "received")
+              }
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Show" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="pending">Pending</SelectItem>
+                <SelectItem value="received">Received</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select
+              value={sortBy}
+              onValueChange={(value: any) => setSortBy(value)}
+            >
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">Date</SelectItem>
+                <SelectItem value="amount">Amount</SelectItem>
+                <SelectItem value="project">Project</SelectItem>
+                <SelectItem value="status">Status</SelectItem>
+              </SelectContent>
+            </Select>
+          </>
         )}
       </div>
 
@@ -519,6 +548,7 @@ export default function IncomesPage() {
                     <div className="text-green-600">
                       Rs.
                       {filteredIncomes
+                        .filter((income) => income.payment_status === "pending")
                         .reduce((sum, income) => sum + Number(income.amount), 0)
                         .toLocaleString()}
                     </div>
