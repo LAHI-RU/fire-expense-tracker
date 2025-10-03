@@ -12,6 +12,7 @@
 ## ✨ Features
 
 ### 📊 **Dashboard & Analytics**
+
 - Real-time financial overview with interactive charts
 - Monthly income and expense trends
 - Top 5 expense categories with visual breakdown
@@ -19,6 +20,7 @@
 - Recent activities feed
 
 ### 💰 **Income Management**
+
 - Track payments and income from projects
 - Filter by status (Pending, Received, All)
 - Professional table and card views
@@ -26,6 +28,7 @@
 - Support for incomes without projects
 
 ### 💸 **Expense Management**
+
 - Comprehensive expense tracking
 - Filter by category, project, and employee
 - Receipt attachment support
@@ -33,18 +36,21 @@
 - Visual category breakdown
 
 ### 👥 **Employee Management**
+
 - Employee profiles and records
 - Salary payment tracking
 - Project assignments
 - Employee performance insights
 
 ### 🏗️ **Project Management**
+
 - Project creation and tracking
 - Budget monitoring
 - Profitability analysis
 - Client information management
 
 ### 🎤 **Voice Input**
+
 - Hands-free data entry for forms
 - Voice-powered search functionality
 - Accessibility-first design
@@ -74,19 +80,22 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/LAHI-RU/fire-expense-tracker.git
    cd fire-expense-tracker
    ```
 
 2. **Install dependencies**
+
    ```bash
    pnpm install
    ```
 
 3. **Set up environment variables**
-   
+
    Create `.env.local` in the root directory:
+
    ```env
    DB_HOST=localhost
    DB_USER=root
@@ -95,29 +104,31 @@
    ```
 
 4. **Set up the database**
-   
+
    Run these SQL scripts in order:
+
    ```sql
    -- 1. Create database
    CREATE DATABASE fire_expense_tracker;
-   
+
    -- 2. Run schema
    -- Execute: scripts/01-create-database-schema.sql
-   
+
    -- 3. Run seeds (optional)
    -- Execute: scripts/02-seed-initial-data.sql
-   
+
    -- 4. Make project_id nullable (if needed)
    -- Execute: scripts/04-make-incomes-project-id-nullable.sql
    ```
 
 5. **Start development server**
+
    ```bash
    pnpm dev
    ```
 
 6. **Open your browser**
-   
+
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ---
@@ -157,11 +168,13 @@ fire-expense-tracker/
 ### Deploy to Vercel (Recommended)
 
 1. **Push code to GitHub**
+
    ```bash
    git push origin main
    ```
 
 2. **Deploy to Vercel**
+
    - Go to [vercel.com](https://vercel.com)
    - Click "Import Project"
    - Select your GitHub repository
@@ -187,23 +200,27 @@ DB_NAME=fire_expense_tracker
 ## 🎯 Key Features Explained
 
 ### 1. **Smart Income Tracking**
+
 - Track expected vs. actually received payments
 - Optional project association
 - Status-based filtering (Pending/Received)
 
 ### 2. **Professional Tables**
+
 - Excel-like interface with sorting
 - Search across all fields
 - Light vertical column dividers
 - Summary rows with totals
 
 ### 3. **Dashboard Analytics**
+
 - Top 5 expense categories with legend
 - Top 5 profitable projects
 - Monthly trends with net profit calculation
 - Recent activities summary
 
 ### 4. **View Toggle**
+
 - Switch between Table and Card views
 - Icon-only buttons for clean UI
 - Positioned below summary cards
@@ -213,16 +230,19 @@ DB_NAME=fire_expense_tracker
 ## 🛠️ Development
 
 ### Build for Production
+
 ```bash
 pnpm build
 ```
 
 ### Run Production Build
+
 ```bash
 pnpm start
 ```
 
 ### Lint Code
+
 ```bash
 pnpm lint
 ```
@@ -238,6 +258,7 @@ This project is licensed under the MIT License.
 ## 👨‍💻 Author
 
 **LAHI-RU**
+
 - GitHub: [@LAHI-RU](https://github.com/LAHI-RU)
 
 ---
