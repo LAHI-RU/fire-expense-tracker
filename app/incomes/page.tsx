@@ -273,26 +273,6 @@ export default function IncomesPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <div className="flex rounded-lg border">
-            <Button
-              variant={viewMode === "table" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("table")}
-              className="rounded-r-none"
-            >
-              <Grid3X3 className="h-4 w-4" />
-              Table
-            </Button>
-            <Button
-              variant={viewMode === "cards" ? "default" : "ghost"}
-              size="sm"
-              onClick={() => setViewMode("cards")}
-              className="rounded-l-none"
-            >
-              <LayoutList className="h-4 w-4" />
-              Cards
-            </Button>
-          </div>
           <VoiceHelpDialog />
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -302,38 +282,62 @@ export default function IncomesPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
-              <div>
-                <div className="text-2xl font-bold text-green-600">
-                  Rs.{totalIncomes.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Total Expected
+      <div className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-primary" />
+                <div>
+                  <div className="text-2xl font-bold text-primary">
+                    Rs.{receivedIncomes.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Actually Received
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
 
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-primary" />
-              <div>
-                <div className="text-2xl font-bold text-primary">
-                  Rs.{receivedIncomes.toLocaleString()}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  Actually Received
+          <Card>
+            <CardContent className="p-6">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-5 w-5 text-green-600" />
+                <div>
+                  <div className="text-2xl font-bold text-green-600">
+                    Rs.{totalIncomes.toLocaleString()}
+                  </div>
+                  <div className="text-sm text-muted-foreground">
+                    Total Expected
+                  </div>
                 </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* View Toggle */}
+        <div className="flex justify-end">
+          <div className="inline-flex rounded-lg border p-1 bg-muted/50">
+            <Button
+              variant={viewMode === "table" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className="h-8 w-8 p-0"
+            >
+              <Grid3X3 className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={viewMode === "cards" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("cards")}
+              className="h-8 w-8 p-0"
+            >
+              <LayoutList className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
       </div>
 
       {/* Search and Controls */}
