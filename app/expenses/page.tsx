@@ -21,6 +21,14 @@ import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Expense } from "@/lib/mysql";
 
 export default function ExpensesPage() {
+  const [viewMode, setViewMode] = useState<"table" | "cards">("table");
+  const [sortBy, setSortBy] = useState<
+    "date" | "amount" | "project" | "category" | "employee"
+  >("date");
+  const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [filterCategory, setFilterCategory] = useState<string>("all");
+  const [filterProject, setFilterProject] = useState<string>("all");
+  const [filterEmployee, setFilterEmployee] = useState<string>("all");
   // Get the logged-in user
   const user = typeof window !== "undefined" ? requireAuth() : null;
   useEffect(() => {
@@ -49,7 +57,15 @@ export default function ExpensesPage() {
   // Filter expenses based on search
   useEffect(() => {
     let filtered = expenses;
-
+    if (filterCategory !== "all") {
+      filtered = filtered.filter((e) => e.category_name === filterCategory);
+    }
+    if (filterProject !== "all") {
+      filtered = filtered.filter((e) => e.project_name === filterProject);
+    }
+    if (filterEmployee !== "all") {
+      filtered = filtered.filter((e) => e.employee_name === filterEmployee);
+    }
     if (searchTerm) {
       filtered = filtered.filter(
         (expense) =>
@@ -61,12 +77,55 @@ export default function ExpensesPage() {
             .includes(searchTerm.toLowerCase()) ||
           expense.category_name
             ?.toLowerCase()
+            .includes(searchTerm.toLowerCase()) ||
+          expense.employee_name
+            ?.toLowerCase()
             .includes(searchTerm.toLowerCase())
       );
     }
-
+    filtered.sort((a, b) => {
+      let aValue, bValue;
+      switch (sortBy) {
+        case "date":
+          aValue = new Date(a.expense_date).getTime();
+          bValue = new Date(b.expense_date).getTime();
+          break;
+        case "amount":
+          aValue = Number(a.amount);
+          bValue = Number(b.amount);
+          break;
+        case "project":
+          aValue = a.project_name || "";
+          bValue = b.project_name || "";
+          break;
+        case "category":
+          aValue = a.category_name || "";
+          bValue = b.category_name || "";
+          break;
+        case "employee":
+          aValue = a.employee_name || "";
+          bValue = b.employee_name || "";
+          break;
+        default:
+          aValue = a.id;
+          bValue = b.id;
+      }
+      if (sortOrder === "asc") {
+        return aValue > bValue ? 1 : -1;
+      } else {
+        return aValue < bValue ? 1 : -1;
+      }
+    });
     setFilteredExpenses(filtered);
-  }, [expenses, searchTerm]);
+  }, [
+    expenses,
+    searchTerm,
+    sortBy,
+    sortOrder,
+    filterCategory,
+    filterProject,
+    filterEmployee,
+  ]);
 
   useEffect(() => {
     fetchExpenses();
@@ -162,6 +221,24 @@ export default function ExpensesPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          <div className="flex rounded-lg border">
+            <Button
+              variant={viewMode === "table" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("table")}
+              className="rounded-r-none"
+            >
+              Table
+            </Button>
+            <Button
+              variant={viewMode === "cards" ? "default" : "ghost"}
+              size="sm"
+              onClick={() => setViewMode("cards")}
+              className="rounded-l-none"
+            >
+              Cards
+            </Button>
+          </div>
           <VoiceHelpDialog />
           <Button onClick={() => setShowForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
@@ -171,37 +248,103 @@ export default function ExpensesPage() {
       </div>
 
       {/* Summary */}
-      <Card>
-        <CardContent className="p-6">
-          <div className="flex items-center gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <Card>
+          <CardContent className="p-6">
             <div className="flex items-center gap-2">
               <DollarSign className="h-5 w-5 text-red-600" />
               <div>
                 <div className="text-2xl font-bold text-red-600">
-                  Rs.{totalExpenses.toLocaleString()}
+                  Rs.
+                  {filteredExpenses
+                    .reduce((sum, expense) => sum + Number(expense.amount), 0)
+                    .toLocaleString()}
                 </div>
                 <div className="text-sm text-muted-foreground">
                   Total Expenses
                 </div>
               </div>
             </div>
-            <div className="text-muted-foreground">•</div>
-            <div className="text-sm text-muted-foreground">
-              {expenses.length} expense records
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="flex items-center gap-2">
+              <div className="text-2xl font-bold text-muted-foreground">
+                {filteredExpenses.length}
+              </div>
+              <div className="text-sm text-muted-foreground">Records</div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input
-          placeholder="Search expenses, projects, or categories..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-10"
-        />
+      {/* Search and Filters */}
+      <div className="flex gap-4 items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search expenses, projects, categories, or employees..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <select
+          className="border rounded px-2 py-1"
+          value={filterCategory}
+          onChange={(e) => setFilterCategory(e.target.value)}
+        >
+          <option value="all">All Categories</option>
+          {[
+            ...new Set(expenses.map((e) => e.category_name).filter(Boolean)),
+          ].map((cat) => (
+            <option key={cat} value={cat}>
+              {cat}
+            </option>
+          ))}
+        </select>
+        <select
+          className="border rounded px-2 py-1"
+          value={filterProject}
+          onChange={(e) => setFilterProject(e.target.value)}
+        >
+          <option value="all">All Projects</option>
+          {[
+            ...new Set(expenses.map((e) => e.project_name).filter(Boolean)),
+          ].map((proj) => (
+            <option key={proj} value={proj}>
+              {proj}
+            </option>
+          ))}
+        </select>
+        <select
+          className="border rounded px-2 py-1"
+          value={filterEmployee}
+          onChange={(e) => setFilterEmployee(e.target.value)}
+        >
+          <option value="all">All Employees</option>
+          {[
+            ...new Set(expenses.map((e) => e.employee_name).filter(Boolean)),
+          ].map((emp) => (
+            <option key={emp} value={emp}>
+              {emp}
+            </option>
+          ))}
+        </select>
+        {viewMode === "table" && (
+          <select
+            className="border rounded px-2 py-1"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+          >
+            <option value="date">Date</option>
+            <option value="amount">Amount</option>
+            <option value="project">Project</option>
+            <option value="category">Category</option>
+            <option value="employee">Employee</option>
+          </select>
+        )}
       </div>
 
       {/* Expenses List */}
@@ -216,6 +359,147 @@ export default function ExpensesPage() {
             <Button onClick={() => setShowForm(true)} className="mt-4">
               Add your first expense
             </Button>
+          </CardContent>
+        </Card>
+      ) : viewMode === "table" ? (
+        <Card>
+          <CardContent className="p-0">
+            <table className="w-full text-sm">
+              <thead className="bg-muted/50">
+                <tr>
+                  <th
+                    className="cursor-pointer px-4 py-2"
+                    onClick={() => {
+                      setSortBy("date");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}
+                  >
+                    Date
+                  </th>
+                  <th
+                    className="cursor-pointer px-4 py-2"
+                    onClick={() => {
+                      setSortBy("project");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}
+                  >
+                    Project
+                  </th>
+                  <th
+                    className="cursor-pointer px-4 py-2"
+                    onClick={() => {
+                      setSortBy("category");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}
+                  >
+                    Category
+                  </th>
+                  <th
+                    className="cursor-pointer px-4 py-2"
+                    onClick={() => {
+                      setSortBy("employee");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}
+                  >
+                    Employee
+                  </th>
+                  <th className="px-4 py-2">Description</th>
+                  <th
+                    className="cursor-pointer px-4 py-2 text-right"
+                    onClick={() => {
+                      setSortBy("amount");
+                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                    }}
+                  >
+                    Amount
+                  </th>
+                  <th className="px-4 py-2">Receipt</th>
+                  <th className="px-4 py-2">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredExpenses.map((expense, index) => (
+                  <tr
+                    key={expense.id}
+                    className={
+                      index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                    }
+                  >
+                    <td className="px-4 py-2">
+                      {new Date(expense.expense_date).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-2">
+                      {expense.project_name || "N/A"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {expense.category_name || "N/A"}
+                    </td>
+                    <td className="px-4 py-2">
+                      {expense.employee_name || "N/A"}
+                    </td>
+                    <td className="px-4 py-2 max-w-xs">
+                      <span className="font-medium truncate">
+                        {expense.description}
+                      </span>
+                      {expense.notes && (
+                        <div className="text-xs text-muted-foreground truncate mt-1">
+                          {expense.notes}
+                        </div>
+                      )}
+                    </td>
+                    <td className="px-4 py-2 text-right text-red-600 font-bold">
+                      Rs.{Number(expense.amount).toLocaleString()}
+                    </td>
+                    <td className="px-4 py-2">
+                      {expense.receipt_url ? (
+                        <a
+                          href={expense.receipt_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline flex items-center gap-1"
+                        >
+                          <Receipt className="h-3 w-3" /> Receipt
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground text-sm">-</span>
+                      )}
+                    </td>
+                    <td className="px-4 py-2">
+                      <div className="flex gap-1">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setEditingExpense(expense)}
+                          className="h-8 w-8 p-0"
+                        >
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleDeleteExpense(expense.id)}
+                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {/* Table Summary Row */}
+            <div className="border-t bg-muted/30 p-4">
+              <div className="flex justify-between items-center font-semibold">
+                <span>Total ({filteredExpenses.length} records)</span>
+                <div className="text-right text-red-600">
+                  Rs.
+                  {filteredExpenses
+                    .reduce((sum, expense) => sum + Number(expense.amount), 0)
+                    .toLocaleString()}
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       ) : (
@@ -238,7 +522,6 @@ export default function ExpensesPage() {
                         </Badge>
                       )}
                     </div>
-
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <div className="flex items-center gap-1">
                         <Calendar className="h-4 w-4" />
@@ -251,14 +534,12 @@ export default function ExpensesPage() {
                         <div>Employee: {expense.employee_name}</div>
                       )}
                     </div>
-
                     {expense.notes && (
                       <p className="text-sm text-muted-foreground">
                         {expense.notes}
                       </p>
                     )}
                   </div>
-
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <div className="text-2xl font-bold text-red-600">
@@ -271,12 +552,10 @@ export default function ExpensesPage() {
                           rel="noopener noreferrer"
                           className="text-xs text-primary hover:underline flex items-center gap-1"
                         >
-                          <Receipt className="h-3 w-3" />
-                          Receipt
+                          <Receipt className="h-3 w-3" /> Receipt
                         </a>
                       )}
                     </div>
-
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
