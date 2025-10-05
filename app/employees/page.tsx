@@ -78,6 +78,19 @@ export default function EmployeesPage() {
     fetchData();
   }, [showActiveOnly]);
 
+  // Open payment form if URL has params (dashboard quick action)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openPayment") === "1") {
+      const empId = params.get("employeeId");
+      if (empId) {
+        setSelectedPaymentEmployeeId(Number(empId));
+      }
+      setShowPaymentForm(true);
+    }
+  }, []);
+
   const handleCreateEmployee = async (employeeData: Partial<Employee>) => {
     try {
       const response = await fetch("/api/employees", {
