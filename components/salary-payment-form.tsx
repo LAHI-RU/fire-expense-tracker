@@ -23,12 +23,14 @@ interface SalaryPaymentFormProps {
   onSubmit: (paymentData: Partial<SalaryPayment>) => void;
   onCancel: () => void;
   isLoading?: boolean;
+  initialEmployeeId?: number;
 }
 
 export function SalaryPaymentForm({
   onSubmit,
   onCancel,
   isLoading,
+  initialEmployeeId,
 }: SalaryPaymentFormProps) {
   const [formData, setFormData] = useState({
     employee_id: "",
@@ -45,6 +47,13 @@ export function SalaryPaymentForm({
     null
   );
   const [duplicateWarning, setDuplicateWarning] = useState("");
+  const [paymentTypes, setPaymentTypes] = useState<string[]>([
+    "monthly_salary",
+    "project_bonus",
+    "overtime",
+  ]);
+  const [showAddTypeInput, setShowAddTypeInput] = useState(false);
+  const [newTypeValue, setNewTypeValue] = useState("");
 
   // Fetch dropdown data
   useEffect(() => {
@@ -62,6 +71,18 @@ export function SalaryPaymentForm({
 
         setEmployees(employeesData.employees || []);
         setProjects(projectsData.projects || []);
+        // If form was opened for a specific employee, preselect them
+        if (initialEmployeeId && (employeesData.employees || []).length > 0) {
+          const exists = (employeesData.employees || []).some(
+            (e: Employee) => e.id === initialEmployeeId
+          );
+          if (exists) {
+            setFormData((prev) => ({
+              ...prev,
+              employee_id: initialEmployeeId.toString(),
+            }));
+          }
+        }
       } catch (error) {
         console.error("Error fetching form data:", error);
       }
@@ -128,11 +149,12 @@ export function SalaryPaymentForm({
     if (
       employee &&
       formData.payment_type === "monthly_salary" &&
-      employee.monthly_salary
+      employee.monthly_salary !== undefined &&
+      employee.monthly_salary !== null
     ) {
       setFormData((prev) => ({
         ...prev,
-        amount: employee.monthly_salary.toString(),
+        amount: employee.monthly_salary!.toString(),
       }));
     }
   }, [formData.employee_id, formData.payment_type, employees]);
@@ -154,9 +176,9 @@ export function SalaryPaymentForm({
         ? Number.parseInt(formData.project_id)
         : undefined,
       amount: Number.parseFloat(formData.amount),
-      payment_date: formData.payment_date,
+      payment_date: new Date(formData.payment_date),
       notes: formData.notes || undefined,
-    });
+    } as any);
   };
 
   const handleChange = (field: string, value: string) => {
@@ -185,41 +207,93 @@ export function SalaryPaymentForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="employee_id">Employee *</Label>
-              <Select
-                value={formData.employee_id}
-                onValueChange={(value) => handleChange("employee_id", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select employee" />
-                </SelectTrigger>
-                <SelectContent>
-                  {employees.map((employee) => (
-                    <SelectItem
-                      key={employee.id}
-                      value={employee.id.toString()}
-                    >
-                      {employee.full_name} ({employee.employee_code})
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {initialEmployeeId ? (
+                <div className="p-2 rounded border border-border bg-muted text-sm">
+                  {selectedEmployee ? (
+                    <div>
+                      {selectedEmployee.full_name} (
+                      {selectedEmployee.employee_code})
+                    </div>
+                  ) : (
+                    <div className="text-muted-foreground">
+                      Loading employee...
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <Select
+                  value={formData.employee_id}
+                  onValueChange={(value) => handleChange("employee_id", value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select employee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {employees.map((employee) => (
+                      <SelectItem
+                        key={employee.id}
+                        value={employee.id.toString()}
+                      >
+                        {employee.full_name} ({employee.employee_code})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="payment_type">Payment Type</Label>
               <Select
                 value={formData.payment_type}
-                onValueChange={(value) => handleChange("payment_type", value)}
+                onValueChange={(value) => {
+                  handleChange("payment_type", value);
+                  // hide custom type input when switching away
+                  if (value !== "other") setShowAddTypeInput(false);
+                }}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="monthly_salary">Monthly Salary</SelectItem>
-                  <SelectItem value="project_bonus">Project Bonus</SelectItem>
-                  <SelectItem value="overtime">Overtime</SelectItem>
+                  {paymentTypes.map((pt) => (
+                    <SelectItem key={pt} value={pt}>
+                      {pt.replace(/_/g, " ")}
+                    </SelectItem>
+                  ))}
+                  <SelectItem value="other">Other (add custom)</SelectItem>
                 </SelectContent>
               </Select>
+
+              {formData.payment_type === "other" && (
+                <div className="mt-2 flex gap-2">
+                  <Input
+                    placeholder="Enter custom payment type"
+                    value={newTypeValue}
+                    onChange={(e) => setNewTypeValue(e.target.value)}
+                  />
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      const normalized = newTypeValue
+                        .trim()
+                        .toLowerCase()
+                        .replace(/\s+/g, "_");
+                      if (!normalized) return;
+                      if (!paymentTypes.includes(normalized)) {
+                        setPaymentTypes((prev) => [...prev, normalized]);
+                      }
+                      setFormData((prev) => ({
+                        ...prev,
+                        payment_type: normalized,
+                      }));
+                      setNewTypeValue("");
+                    }}
+                  >
+                    Add
+                  </Button>
+                </div>
+              )}
             </div>
           </div>
 

@@ -68,6 +68,15 @@ export async function DELETE(request: NextRequest, { params }: { params: { id: s
   try {
     const employeeId = params.id
 
+    const url = new URL(request.url)
+    const force = url.searchParams.get("force") === "true"
+
+    if (force) {
+      // Hard delete
+      await Database.query("DELETE FROM employees WHERE id = ?", [employeeId])
+      return NextResponse.json({ success: true, message: "Employee deleted successfully" })
+    }
+
     // Soft delete - set is_active to false instead of deleting
     await Database.query("UPDATE employees SET is_active = FALSE WHERE id = ?", [employeeId])
 
