@@ -44,7 +44,7 @@ export function DashboardStats({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Projects */}
-        <Card className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+      <Card className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
         <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-primary/10 rounded-lg">
@@ -54,24 +54,32 @@ export function DashboardStats({
               <div className="text-xl font-semibold text-foreground">
                 {totalProjects}
               </div>
-              <div className="text-sm text-muted-foreground">Total Projects</div>
-              <div className="text-xs text-muted-foreground mt-1">{ongoingProjects} ongoing • {completedProjects} completed</div>
+              <div className="text-sm text-muted-foreground">
+                Total Projects
+              </div>
+              <div className="text-xs text-muted-foreground mt-1">
+                {ongoingProjects} ongoing • {completedProjects} completed
+              </div>
             </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Total Revenue */}
-        <Card>
+      <Card>
         <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-green-100 rounded-lg">
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <div className="text-xl font-semibold text-green-600">Rs.{Number(totalIncome).toLocaleString()}</div>
+              <div className="text-xl font-semibold text-green-600">
+                Rs.{Number(totalIncome).toLocaleString()}
+              </div>
               <div className="text-sm text-muted-foreground">Total Income</div>
-              <div className="text-xs text-green-600 mt-1">Revenue generated</div>
+              <div className="text-xs text-green-600 mt-1">
+                Revenue generated
+              </div>
             </div>
           </div>
         </CardContent>
@@ -85,8 +93,12 @@ export function DashboardStats({
               <TrendingDown className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <div className="text-xl font-semibold text-red-600">Rs.{Number(totalExpenses).toLocaleString()}</div>
-              <div className="text-sm text-muted-foreground">Total Expenses</div>
+              <div className="text-xl font-semibold text-red-600">
+                Rs.{Number(totalExpenses).toLocaleString()}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Total Expenses
+              </div>
               <div className="text-xs text-red-600 mt-1">Business costs</div>
             </div>
           </div>
@@ -130,15 +142,19 @@ export function DashboardStats({
       </Card>
 
       {/* Active Employees */}
-        <Card>
+      <Card>
         <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Users className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <div className="text-xl font-semibold text-blue-600">{employeeCount}</div>
-              <div className="text-sm text-muted-foreground">Active Employees</div>
+              <div className="text-xl font-semibold text-blue-600">
+                {employeeCount}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Active Employees
+              </div>
               <div className="text-xs text-blue-600 mt-1">Team members</div>
             </div>
           </div>
@@ -153,8 +169,13 @@ export function DashboardStats({
               <AlertTriangle className="h-6 w-6 text-amber-600" />
             </div>
             <div>
-              <div className="text-xl font-semibold text-amber-600">{projectStats.find((stat) => stat.status === "on-hold")?.count || 0}</div>
-              <div className="text-sm text-muted-foreground">On Hold Projects</div>
+              <div className="text-xl font-semibold text-amber-600">
+                {projectStats.find((stat) => stat.status === "on-hold")
+                  ?.count || 0}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                On Hold Projects
+              </div>
               <div className="text-xs text-amber-600 mt-1">Need attention</div>
             </div>
           </div>
@@ -185,9 +206,33 @@ export function DashboardStats({
               />
             </div>
             <div>
-              <div className={`text-xl font-semibold ${profitMargin >= 20 ? "text-green-600" : profitMargin >= 10 ? "text-amber-600" : "text-red-600"}`}>{profitMargin.toFixed(1)}%</div>
+              <div
+                className={`text-xl font-semibold ${
+                  profitMargin >= 20
+                    ? "text-green-600"
+                    : profitMargin >= 10
+                    ? "text-amber-600"
+                    : "text-red-600"
+                }`}
+              >
+                {profitMargin.toFixed(1)}%
+              </div>
               <div className="text-sm text-muted-foreground">Profit Margin</div>
-              <div className={`text-xs mt-1 ${profitMargin >= 20 ? "text-green-600" : profitMargin >= 10 ? "text-amber-600" : "text-red-600"}`}>{profitMargin >= 20 ? "Excellent" : profitMargin >= 10 ? "Good" : "Needs improvement"}</div>
+              <div
+                className={`text-xs mt-1 ${
+                  profitMargin >= 20
+                    ? "text-green-600"
+                    : profitMargin >= 10
+                    ? "text-amber-600"
+                    : "text-red-600"
+                }`}
+              >
+                {profitMargin >= 20
+                  ? "Excellent"
+                  : profitMargin >= 10
+                  ? "Good"
+                  : "Needs improvement"}
+              </div>
             </div>
           </div>
         </CardContent>
@@ -201,8 +246,13 @@ export function DashboardStats({
               <FolderOpen className="h-6 w-6 text-purple-600" />
             </div>
             <div>
-              <div className="text-xl font-semibold text-purple-600">{projectStats.find((stat) => stat.status === "planning")?.count || 0}</div>
-              <div className="text-sm text-muted-foreground">Planning Projects</div>
+              <div className="text-xl font-semibold text-purple-600">
+                {projectStats.find((stat) => stat.status === "planning")
+                  ?.count || 0}
+              </div>
+              <div className="text-sm text-muted-foreground">
+                Planning Projects
+              </div>
               <div className="text-xs text-purple-600 mt-1">Ready to start</div>
             </div>
           </div>

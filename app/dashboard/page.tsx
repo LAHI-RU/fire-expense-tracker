@@ -74,20 +74,20 @@ export default function DashboardPage() {
         </div>
 
         {/* Key Stats + Quick Actions */}
-  <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
           <div className="lg:col-span-3">
             <DashboardStats
-          projectStats={data.projectStats}
-          financialOverview={data.financialOverview}
-          employeeCount={data.employeeSalaries?.length || 0}
-          totalProfit={
-            (data.financialOverview?.find(
-              (item: any) => item.type === "incomes"
-            )?.total || 0) -
-            (data.financialOverview?.find(
-              (item: any) => item.type === "expenses"
-            )?.total || 0)
-          }
+              projectStats={data.projectStats}
+              financialOverview={data.financialOverview}
+              employeeCount={data.employeeSalaries?.length || 0}
+              totalProfit={
+                (data.financialOverview?.find(
+                  (item: any) => item.type === "incomes"
+                )?.total || 0) -
+                (data.financialOverview?.find(
+                  (item: any) => item.type === "expenses"
+                )?.total || 0)
+              }
             />
           </div>
 
@@ -120,7 +120,7 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           </div>
-  </div>
+        </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
