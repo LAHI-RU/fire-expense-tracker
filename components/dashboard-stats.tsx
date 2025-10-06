@@ -122,7 +122,7 @@ export function DashboardStats({
             </div>
             <div>
               <div
-                className={`text-2xl font-bold ${
+                className={`text-xl font-semibold ${
                   totalProfit >= 0 ? "text-green-600" : "text-red-600"
                 }`}
               >
