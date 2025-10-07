@@ -235,7 +235,7 @@ export default function ExpensesPage() {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-1 ml-2">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-red-600" />
                 <div>
@@ -253,7 +253,7 @@ export default function ExpensesPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-1 ml-2">
               <div className="flex items-center gap-2">
                 <div className="text-2xl font-bold text-muted-foreground">
                   {filteredExpenses.length}

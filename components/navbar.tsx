@@ -1,8 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import React from "react";
-import { smoothScrollTo } from "@/lib/ui-effects";
 import { usePathname } from "next/navigation";
 import { useState, useRef, useEffect } from "react";
 import {
@@ -57,7 +55,7 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [profileOpen]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (typeof window !== "undefined") {
       try {
         const u = getUserFromCookie();
@@ -85,7 +83,7 @@ export default function Navbar() {
             alt="logo"
             className="h-24 w-24 rounded-full object-cover"
           />
-          <div className="mt-2 text-m font-semibold text-center">
+          <div className="mt-2 text-base font-semibold text-center">
             North Central
             <div className="text-sm font-medium">Engineering</div>
           </div>
