@@ -468,18 +468,27 @@ export default function IncomesPage() {
                         {new Date(income.payment_date).toLocaleDateString()}
                       </div>
                     </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      <div className="font-medium text-sm">
+                    <TableCell className="border-r border-border/50 max-w-[200px]">
+                      <div
+                        className="font-medium text-sm truncate"
+                        title={income.project_name || "N/A"}
+                      >
                         {income.project_name || "N/A"}
                       </div>
                     </TableCell>
                     <TableCell className="border-r border-border/50">
                       <div className="max-w-xs">
-                        <div className="font-medium truncate">
+                        <div
+                          className="font-medium break-words line-clamp-2"
+                          title={income.description}
+                        >
                           {income.description}
                         </div>
                         {income.notes && (
-                          <div className="text-xs text-muted-foreground truncate mt-1">
+                          <div
+                            className="text-xs text-muted-foreground break-words line-clamp-1 mt-1"
+                            title={income.notes}
+                          >
                             {income.notes}
                           </div>
                         )}

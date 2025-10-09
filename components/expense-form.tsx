@@ -1,37 +1,50 @@
-"use client"
+"use client";
 
-import type React from "react"
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { VoiceInput } from "@/components/voice-input"
-import { VoiceTextarea } from "@/components/voice-textarea"
-import type { Expense, Project } from "@/lib/mysql"
+import type React from "react";
+import { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { VoiceInput } from "@/components/voice-input";
+import { VoiceTextarea } from "@/components/voice-textarea";
+import type { Expense, Project } from "@/lib/mysql";
 
 interface ExpenseFormProps {
-  expense?: Expense
-  onSubmit: (expenseData: Partial<Expense>) => void
-  onCancel: () => void
-  isLoading?: boolean
+  expense?: Expense;
+  onSubmit: (expenseData: Partial<Expense>) => void;
+  onCancel: () => void;
+  isLoading?: boolean;
 }
 
-export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseFormProps) {
+export function ExpenseForm({
+  expense,
+  onSubmit,
+  onCancel,
+  isLoading,
+}: ExpenseFormProps) {
   const [formData, setFormData] = useState({
     project_id: expense?.project_id?.toString() || "",
     category_id: expense?.category_id?.toString() || "",
     employee_id: expense?.employee_id?.toString() || "",
     description: expense?.description || "",
     amount: expense?.amount?.toString() || "",
-    expense_date: expense?.expense_date ? new Date(expense.expense_date).toISOString().split("T")[0] : "",
+    expense_date: expense?.expense_date
+      ? new Date(expense.expense_date).toISOString().split("T")[0]
+      : "",
     receipt_url: expense?.receipt_url || "",
     notes: expense?.notes || "",
-  })
+  });
 
-  const [projects, setProjects] = useState<Project[]>([])
-  const [categories, setCategories] = useState<any[]>([])
-  const [employees, setEmployees] = useState<any[]>([])
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
+  const [employees, setEmployees] = useState<any[]>([]);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -41,48 +54,54 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
           fetch("/api/projects"),
           fetch("/api/expense-categories"),
           fetch("/api/employees"),
-        ])
+        ]);
 
-        const [projectsData, categoriesData, employeesData] = await Promise.all([
-          projectsRes.json(),
-          categoriesRes.json(),
-          employeesRes.json(),
-        ])
+        const [projectsData, categoriesData, employeesData] = await Promise.all(
+          [projectsRes.json(), categoriesRes.json(), employeesRes.json()]
+        );
 
-        setProjects(projectsData.projects || [])
-        setCategories(categoriesData.categories || [])
-        setEmployees(employeesData.employees || [])
+        setProjects(projectsData.projects || []);
+        setCategories(categoriesData.categories || []);
+        setEmployees(employeesData.employees || []);
       } catch (error) {
-        console.error("Error fetching form data:", error)
+        console.error("Error fetching form data:", error);
       }
-    }
+    };
 
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     onSubmit({
       ...formData,
       project_id: Number.parseInt(formData.project_id),
-      category_id: formData.category_id ? Number.parseInt(formData.category_id) : undefined,
-      employee_id: formData.employee_id ? Number.parseInt(formData.employee_id) : undefined,
+      category_id: formData.category_id
+        ? Number.parseInt(formData.category_id)
+        : undefined,
+      employee_id: formData.employee_id
+        ? Number.parseInt(formData.employee_id)
+        : undefined,
       amount: Number.parseFloat(formData.amount),
-      expense_date: formData.expense_date,
+      expense_date: new Date(formData.expense_date),
       receipt_url: formData.receipt_url || undefined,
       notes: formData.notes || undefined,
-    })
-  }
+    });
+  };
 
   const handleChange = (field: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">{expense ? "Edit Expense" : "Add New Expense"}</CardTitle>
-        <p className="text-sm text-muted-foreground">Use voice input for hands-free data entry</p>
+        <CardTitle className="text-xl font-semibold">
+          {expense ? "Edit Expense" : "Add New Expense"}
+        </CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Use voice input for hands-free data entry
+        </p>
       </CardHeader>
 
       <CardContent>
@@ -90,14 +109,28 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="project_id">Project *</Label>
-              <Select value={formData.project_id} onValueChange={(value) => handleChange("project_id", value)}>
-                <SelectTrigger>
+              <Select
+                value={formData.project_id}
+                onValueChange={(value) => handleChange("project_id", value)}
+              >
+                <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select project" />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="w-full max-w-none">
                   {projects.map((project) => (
-                    <SelectItem key={project.id} value={project.id.toString()}>
-                      {project.name} - {project.client_name}
+                    <SelectItem
+                      key={project.id}
+                      value={project.id.toString()}
+                      className="w-full"
+                    >
+                      <div className="flex flex-col items-start w-full max-w-[300px]">
+                        <div className="font-medium truncate w-full text-left">
+                          {project.name}
+                        </div>
+                        <div className="text-xs text-muted-foreground truncate w-full text-left">
+                          Client: {project.client_name}
+                        </div>
+                      </div>
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -106,13 +139,19 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
 
             <div className="space-y-2">
               <Label htmlFor="category_id">Category</Label>
-              <Select value={formData.category_id} onValueChange={(value) => handleChange("category_id", value)}>
+              <Select
+                value={formData.category_id}
+                onValueChange={(value) => handleChange("category_id", value)}
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   {categories.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
+                    <SelectItem
+                      key={category.id}
+                      value={category.id.toString()}
+                    >
                       {category.name}
                     </SelectItem>
                   ))}
@@ -161,14 +200,28 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
 
           <div className="space-y-2">
             <Label htmlFor="employee_id">Employee (if applicable)</Label>
-            <Select value={formData.employee_id} onValueChange={(value) => handleChange("employee_id", value)}>
-              <SelectTrigger>
+            <Select
+              value={formData.employee_id}
+              onValueChange={(value) => handleChange("employee_id", value)}
+            >
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select employee" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full max-w-none">
                 {employees.map((employee) => (
-                  <SelectItem key={employee.id} value={employee.id.toString()}>
-                    {employee.full_name} ({employee.employee_code})
+                  <SelectItem
+                    key={employee.id}
+                    value={employee.id.toString()}
+                    className="w-full"
+                  >
+                    <div className="flex flex-col items-start w-full max-w-[300px]">
+                      <div className="font-medium truncate w-full text-left">
+                        {employee.full_name}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate w-full text-left">
+                        Code: {employee.employee_code}
+                      </div>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
@@ -198,14 +251,23 @@ export function ExpenseForm({ expense, onSubmit, onCancel, isLoading }: ExpenseF
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Saving..." : expense ? "Update Expense" : "Add Expense"}
+              {isLoading
+                ? "Saving..."
+                : expense
+                ? "Update Expense"
+                : "Add Expense"}
             </Button>
-            <Button type="button" variant="outline" onClick={onCancel} className="flex-1 bg-transparent">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              className="flex-1 bg-transparent"
+            >
               Cancel
             </Button>
           </div>
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

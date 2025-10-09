@@ -68,7 +68,7 @@ export function IncomeForm({
           ? Number.parseInt(formData.project_id)
           : undefined,
       amount: Number.parseFloat(formData.amount),
-      payment_date: formData.payment_date,
+      payment_date: new Date(formData.payment_date),
       invoice_number: formData.invoice_number || undefined,
       notes: formData.notes || undefined,
     });
@@ -97,14 +97,25 @@ export function IncomeForm({
               value={formData.project_id}
               onValueChange={(value) => handleChange("project_id", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select project or 'No Project'" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full max-w-none">
                 <SelectItem value="none">No Project</SelectItem>
                 {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.id.toString()}>
-                    {project.name} - {project.client_name}
+                  <SelectItem
+                    key={project.id}
+                    value={project.id.toString()}
+                    className="w-full"
+                  >
+                    <div className="flex flex-col items-start w-full max-w-[300px]">
+                      <div className="font-medium truncate w-full text-left">
+                        {project.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate w-full text-left">
+                        Client: {project.client_name}
+                      </div>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

@@ -225,16 +225,24 @@ export function SalaryPaymentForm({
                   value={formData.employee_id}
                   onValueChange={(value) => handleChange("employee_id", value)}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="w-full">
                     <SelectValue placeholder="Select employee" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="w-full max-w-none">
                     {employees.map((employee) => (
                       <SelectItem
                         key={employee.id}
                         value={employee.id.toString()}
+                        className="w-full"
                       >
-                        {employee.full_name} ({employee.employee_code})
+                        <div className="flex flex-col items-start w-full max-w-[300px]">
+                          <div className="font-medium truncate w-full text-left">
+                            {employee.full_name}
+                          </div>
+                          <div className="text-xs text-muted-foreground truncate w-full text-left">
+                            Code: {employee.employee_code}
+                          </div>
+                        </div>
                       </SelectItem>
                     ))}
                   </SelectContent>
@@ -356,13 +364,24 @@ export function SalaryPaymentForm({
               value={formData.project_id}
               onValueChange={(value) => handleChange("project_id", value)}
             >
-              <SelectTrigger>
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Select project" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="w-full max-w-none">
                 {projects.map((project) => (
-                  <SelectItem key={project.id} value={project.id.toString()}>
-                    {project.name} - {project.client_name}
+                  <SelectItem
+                    key={project.id}
+                    value={project.id.toString()}
+                    className="w-full"
+                  >
+                    <div className="flex flex-col items-start w-full max-w-[300px]">
+                      <div className="font-medium truncate w-full text-left">
+                        {project.name}
+                      </div>
+                      <div className="text-xs text-muted-foreground truncate w-full text-left">
+                        Client: {project.client_name}
+                      </div>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>
