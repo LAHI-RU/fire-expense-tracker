@@ -23,7 +23,7 @@ export default function ClientLayoutShell({
         {children}
       </main>
       {!hideNavAndFooter && (
-        <footer className="w-full  bg-white border-t border-gray-100 text-sm">
+        <footer className="w-full  bg-white border-t border-gray-100 text-sm ml-20">
           <div className="container p-responsive flex flex-col items-center gap-2">
             <div className="flex items-center gap-4">
               <a
