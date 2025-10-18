@@ -1,6 +1,7 @@
 // Recent activities component
 "use client";
 
+import { memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { DollarSign, TrendingUp, TrendingDown, Users } from "lucide-react";
@@ -9,7 +10,9 @@ interface RecentActivitiesProps {
   activities: any[];
 }
 
-export function RecentActivities({ activities }: RecentActivitiesProps) {
+export const RecentActivities = memo(function RecentActivities({
+  activities,
+}: RecentActivitiesProps) {
   activities = Array.isArray(activities) ? activities : [];
 
   const getActivityIcon = (type: string) => {
@@ -128,4 +131,4 @@ export function RecentActivities({ activities }: RecentActivitiesProps) {
       </CardContent>
     </Card>
   );
-}
+});

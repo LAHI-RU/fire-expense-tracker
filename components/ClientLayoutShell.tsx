@@ -1,18 +1,25 @@
 "use client";
+import { memo, useMemo } from "react";
 import Navbar from "./navbar";
+import PageTransition from "./page-transition";
+import NavigationProgress from "./navigation-progress";
 import { usePathname } from "next/navigation";
 import { Analytics } from "@vercel/analytics/next";
 
-export default function ClientLayoutShell({
+const ClientLayoutShell = memo(function ClientLayoutShell({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const hideNavAndFooter = pathname === "/login" || pathname === "/register";
+  const hideNavAndFooter = useMemo(
+    () => pathname === "/login" || pathname === "/register",
+    [pathname]
+  );
 
   return (
     <>
+      <NavigationProgress />
       {!hideNavAndFooter && <Navbar />}
       <main
         className={`container p-responsive mt-20 md:mt-6 md:ml-56 flex-1 ${
@@ -20,10 +27,10 @@ export default function ClientLayoutShell({
         }`}
         style={{ minHeight: "calc(100vh - 160px)" }}
       >
-        {children}
+        <PageTransition>{children}</PageTransition>
       </main>
       {!hideNavAndFooter && (
-        <footer className="w-full  bg-white border-t border-gray-100 text-sm ml-20">
+        <footer className="w-full bg-white border-t border-gray-100 text-sm ml-20">
           <div className="container p-responsive flex flex-col items-center gap-2">
             <div className="flex items-center gap-4">
               <a
@@ -84,4 +91,6 @@ export default function ClientLayoutShell({
       <Analytics />
     </>
   );
-}
+});
+
+export default ClientLayoutShell;

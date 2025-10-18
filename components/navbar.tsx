@@ -107,6 +107,7 @@ export default function Navbar() {
               <Link
                 key={item.name}
                 href={item.href}
+                prefetch={true}
                 className={`group flex items-center gap-4 px-4 py-3 rounded-md transition-colors duration-150 hover:bg-blue-700 ${
                   pathname === item.href
                     ? "bg-blue-700 text-white"
@@ -262,6 +263,7 @@ export default function Navbar() {
                   <Link
                     key={item.name}
                     href={item.href}
+                    prefetch={true}
                     className={`flex items-center gap-3 px-3 py-2 rounded-md hover:bg-blue-700 ${
                       pathname === item.href ? "bg-blue-700" : ""
                     }`}

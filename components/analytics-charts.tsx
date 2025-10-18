@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   BarChart,
@@ -32,7 +33,7 @@ const COLORS = [
   "#10b981",
 ];
 
-export function AnalyticsCharts({
+export const AnalyticsCharts = memo(function AnalyticsCharts({
   monthlyTrends,
   expenseCategories,
   projectProfitability,
@@ -258,6 +259,6 @@ export function AnalyticsCharts({
       </Card>
     </div>
   );
-}
+});
 
 export default AnalyticsCharts;

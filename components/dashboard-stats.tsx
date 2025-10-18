@@ -1,6 +1,7 @@
 // Dashboard statistics cards
 "use client";
 
+import { memo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   TrendingUp,
@@ -18,7 +19,7 @@ interface DashboardStatsProps {
   totalProfit: number;
 }
 
-export function DashboardStats({
+export const DashboardStats = memo(function DashboardStats({
   projectStats,
   financialOverview,
   employeeCount,
@@ -260,6 +261,6 @@ export function DashboardStats({
       </Card>
     </div>
   );
-}
+});
 
 export default DashboardStats;
