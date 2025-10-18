@@ -9,6 +9,7 @@ import {
   CreditCard,
   Wallet,
   Folder,
+  FileText,
   Menu,
   X,
   User,
@@ -23,6 +24,7 @@ const navItems = [
   { name: "Expenses", href: "/expenses", icon: CreditCard },
   { name: "Incomes", href: "/incomes", icon: Wallet },
   { name: "Projects", href: "/projects", icon: Folder },
+  { name: "Reports", href: "/reports", icon: FileText },
 ];
 
 export default function Navbar() {
