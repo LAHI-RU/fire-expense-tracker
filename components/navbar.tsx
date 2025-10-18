@@ -14,6 +14,8 @@ import {
   X,
   User,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import { getUserFromCookie } from "@/lib/auth-client";
@@ -38,6 +40,7 @@ export default function Navbar() {
   const [jwtError, setJwtError] = useState("");
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false); // Navbar collapse state
 
   const profileRefDesktop = useRef<HTMLDivElement | null>(null);
   const profileRefMobile = useRef<HTMLDivElement | null>(null);
@@ -88,19 +91,43 @@ export default function Navbar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:fixed md:inset-y-0 md:left-0 md:w-56 md:flex md:flex-col bg-gradient-to-b from-blue-800 via-blue-900 to-indigo-900 text-white shadow-lg z-40">
-        <div className="flex flex-col items-center px-4 py-6 mt-4">
+      <aside
+        className={`hidden md:fixed md:inset-y-0 md:left-0 md:flex md:flex-col bg-gradient-to-b from-blue-800 via-blue-900 to-indigo-900 text-white shadow-lg z-40 transition-all duration-300 ${
+          collapsed ? "md:w-20" : "md:w-56"
+        }`}
+      >
+        {/* Collapse/Expand Button - Desktop only, placed at bottom for better UI */}
+        <div className="hidden md:flex justify-end px-2 pb-2 mt-4">
+          <button
+            onClick={() => setCollapsed((c) => !c)}
+            className="p-2 rounded-full bg-blue-900 hover:bg-blue-700 focus:outline-none transition-colors"
+            title={collapsed ? "Expand navbar" : "Collapse navbar"}
+            aria-label={collapsed ? "Expand navbar" : "Collapse navbar"}
+          >
+            {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
+          </button>
+        </div>
+        <div className={`flex flex-col items-center px-4 py-6 mt-4 relative`}>
           <img
             src="/logo.jpg"
             alt="logo"
-            className="h-24 w-24 rounded-full object-cover"
+            className={`rounded-full object-cover transition-all duration-300 ${
+              collapsed ? "h-12 w-12" : "h-24 w-24"
+            }`}
           />
-          <div className="mt-2 text-base font-semibold text-center">
-            North Central
-            <div className="text-sm font-medium">Engineering</div>
-          </div>
+          {!collapsed && (
+            <div className="mt-2 text-base font-semibold text-center">
+              North Central
+              <div className="text-sm font-medium">Engineering</div>
+            </div>
+          )}
         </div>
-        <nav className="flex-1 px-2 py-4 space-y-2">
+
+        <nav
+          className={`flex-1 px-2 py-4 space-y-2 ${
+            collapsed ? "items-center" : ""
+          } flex flex-col`}
+        >
           {navItems.map((item) => {
             const Icon = item.icon as any;
             return (
@@ -108,44 +135,56 @@ export default function Navbar() {
                 key={item.name}
                 href={item.href}
                 prefetch={true}
-                className={`group flex items-center gap-4 px-4 py-3 rounded-md transition-colors duration-150 hover:bg-blue-700 ${
+                className={`group flex items-center ${
+                  collapsed ? "justify-center" : "gap-4"
+                } px-4 py-3 rounded-md transition-all duration-200 hover:bg-blue-700 ${
                   pathname === item.href
                     ? "bg-blue-700 text-white"
                     : "text-blue-100"
                 }`}
               >
                 <Icon className="w-6 h-6" />
-                <span className="font-semibold text-base">{item.name}</span>
+                {!collapsed && (
+                  <span className="font-semibold text-base transition-opacity duration-200">
+                    {item.name}
+                  </span>
+                )}
               </Link>
             );
           })}
         </nav>
 
         <div
-          className="px-4 py-4 border-t border-blue-700 relative"
+          className={`px-4 py-4 border-t border-blue-700 relative flex items-center ${
+            collapsed ? "justify-center" : ""
+          }`}
           ref={profileRefDesktop}
         >
           <button
             onClick={() => setProfileOpen((s) => !s)}
             aria-haspopup="true"
             aria-expanded={profileOpen}
-            className="w-full text-left flex items-center gap-3 focus:outline-none"
+            className={`w-full text-left flex items-center gap-3 focus:outline-none ${
+              collapsed ? "justify-center" : ""
+            }`}
             title="Open profile menu"
           >
             <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center">
               <User className="text-white" size={20} />
             </div>
-            <div className="flex-1 overflow-hidden">
-              <div className="font-semibold truncate">
-                {user?.name || user?.email || "No user"}
+            {!collapsed && (
+              <div className="flex-1 overflow-hidden">
+                <div className="font-semibold truncate">
+                  {user?.name || user?.email || "No user"}
+                </div>
+                <div className="text-xs text-blue-200 truncate">
+                  {user?.role || jwtError}
+                </div>
               </div>
-              <div className="text-xs text-blue-200 truncate">
-                {user?.role || jwtError}
-              </div>
-            </div>
+            )}
           </button>
 
-          {profileOpen && (
+          {profileOpen && !collapsed && (
             <div className="hidden md:block absolute left-4 bottom-16 w-48 bg-white text-gray-800 rounded shadow-lg z-50">
               <div className="p-3 border-b text-sm">
                 <div className="font-semibold truncate">
@@ -160,7 +199,9 @@ export default function Navbar() {
                   onClick={() => (window.location.href = "/profile")}
                   className="text-left px-2 py-2 rounded hover:bg-gray-100"
                 >
-                  Profile
+                  <div className="flex items-center gap-2">
+                    <User size={14} /> Profile
+                  </div>
                 </button>
                 <button
                   onClick={handleLogout}
@@ -224,7 +265,9 @@ export default function Navbar() {
                 onClick={() => (window.location.href = "/profile")}
                 className="text-left px-2 py-2 rounded hover:bg-gray-100"
               >
-                Profile
+                <div className="flex items-center gap-2">
+                  <User size={14} /> Profile
+                </div>
               </button>
               <button
                 onClick={handleLogout}
@@ -306,7 +349,9 @@ export default function Navbar() {
                     }}
                     className="w-full py-2 rounded bg-white/10 text-white mb-2"
                   >
-                    Profile
+                    <div className="flex items-center justify-center gap-2">
+                      <User size={14} /> Profile
+                    </div>
                   </button>
                   <button
                     onClick={() => {
