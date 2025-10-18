@@ -25,10 +25,10 @@ export default function ProjectsPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
-  // Fetch projects
+  // Fetch ALL projects (without status filter)
   const fetchProjects = async () => {
     try {
-      const response = await fetch(`/api/projects?status=${statusFilter}`);
+      const response = await fetch("/api/projects"); // Remove status filter from API call
       const data = await response.json();
       setProjects(data.projects || []);
     } catch (error) {
@@ -38,10 +38,16 @@ export default function ProjectsPage() {
     }
   };
 
-  // Filter projects based on search and status
+  // Filter projects based on search and status (CLIENT-SIDE FILTERING)
   useEffect(() => {
     let filtered = projects;
 
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter((project) => project.status === statusFilter);
+    }
+
+    // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(
         (project) =>
@@ -51,11 +57,11 @@ export default function ProjectsPage() {
     }
 
     setFilteredProjects(filtered);
-  }, [projects, searchTerm]);
+  }, [projects, searchTerm, statusFilter]); // Add statusFilter to dependency array
 
   useEffect(() => {
-    fetchProjects();
-  }, [statusFilter]);
+    fetchProjects(); // Fetch projects only once on component mount
+  }, []); // Remove statusFilter dependency
 
   const handleCreateProject = async (projectData: Partial<Project>) => {
     if (!user) {
@@ -114,7 +120,7 @@ export default function ProjectsPage() {
   };
 
   const statusCounts = {
-    all: projects.length,
+    all: projects.length, // Total count of all projects
     planning: projects.filter((p) => p.status === "planning").length,
     ongoing: projects.filter((p) => p.status === "ongoing").length,
     completed: projects.filter((p) => p.status === "completed").length,
@@ -162,7 +168,7 @@ export default function ProjectsPage() {
             }`}
             onClick={() => setStatusFilter(status)}
           >
-            <CardContent className="p-4 text-center">
+            <CardContent className="p-1 text-center">
               <div className="text-2xl font-bold text-primary">{count}</div>
               <div className="text-sm text-muted-foreground capitalize">
                 {status === "on-hold" ? "On Hold" : status}

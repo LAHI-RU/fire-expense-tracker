@@ -73,20 +73,54 @@ export default function DashboardPage() {
           />
         </div>
 
-        {/* Key Stats */}
-        <DashboardStats
-          projectStats={data.projectStats}
-          financialOverview={data.financialOverview}
-          employeeCount={data.employeeSalaries?.length || 0}
-          totalProfit={
-            (data.financialOverview?.find(
-              (item: any) => item.type === "incomes"
-            )?.total || 0) -
-            (data.financialOverview?.find(
-              (item: any) => item.type === "expenses"
-            )?.total || 0)
-          }
-        />
+        {/* Key Stats + Quick Actions */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 items-stretch">
+          <div className="lg:col-span-3">
+            <DashboardStats
+              projectStats={data.projectStats}
+              financialOverview={data.financialOverview}
+              employeeCount={data.employeeSalaries?.length || 0}
+              totalProfit={
+                (data.financialOverview?.find(
+                  (item: any) => item.type === "incomes"
+                )?.total || 0) -
+                (data.financialOverview?.find(
+                  (item: any) => item.type === "expenses"
+                )?.total || 0)
+              }
+            />
+          </div>
+
+          <div className="lg:col-span-1">
+            <Card className="h-full">
+              <CardContent>
+                <div className="h-full flex flex-col">
+                  <h3 className="text-lg font-medium mb-4">Quick Actions</h3>
+                  <div className="flex flex-col gap-3 flex-1">
+                    <a
+                      href="/employees?openPayment=1"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
+                    >
+                      Record Payment
+                    </a>
+                    <a
+                      href="/incomes"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded shadow hover:bg-green-700 transition"
+                    >
+                      Incomes
+                    </a>
+                    <a
+                      href="/expenses"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 text-white rounded shadow hover:bg-amber-700 transition"
+                    >
+                      Expenses
+                    </a>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
         {/* Charts Section */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">

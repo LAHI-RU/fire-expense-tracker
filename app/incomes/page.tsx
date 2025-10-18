@@ -285,7 +285,7 @@ export default function IncomesPage() {
       <div className="space-y-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-1 ml-2">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-primary" />
                 <div>
@@ -301,7 +301,7 @@ export default function IncomesPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-1 ml-2">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-green-600" />
                 <div>
@@ -468,18 +468,27 @@ export default function IncomesPage() {
                         {new Date(income.payment_date).toLocaleDateString()}
                       </div>
                     </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      <div className="font-medium text-sm">
+                    <TableCell className="border-r border-border/50 max-w-[200px]">
+                      <div
+                        className="font-medium text-sm truncate"
+                        title={income.project_name || "N/A"}
+                      >
                         {income.project_name || "N/A"}
                       </div>
                     </TableCell>
                     <TableCell className="border-r border-border/50">
                       <div className="max-w-xs">
-                        <div className="font-medium truncate">
+                        <div
+                          className="font-medium break-words line-clamp-2"
+                          title={income.description}
+                        >
                           {income.description}
                         </div>
                         {income.notes && (
-                          <div className="text-xs text-muted-foreground truncate mt-1">
+                          <div
+                            className="text-xs text-muted-foreground break-words line-clamp-1 mt-1"
+                            title={income.notes}
+                          >
                             {income.notes}
                           </div>
                         )}

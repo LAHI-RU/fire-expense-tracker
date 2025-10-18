@@ -42,16 +42,16 @@ export function DashboardStats({
     totalIncome > 0 ? ((totalIncome - totalExpenses) / totalIncome) * 100 : 0;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       {/* Total Projects */}
       <Card className="hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-primary/10 rounded-lg">
               <FolderOpen className="h-6 w-6 text-primary" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-foreground">
+              <div className="text-xl font-semibold text-foreground">
                 {totalProjects}
               </div>
               <div className="text-sm text-muted-foreground">
@@ -67,13 +67,13 @@ export function DashboardStats({
 
       {/* Total Revenue */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-green-100 rounded-lg">
               <DollarSign className="h-6 w-6 text-green-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-green-600">
+              <div className="text-xl font-semibold text-green-600">
                 Rs.{Number(totalIncome).toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">Total Income</div>
@@ -87,13 +87,13 @@ export function DashboardStats({
 
       {/* Total Expenses */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-red-100 rounded-lg">
               <TrendingDown className="h-6 w-6 text-red-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-red-600">
+              <div className="text-xl font-semibold text-red-600">
                 Rs.{Number(totalExpenses).toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">
@@ -107,7 +107,7 @@ export function DashboardStats({
 
       {/* Net Profit */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div
               className={`p-2 rounded-lg ${
@@ -122,7 +122,7 @@ export function DashboardStats({
             </div>
             <div>
               <div
-                className={`text-2xl font-bold ${
+                className={`text-xl font-semibold ${
                   totalProfit >= 0 ? "text-green-600" : "text-red-600"
                 }`}
               >
@@ -143,13 +143,13 @@ export function DashboardStats({
 
       {/* Active Employees */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Users className="h-6 w-6 text-blue-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-600">
+              <div className="text-xl font-semibold text-blue-600">
                 {employeeCount}
               </div>
               <div className="text-sm text-muted-foreground">
@@ -163,13 +163,13 @@ export function DashboardStats({
 
       {/* Project Status Alert */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-amber-100 rounded-lg">
               <AlertTriangle className="h-6 w-6 text-amber-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-amber-600">
+              <div className="text-xl font-semibold text-amber-600">
                 {projectStats.find((stat) => stat.status === "on-hold")
                   ?.count || 0}
               </div>
@@ -184,7 +184,7 @@ export function DashboardStats({
 
       {/* Profit Margin */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div
               className={`p-2 rounded-lg ${
@@ -207,7 +207,7 @@ export function DashboardStats({
             </div>
             <div>
               <div
-                className={`text-2xl font-bold ${
+                className={`text-xl font-semibold ${
                   profitMargin >= 20
                     ? "text-green-600"
                     : profitMargin >= 10
@@ -240,13 +240,13 @@ export function DashboardStats({
 
       {/* Planning Projects */}
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="p-3">
           <div className="flex items-center gap-4">
             <div className="p-2 bg-purple-100 rounded-lg">
               <FolderOpen className="h-6 w-6 text-purple-600" />
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-600">
+              <div className="text-xl font-semibold text-purple-600">
                 {projectStats.find((stat) => stat.status === "planning")
                   ?.count || 0}
               </div>

@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Edit, UserX, Phone, Calendar } from "lucide-react";
+import { Plus, Search, Edit, Trash, Phone, Calendar } from "lucide-react";
 import { EmployeeForm } from "@/components/employee-form";
 import { SalaryPaymentForm } from "@/components/salary-payment-form";
 import type { Employee, SalaryPayment } from "@/lib/mysql";
@@ -27,6 +27,9 @@ export default function EmployeesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [selectedPaymentEmployeeId, setSelectedPaymentEmployeeId] = useState<
+    number | null
+  >(null);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(true);
@@ -74,6 +77,19 @@ export default function EmployeesPage() {
   useEffect(() => {
     fetchData();
   }, [showActiveOnly]);
+
+  // Open payment form if URL has params (dashboard quick action)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("openPayment") === "1") {
+      const empId = params.get("employeeId");
+      if (empId) {
+        setSelectedPaymentEmployeeId(Number(empId));
+      }
+      setShowPaymentForm(true);
+    }
+  }, []);
 
   const handleCreateEmployee = async (employeeData: Partial<Employee>) => {
     try {
@@ -124,6 +140,35 @@ export default function EmployeesPage() {
       }
     } catch (error) {
       console.error("Error deactivating employee:", error);
+    }
+  };
+
+  const handleDeleteEmployee = async (employeeId: number) => {
+    // Fetch the employee to determine active state for a clearer confirmation message
+    try {
+      const empRes = await fetch(`/api/employees/${employeeId}`);
+      const empJson = await empRes.json();
+      const isActive = empJson?.employee?.is_active ?? false;
+      const confirmMsg = isActive
+        ? "This will permanently delete the active employee. Continue?"
+        : "This will permanently delete the deactivated employee. Continue?";
+
+      if (!confirm(confirmMsg)) return;
+    } catch (err) {
+      // fallback confirmation if fetch fails
+      if (!confirm("This will permanently delete the employee. Continue?"))
+        return;
+    }
+    try {
+      const response = await fetch(`/api/employees/${employeeId}?force=true`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        fetchData();
+      }
+    } catch (error) {
+      console.error("Error deleting employee:", error);
     }
   };
 
@@ -181,8 +226,15 @@ export default function EmployeesPage() {
     return (
       <div className="container p-responsive">
         <SalaryPaymentForm
-          onSubmit={handleRecordPayment}
-          onCancel={() => setShowPaymentForm(false)}
+          onSubmit={(data) => {
+            handleRecordPayment(data);
+            setSelectedPaymentEmployeeId(null);
+          }}
+          onCancel={() => {
+            setShowPaymentForm(false);
+            setSelectedPaymentEmployeeId(null);
+          }}
+          initialEmployeeId={selectedPaymentEmployeeId || undefined}
         />
       </div>
     );
@@ -199,13 +251,6 @@ export default function EmployeesPage() {
           </p>
         </div>
         <div className="flex gap-2">
-          <Button
-            onClick={() => setShowPaymentForm(true)}
-            variant="outline"
-            className="gap-2"
-          >
-            Record Payment
-          </Button>
           <Button onClick={() => setShowEmployeeForm(true)} className="gap-2">
             <Plus className="h-4 w-4" />
             Add Employee
@@ -216,8 +261,8 @@ export default function EmployeesPage() {
       {/* Summary */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="text-2xl font-bold text-primary">
+          <CardContent className="p-1 ml-2">
+            <div className="text-xl font-semibold text-primary">
               {employees.filter((e) => e.is_active).length}
             </div>
             <div className="text-sm text-muted-foreground">
@@ -227,8 +272,8 @@ export default function EmployeesPage() {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="text-2xl font-bold text-green-600">
+          <CardContent className="p-1 ml-2">
+            <div className="text-xl font-semibold text-green-600">
               Rs.
               {salaryPayments
                 .reduce((sum, payment) => sum + Number(payment.amount), 0)
@@ -241,8 +286,8 @@ export default function EmployeesPage() {
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="text-2xl font-bold text-amber-600">
+          <CardContent className="p-1 ml-2">
+            <div className="text-xl font-semibold text-amber-600">
               {
                 salaryPayments.filter((p) => {
                   const paymentDate = new Date(p.payment_date);
@@ -307,7 +352,7 @@ export default function EmployeesPage() {
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle className="text-lg">
+                      <CardTitle className="text-base">
                         {employee.full_name}
                       </CardTitle>
                       <div className="flex items-center gap-2 mt-1">
@@ -325,21 +370,39 @@ export default function EmployeesPage() {
                       <Button
                         variant="ghost"
                         size="sm"
+                        onClick={() => {
+                          setSelectedPaymentEmployeeId(employee.id);
+                          setShowPaymentForm(true);
+                        }}
+                        className="h-8 w-8 p-0"
+                        title="Record payment"
+                      >
+                        <Plus className="h-4 w-4" />
+                      </Button>
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => setEditingEmployee(employee)}
                         className="h-8 w-8 p-0"
+                        title="Edit employee"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
-                      {employee.is_active && (
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeactivateEmployee(employee.id)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <UserX className="h-4 w-4" />
-                        </Button>
-                      )}
+
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => handleDeleteEmployee(employee.id)}
+                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                        title={
+                          employee.is_active
+                            ? "Delete employee"
+                            : "Delete deactivated employee"
+                        }
+                      >
+                        <Trash className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
@@ -405,7 +468,7 @@ export default function EmployeesPage() {
                               {new Date(
                                 payment.payment_date
                               ).toLocaleDateString()}{" "}
-                              - {payment.payment_type.replace("_", " ")}
+                              - {payment.payment_type.replace(/_/g, " ")}
                             </span>
                             <span className="font-medium">
                               Rs.{Number(payment.amount).toLocaleString()}

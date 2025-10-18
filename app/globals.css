@@ -40,6 +40,38 @@
   --sidebar-ring: oklch(0.65 0.12 195 / 0.5); /* rgba(20, 184, 166, 0.5) */
 }
 
+/* Text overflow and wrap utilities */
+.line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.break-words {
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.text-wrap {
+  white-space: normal;
+  word-wrap: break-word;
+}
+
 .dark {
   --background: oklch(0.15 0.02 258); /* Dark background */
   --foreground: oklch(0.95 0 0); /* Light text */
