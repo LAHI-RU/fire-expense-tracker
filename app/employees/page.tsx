@@ -243,15 +243,20 @@ export default function EmployeesPage() {
   return (
     <div className="container p-responsive space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Employees</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Employees
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Manage employees and salary payments
           </p>
         </div>
-        <div className="flex gap-2">
-          <Button onClick={() => setShowEmployeeForm(true)} className="gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            onClick={() => setShowEmployeeForm(true)}
+            className="gap-2 flex-1 sm:flex-initial"
+          >
             <Plus className="h-4 w-4" />
             Add Employee
           </Button>
@@ -259,10 +264,10 @@ export default function EmployeesPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <Card>
-          <CardContent className="p-1 ml-2">
-            <div className="text-xl font-semibold text-primary">
+          <CardContent className="pt-6 px-4">
+            <div className="text-xl sm:text-2xl font-semibold text-primary">
               {employees.filter((e) => e.is_active).length}
             </div>
             <div className="text-sm text-muted-foreground">
@@ -272,8 +277,8 @@ export default function EmployeesPage() {
         </Card>
 
         <Card>
-          <CardContent className="p-1 ml-2">
-            <div className="text-xl font-semibold text-green-600">
+          <CardContent className="pt-6 px-4">
+            <div className="text-xl sm:text-2xl font-semibold text-green-600">
               Rs.
               {salaryPayments
                 .reduce((sum, payment) => sum + Number(payment.amount), 0)
@@ -286,8 +291,8 @@ export default function EmployeesPage() {
         </Card>
 
         <Card>
-          <CardContent className="p-1 ml-2">
-            <div className="text-xl font-semibold text-amber-600">
+          <CardContent className="pt-6 px-4">
+            <div className="text-xl sm:text-2xl font-semibold text-amber-600">
               {
                 salaryPayments.filter((p) => {
                   const paymentDate = new Date(p.payment_date);
@@ -308,7 +313,7 @@ export default function EmployeesPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex gap-4">
+      <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -321,6 +326,7 @@ export default function EmployeesPage() {
         <Button
           variant={showActiveOnly ? "default" : "outline"}
           onClick={() => setShowActiveOnly(!showActiveOnly)}
+          className="w-full sm:w-auto"
         >
           {showActiveOnly ? "Active Only" : "All Employees"}
         </Button>

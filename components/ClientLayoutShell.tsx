@@ -30,8 +30,8 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
         <PageTransition>{children}</PageTransition>
       </main>
       {!hideNavAndFooter && (
-        <footer className="w-full bg-white border-t border-gray-100 text-sm ml-20">
-          <div className="container p-responsive flex flex-col items-center gap-2">
+        <footer className="w-full bg-white border-t border-gray-100 text-sm md:ml-56">
+          <div className="container mx-auto px-4 py-4 flex flex-col items-center gap-2">
             <div className="flex items-center gap-4">
               <a
                 href="https://facebook.com/ldbsolutions"

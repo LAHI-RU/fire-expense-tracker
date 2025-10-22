@@ -265,16 +265,21 @@ export default function IncomesPage() {
   return (
     <div className="container p-responsive space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Income</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Income
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Track project payments and income
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <VoiceHelpDialog />
-          <Button onClick={() => setShowForm(true)} className="gap-2">
+          <Button
+            onClick={() => setShowForm(true)}
+            className="gap-2 flex-1 sm:flex-initial"
+          >
             <Plus className="h-4 w-4" />
             Add Income
           </Button>
@@ -283,13 +288,13 @@ export default function IncomesPage() {
 
       {/* Summary */}
       <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-1 ml-2">
+            <CardContent className="pt-6 px-4">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-primary" />
                 <div>
-                  <div className="text-2xl font-bold text-primary">
+                  <div className="text-xl sm:text-2xl font-bold text-primary">
                     Rs.{receivedIncomes.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -301,11 +306,11 @@ export default function IncomesPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-1 ml-2">
+            <CardContent className="pt-6 px-4">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-green-600" />
                 <div>
-                  <div className="text-2xl font-bold text-green-600">
+                  <div className="text-xl sm:text-2xl font-bold text-green-600">
                     Rs.{totalIncomes.toLocaleString()}
                   </div>
                   <div className="text-sm text-muted-foreground">
@@ -341,7 +346,7 @@ export default function IncomesPage() {
       </div>
 
       {/* Search and Controls */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -352,14 +357,14 @@ export default function IncomesPage() {
           />
         </div>
         {viewMode === "table" && (
-          <>
+          <div className="grid grid-cols-2 gap-2">
             <Select
               value={filterStatus}
               onValueChange={(value) =>
                 setFilterStatus(value as "all" | "pending" | "received")
               }
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Show" />
               </SelectTrigger>
               <SelectContent>
@@ -372,7 +377,7 @@ export default function IncomesPage() {
               value={sortBy}
               onValueChange={(value: any) => setSortBy(value)}
             >
-              <SelectTrigger className="w-40">
+              <SelectTrigger className="w-full">
                 <SelectValue placeholder="Sort by" />
               </SelectTrigger>
               <SelectContent>
@@ -382,7 +387,7 @@ export default function IncomesPage() {
                 <SelectItem value="status">Status</SelectItem>
               </SelectContent>
             </Select>
-          </>
+          </div>
         )}
       </div>
 
@@ -402,164 +407,168 @@ export default function IncomesPage() {
         </Card>
       ) : viewMode === "table" ? (
         <Card>
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader>
-                <TableRow className="bg-muted/50">
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
-                    onClick={() => handleSort("date")}
-                  >
-                    <div className="flex items-center gap-1 font-bold">
-                      Date
-                      <ArrowUpDown className="h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
-                    onClick={() => handleSort("project")}
-                  >
-                    <div className="flex items-center gap-1 font-bold">
-                      Project
-                      <ArrowUpDown className="h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead className="font-bold border-r border-border/50">
-                    Description
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors text-right border-r border-border/50"
-                    onClick={() => handleSort("amount")}
-                  >
-                    <div className="flex items-center gap-1 justify-end font-bold">
-                      Amount
-                      <ArrowUpDown className="h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead className="font-bold border-r border-border/50">
-                    Payment Method
-                  </TableHead>
-                  <TableHead
-                    className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
-                    onClick={() => handleSort("status")}
-                  >
-                    <div className="flex items-center gap-1 font-bold">
-                      Status
-                      <ArrowUpDown className="h-3 w-3" />
-                    </div>
-                  </TableHead>
-                  <TableHead className="font-bold border-r border-border/50">
-                    Invoice
-                  </TableHead>
-                  <TableHead className="font-bold">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredIncomes.map((income, index) => (
-                  <TableRow
-                    key={income.id}
-                    className={`hover:bg-muted/50 transition-colors ${
-                      index % 2 === 0 ? "bg-background" : "bg-muted/20"
-                    }`}
-                  >
-                    <TableCell className="font-medium border-r border-border/50">
-                      <div className="flex items-center gap-1">
-                        <Calendar className="h-4 w-4 text-muted-foreground" />
-                        {new Date(income.payment_date).toLocaleDateString()}
+          <CardContent className="p-0 overflow-x-auto">
+            <div className="min-w-[1100px]">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/50">
+                    <TableHead
+                      className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
+                      onClick={() => handleSort("date")}
+                    >
+                      <div className="flex items-center gap-1 font-bold">
+                        Date
+                        <ArrowUpDown className="h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell className="border-r border-border/50 max-w-[200px]">
-                      <div
-                        className="font-medium text-sm truncate"
-                        title={income.project_name || "N/A"}
-                      >
-                        {income.project_name || "N/A"}
+                    </TableHead>
+                    <TableHead
+                      className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
+                      onClick={() => handleSort("project")}
+                    >
+                      <div className="flex items-center gap-1 font-bold">
+                        Project
+                        <ArrowUpDown className="h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      <div className="max-w-xs">
-                        <div
-                          className="font-medium break-words line-clamp-2"
-                          title={income.description}
-                        >
-                          {income.description}
-                        </div>
-                        {income.notes && (
-                          <div
-                            className="text-xs text-muted-foreground break-words line-clamp-1 mt-1"
-                            title={income.notes}
-                          >
-                            {income.notes}
-                          </div>
-                        )}
+                    </TableHead>
+                    <TableHead className="font-bold border-r border-border/50">
+                      Description
+                    </TableHead>
+                    <TableHead
+                      className="cursor-pointer hover:bg-muted/80 transition-colors text-right border-r border-border/50"
+                      onClick={() => handleSort("amount")}
+                    >
+                      <div className="flex items-center gap-1 justify-end font-bold">
+                        Amount
+                        <ArrowUpDown className="h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell className="text-right border-r border-border/50">
-                      <div className="font-bold text-green-600">
-                        Rs.{Number(income.amount).toLocaleString()}
+                    </TableHead>
+                    <TableHead className="font-bold border-r border-border/50">
+                      Payment Method
+                    </TableHead>
+                    <TableHead
+                      className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
+                      onClick={() => handleSort("status")}
+                    >
+                      <div className="flex items-center gap-1 font-bold">
+                        Status
+                        <ArrowUpDown className="h-3 w-3" />
                       </div>
-                    </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      <Badge
-                        variant="secondary"
-                        className={
-                          getPaymentMethodConfig(income.payment_method)
-                            .className
-                        }
-                      >
-                        {getPaymentMethodConfig(income.payment_method).label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      <Badge
-                        variant="secondary"
-                        className={
-                          getStatusConfig(income.payment_status).className
-                        }
-                      >
-                        {getStatusConfig(income.payment_status).label}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="border-r border-border/50">
-                      {income.invoice_number ? (
-                        <div className="flex items-center gap-1 text-sm">
-                          <FileText className="h-3 w-3 text-muted-foreground" />
-                          {income.invoice_number}
-                        </div>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingIncome(income)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteIncome(income.id)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </TableCell>
+                    </TableHead>
+                    <TableHead className="font-bold border-r border-border/50">
+                      Invoice
+                    </TableHead>
+                    <TableHead className="font-bold">Actions</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredIncomes.map((income, index) => (
+                    <TableRow
+                      key={income.id}
+                      className={`hover:bg-muted/50 transition-colors ${
+                        index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                      }`}
+                    >
+                      <TableCell className="font-medium border-r border-border/50">
+                        <div className="flex items-center gap-1">
+                          <Calendar className="h-4 w-4 text-muted-foreground" />
+                          {new Date(income.payment_date).toLocaleDateString()}
+                        </div>
+                      </TableCell>
+                      <TableCell className="border-r border-border/50 max-w-[200px]">
+                        <div
+                          className="font-medium text-sm truncate"
+                          title={income.project_name || "N/A"}
+                        >
+                          {income.project_name || "N/A"}
+                        </div>
+                      </TableCell>
+                      <TableCell className="border-r border-border/50">
+                        <div className="max-w-xs">
+                          <div
+                            className="font-medium break-words line-clamp-2"
+                            title={income.description}
+                          >
+                            {income.description}
+                          </div>
+                          {income.notes && (
+                            <div
+                              className="text-xs text-muted-foreground break-words line-clamp-1 mt-1"
+                              title={income.notes}
+                            >
+                              {income.notes}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="text-right border-r border-border/50">
+                        <div className="font-bold text-green-600">
+                          Rs.{Number(income.amount).toLocaleString()}
+                        </div>
+                      </TableCell>
+                      <TableCell className="border-r border-border/50">
+                        <Badge
+                          variant="secondary"
+                          className={
+                            getPaymentMethodConfig(income.payment_method)
+                              .className
+                          }
+                        >
+                          {getPaymentMethodConfig(income.payment_method).label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="border-r border-border/50">
+                        <Badge
+                          variant="secondary"
+                          className={
+                            getStatusConfig(income.payment_status).className
+                          }
+                        >
+                          {getStatusConfig(income.payment_status).label}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="border-r border-border/50">
+                        {income.invoice_number ? (
+                          <div className="flex items-center gap-1 text-sm">
+                            <FileText className="h-3 w-3 text-muted-foreground" />
+                            {income.invoice_number}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            -
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingIncome(income)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteIncome(income.id)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
 
             {/* Table Summary Row */}
             <div className="border-t bg-muted/30 p-4">
-              <div className="flex justify-between items-center font-semibold">
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 font-semibold">
                 <span>Total ({filteredIncomes.length} records)</span>
-                <div className="flex gap-8">
+                <div className="flex gap-4 sm:gap-8">
                   <div className="text-right">
                     <div className="text-sm text-muted-foreground">
                       Expected

@@ -215,16 +215,21 @@ export default function ExpensesPage() {
   return (
     <div className="container p-responsive space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Expenses</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Expenses
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Track project expenses and costs
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <VoiceHelpDialog />
-          <Button onClick={() => setShowForm(true)} className="gap-2">
+          <Button
+            onClick={() => setShowForm(true)}
+            className="gap-2 flex-1 sm:flex-initial"
+          >
             <Plus className="h-4 w-4" />
             Add Expense
           </Button>
@@ -233,13 +238,13 @@ export default function ExpensesPage() {
 
       {/* Summary */}
       <div className="space-y-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Card>
-            <CardContent className="p-1 ml-2">
+            <CardContent className="pt-6 px-4">
               <div className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-red-600" />
                 <div>
-                  <div className="text-2xl font-bold text-red-600">
+                  <div className="text-xl sm:text-2xl font-bold text-red-600">
                     Rs.
                     {filteredExpenses
                       .reduce((sum, expense) => sum + Number(expense.amount), 0)
@@ -253,9 +258,9 @@ export default function ExpensesPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-1 ml-2">
+            <CardContent className="pt-6 px-4">
               <div className="flex items-center gap-2">
-                <div className="text-2xl font-bold text-muted-foreground">
+                <div className="text-xl sm:text-2xl font-bold text-muted-foreground">
                   {filteredExpenses.length}
                 </div>
                 <div className="text-sm text-muted-foreground">Records</div>
@@ -288,7 +293,7 @@ export default function ExpensesPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex gap-4 items-center">
+      <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
@@ -298,61 +303,63 @@ export default function ExpensesPage() {
             className="pl-10"
           />
         </div>
-        <select
-          className="border rounded px-2 py-1"
-          value={filterCategory}
-          onChange={(e) => setFilterCategory(e.target.value)}
-        >
-          <option value="all">All Categories</option>
-          {[
-            ...new Set(expenses.map((e) => e.category_name).filter(Boolean)),
-          ].map((cat) => (
-            <option key={cat} value={cat}>
-              {cat}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border rounded px-2 py-1"
-          value={filterProject}
-          onChange={(e) => setFilterProject(e.target.value)}
-        >
-          <option value="all">All Projects</option>
-          {[
-            ...new Set(expenses.map((e) => e.project_name).filter(Boolean)),
-          ].map((proj) => (
-            <option key={proj} value={proj}>
-              {proj}
-            </option>
-          ))}
-        </select>
-        <select
-          className="border rounded px-2 py-1"
-          value={filterEmployee}
-          onChange={(e) => setFilterEmployee(e.target.value)}
-        >
-          <option value="all">All Employees</option>
-          {[
-            ...new Set(expenses.map((e) => e.employee_name).filter(Boolean)),
-          ].map((emp) => (
-            <option key={emp} value={emp}>
-              {emp}
-            </option>
-          ))}
-        </select>
-        {viewMode === "table" && (
+        <div className="grid grid-cols-2 md:flex gap-2">
           <select
-            className="border rounded px-2 py-1"
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as any)}
+            className="border rounded px-3 py-2 text-sm bg-background"
+            value={filterCategory}
+            onChange={(e) => setFilterCategory(e.target.value)}
           >
-            <option value="date">Date</option>
-            <option value="amount">Amount</option>
-            <option value="project">Project</option>
-            <option value="category">Category</option>
-            <option value="employee">Employee</option>
+            <option value="all">All Categories</option>
+            {[
+              ...new Set(expenses.map((e) => e.category_name).filter(Boolean)),
+            ].map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
+              </option>
+            ))}
           </select>
-        )}
+          <select
+            className="border rounded px-3 py-2 text-sm bg-background"
+            value={filterProject}
+            onChange={(e) => setFilterProject(e.target.value)}
+          >
+            <option value="all">All Projects</option>
+            {[
+              ...new Set(expenses.map((e) => e.project_name).filter(Boolean)),
+            ].map((proj) => (
+              <option key={proj} value={proj}>
+                {proj}
+              </option>
+            ))}
+          </select>
+          <select
+            className="border rounded px-3 py-2 text-sm bg-background"
+            value={filterEmployee}
+            onChange={(e) => setFilterEmployee(e.target.value)}
+          >
+            <option value="all">All Employees</option>
+            {[
+              ...new Set(expenses.map((e) => e.employee_name).filter(Boolean)),
+            ].map((emp) => (
+              <option key={emp} value={emp}>
+                {emp}
+              </option>
+            ))}
+          </select>
+          {viewMode === "table" && (
+            <select
+              className="border rounded px-3 py-2 text-sm bg-background"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as any)}
+            >
+              <option value="date">Sort: Date</option>
+              <option value="amount">Sort: Amount</option>
+              <option value="project">Sort: Project</option>
+              <option value="category">Sort: Category</option>
+              <option value="employee">Sort: Employee</option>
+            </select>
+          )}
+        </div>
       </div>
 
       {/* Expenses List */}
@@ -371,158 +378,162 @@ export default function ExpensesPage() {
         </Card>
       ) : viewMode === "table" ? (
         <Card>
-          <CardContent className="p-0">
-            <table className="w-full text-sm">
-              <thead className="bg-muted/50">
-                <tr>
-                  <th
-                    className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[100px]"
-                    onClick={() => {
-                      setSortBy("date");
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    }}
-                  >
-                    Date
-                  </th>
-                  <th
-                    className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[150px] max-w-[200px]"
-                    onClick={() => {
-                      setSortBy("project");
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    }}
-                  >
-                    Project
-                  </th>
-                  <th
-                    className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
-                    onClick={() => {
-                      setSortBy("category");
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    }}
-                  >
-                    Category
-                  </th>
-                  <th
-                    className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
-                    onClick={() => {
-                      setSortBy("employee");
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    }}
-                  >
-                    Employee
-                  </th>
-                  <th className="px-4 py-2 border-r border-border/50 min-w-[200px]">
-                    Description
-                  </th>
-                  <th
-                    className="cursor-pointer px-4 py-2 text-right border-r border-border/50 min-w-[120px]"
-                    onClick={() => {
-                      setSortBy("amount");
-                      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-                    }}
-                  >
-                    Amount
-                  </th>
-                  <th className="px-4 py-2 border-r border-border/50 min-w-[80px]">
-                    Receipt
-                  </th>
-                  <th className="px-4 py-2 min-w-[100px]">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredExpenses.map((expense, index) => (
-                  <tr
-                    key={expense.id}
-                    className={
-                      index % 2 === 0 ? "bg-background" : "bg-muted/20"
-                    }
-                  >
-                    <td className="px-4 py-2 border-r border-border/50">
-                      {new Date(expense.expense_date).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-2 border-r border-border/50 max-w-[200px]">
-                      <div
-                        className="truncate"
-                        title={expense.project_name || "N/A"}
-                      >
-                        {expense.project_name || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 border-r border-border/50 max-w-[150px]">
-                      <div
-                        className="truncate"
-                        title={expense.category_name || "N/A"}
-                      >
-                        {expense.category_name || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 border-r border-border/50 max-w-[150px]">
-                      <div
-                        className="truncate"
-                        title={expense.employee_name || "N/A"}
-                      >
-                        {expense.employee_name || "N/A"}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 max-w-xs border-r border-border/50">
-                      <div className="space-y-1">
-                        <div
-                          className="font-medium break-words line-clamp-2"
-                          title={expense.description}
-                        >
-                          {expense.description}
-                        </div>
-                        {expense.notes && (
-                          <div
-                            className="text-xs text-muted-foreground break-words line-clamp-1"
-                            title={expense.notes}
-                          >
-                            {expense.notes}
-                          </div>
-                        )}
-                      </div>
-                    </td>
-                    <td className="px-4 py-2 text-right text-red-600 font-bold border-r border-border/50">
-                      Rs.{Number(expense.amount).toLocaleString()}
-                    </td>
-                    <td className="px-4 py-2 border-r border-border/50">
-                      {expense.receipt_url ? (
-                        <a
-                          href={expense.receipt_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xs text-primary hover:underline flex items-center gap-1"
-                        >
-                          <Receipt className="h-3 w-3" /> Receipt
-                        </a>
-                      ) : (
-                        <span className="text-muted-foreground text-sm">-</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-2">
-                      <div className="flex gap-1">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => setEditingExpense(expense)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => handleDeleteExpense(expense.id)}
-                          className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
+          <CardContent className="p-0 overflow-x-auto">
+            <div className="min-w-[1000px]">
+              <table className="w-full text-sm">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th
+                      className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[100px]"
+                      onClick={() => {
+                        setSortBy("date");
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      }}
+                    >
+                      Date
+                    </th>
+                    <th
+                      className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[150px] max-w-[200px]"
+                      onClick={() => {
+                        setSortBy("project");
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      }}
+                    >
+                      Project
+                    </th>
+                    <th
+                      className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
+                      onClick={() => {
+                        setSortBy("category");
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      }}
+                    >
+                      Category
+                    </th>
+                    <th
+                      className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
+                      onClick={() => {
+                        setSortBy("employee");
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      }}
+                    >
+                      Employee
+                    </th>
+                    <th className="px-4 py-2 border-r border-border/50 min-w-[200px]">
+                      Description
+                    </th>
+                    <th
+                      className="cursor-pointer px-4 py-2 text-right border-r border-border/50 min-w-[120px]"
+                      onClick={() => {
+                        setSortBy("amount");
+                        setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+                      }}
+                    >
+                      Amount
+                    </th>
+                    <th className="px-4 py-2 border-r border-border/50 min-w-[80px]">
+                      Receipt
+                    </th>
+                    <th className="px-4 py-2 min-w-[100px]">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredExpenses.map((expense, index) => (
+                    <tr
+                      key={expense.id}
+                      className={
+                        index % 2 === 0 ? "bg-background" : "bg-muted/20"
+                      }
+                    >
+                      <td className="px-4 py-2 border-r border-border/50">
+                        {new Date(expense.expense_date).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-2 border-r border-border/50 max-w-[200px]">
+                        <div
+                          className="truncate"
+                          title={expense.project_name || "N/A"}
+                        >
+                          {expense.project_name || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 border-r border-border/50 max-w-[150px]">
+                        <div
+                          className="truncate"
+                          title={expense.category_name || "N/A"}
+                        >
+                          {expense.category_name || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 border-r border-border/50 max-w-[150px]">
+                        <div
+                          className="truncate"
+                          title={expense.employee_name || "N/A"}
+                        >
+                          {expense.employee_name || "N/A"}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 max-w-xs border-r border-border/50">
+                        <div className="space-y-1">
+                          <div
+                            className="font-medium break-words line-clamp-2"
+                            title={expense.description}
+                          >
+                            {expense.description}
+                          </div>
+                          {expense.notes && (
+                            <div
+                              className="text-xs text-muted-foreground break-words line-clamp-1"
+                              title={expense.notes}
+                            >
+                              {expense.notes}
+                            </div>
+                          )}
+                        </div>
+                      </td>
+                      <td className="px-4 py-2 text-right text-red-600 font-bold border-r border-border/50">
+                        Rs.{Number(expense.amount).toLocaleString()}
+                      </td>
+                      <td className="px-4 py-2 border-r border-border/50">
+                        {expense.receipt_url ? (
+                          <a
+                            href={expense.receipt_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xs text-primary hover:underline flex items-center gap-1"
+                          >
+                            <Receipt className="h-3 w-3" /> Receipt
+                          </a>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            -
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-2">
+                        <div className="flex gap-1">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setEditingExpense(expense)}
+                            className="h-8 w-8 p-0"
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleDeleteExpense(expense.id)}
+                            className="h-8 w-8 p-0 text-destructive hover:text-destructive"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
             {/* Table Summary Row */}
             <div className="border-t bg-muted/30 p-4">
               <div className="flex justify-between items-center font-semibold">

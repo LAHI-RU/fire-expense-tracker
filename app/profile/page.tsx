@@ -104,10 +104,10 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen flex items-center justify-center py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <Card className="max-w-md w-full mx-auto">
         <CardHeader>
-          <CardTitle>Profile</CardTitle>
+          <CardTitle className="text-xl sm:text-2xl">Profile</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="mb-6 flex flex-col items-center">
@@ -129,14 +129,16 @@ export default function ProfilePage() {
                 <circle cx="12" cy="7" r="4"></circle>
               </svg>
             </div>
-            <div className="font-bold text-lg">{user.email}</div>
+            <div className="font-bold text-base sm:text-lg text-center break-words max-w-full px-2">
+              {user.email}
+            </div>
             <div className="text-xs text-blue-600 font-semibold">
               Role: {user.role}
             </div>
           </div>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="oldPassword" className="ml-1 mb-2">
+              <Label htmlFor="oldPassword" className="ml-1 mb-2 text-sm">
                 Current Password
               </Label>
               <Input
@@ -148,7 +150,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <Label htmlFor="newPassword" className="ml-1 mb-2">
+              <Label htmlFor="newPassword" className="ml-1 mb-2 text-sm">
                 New Password
               </Label>
               <Input
@@ -161,7 +163,7 @@ export default function ProfilePage() {
               />
             </div>
             <div>
-              <Label htmlFor="confirmPassword" className="ml-1 mb-2">
+              <Label htmlFor="confirmPassword" className="ml-1 mb-2 text-sm">
                 Confirm New Password
               </Label>
               <Input

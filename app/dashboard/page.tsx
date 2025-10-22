@@ -56,12 +56,12 @@ export default function DashboardPage() {
     <>
       <div className="container p-responsive space-y-8">
         {/* Welcome Section */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 mb-4">
-          <div>
-            <h1 className="text-3xl md:text-4xl font-bold text-blue-900 mb-2 ">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-4">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-blue-900 mb-2">
               Welcome to Your Dashboard
             </h1>
-            <p className="text-muted-foreground text-lg">
+            <p className="text-muted-foreground text-base md:text-lg">
               Get a quick overview of your business performance and recent
               activities.
             </p>
@@ -93,25 +93,27 @@ export default function DashboardPage() {
 
           <div className="lg:col-span-1">
             <Card className="h-full">
-              <CardContent>
+              <CardContent className="pt-6">
                 <div className="h-full flex flex-col">
-                  <h3 className="text-lg font-medium mb-4">Quick Actions</h3>
+                  <h3 className="text-base md:text-lg font-medium mb-4">
+                    Quick Actions
+                  </h3>
                   <div className="flex flex-col gap-3 flex-1">
                     <a
                       href="/employees?openPayment=1"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white text-sm md:text-base rounded shadow hover:bg-blue-700 transition"
                     >
                       Record Payment
                     </a>
                     <a
                       href="/incomes"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded shadow hover:bg-green-700 transition"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white text-sm md:text-base rounded shadow hover:bg-green-700 transition"
                     >
                       Incomes
                     </a>
                     <a
                       href="/expenses"
-                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 text-white rounded shadow hover:bg-amber-700 transition"
+                      className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-amber-600 text-white text-sm md:text-base rounded shadow hover:bg-amber-700 transition"
                     >
                       Expenses
                     </a>
@@ -123,10 +125,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
           <Card>
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-4 text-blue-800">
+            <CardContent className="pt-6">
+              <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-800">
                 Monthly Trends
               </h2>
               <AnalyticsCharts
@@ -137,8 +139,8 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
           <Card>
-            <CardContent>
-              <h2 className="text-xl font-semibold mb-4 text-green-800">
+            <CardContent className="pt-6">
+              <h2 className="text-lg md:text-xl font-semibold mb-4 text-green-800">
                 Recent Activities
               </h2>
               <RecentActivities activities={data.recentActivities} />

@@ -145,21 +145,26 @@ export default function ProjectsPage() {
   return (
     <div className="container p-responsive space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Projects</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
+            Projects
+          </h1>
+          <p className="text-muted-foreground text-sm sm:text-base">
             Manage your fire installation projects
           </p>
         </div>
-        <Button onClick={() => setShowForm(true)} className="gap-2">
+        <Button
+          onClick={() => setShowForm(true)}
+          className="gap-2 w-full sm:w-auto"
+        >
           <Plus className="h-4 w-4" />
           New Project
         </Button>
       </div>
 
       {/* Status Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
         {Object.entries(statusCounts).map(([status, count]) => (
           <Card
             key={status}
@@ -168,9 +173,11 @@ export default function ProjectsPage() {
             }`}
             onClick={() => setStatusFilter(status)}
           >
-            <CardContent className="p-1 text-center">
-              <div className="text-2xl font-bold text-primary">{count}</div>
-              <div className="text-sm text-muted-foreground capitalize">
+            <CardContent className="pt-4 pb-4 px-3 sm:px-4 text-center">
+              <div className="text-xl sm:text-2xl font-bold text-primary">
+                {count}
+              </div>
+              <div className="text-xs sm:text-sm text-muted-foreground capitalize">
                 {status === "on-hold" ? "On Hold" : status}
               </div>
             </CardContent>
@@ -179,7 +186,7 @@ export default function ProjectsPage() {
       </div>
 
       {/* Search and Filters */}
-      <div className="flex gap-4">
+      <div className="flex gap-3 sm:gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input

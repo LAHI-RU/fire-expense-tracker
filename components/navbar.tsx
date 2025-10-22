@@ -251,29 +251,37 @@ export default function Navbar() {
         </div>
 
         {profileOpen && (
-          <div className="absolute right-4 top-16 z-50 w-40 bg-white text-gray-800 rounded shadow-lg">
-            <div className="p-2 border-b">
-              <div className="font-semibold truncate">
+          <div className="md:hidden fixed right-4 top-16 z-50 w-48 bg-white text-gray-800 rounded shadow-lg border border-gray-200">
+            <div className="p-3 border-b">
+              <div className="font-semibold truncate text-sm">
                 {user?.name || user?.email || "No user"}
               </div>
-              <div className="text-xs text-gray-500">
+              <div className="text-xs text-gray-500 truncate">
                 {user?.role || jwtError}
               </div>
             </div>
             <div className="flex flex-col p-2">
               <button
-                onClick={() => (window.location.href = "/profile")}
-                className="text-left px-2 py-2 rounded hover:bg-gray-100"
+                onClick={() => {
+                  setProfileOpen(false);
+                  window.location.href = "/profile";
+                }}
+                className="text-left px-3 py-2 rounded hover:bg-gray-100 text-sm"
               >
                 <div className="flex items-center gap-2">
                   <User size={14} /> Profile
                 </div>
               </button>
               <button
-                onClick={handleLogout}
-                className="text-left px-2 py-2 rounded text-red-600 hover:bg-gray-100"
+                onClick={() => {
+                  setProfileOpen(false);
+                  handleLogout();
+                }}
+                className="text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100 text-sm"
               >
-                Logout
+                <div className="flex items-center gap-2">
+                  <LogOut size={14} /> Logout
+                </div>
               </button>
             </div>
           </div>
