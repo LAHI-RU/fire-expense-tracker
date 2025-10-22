@@ -5,6 +5,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
 import Link from "next/link";
 import {
   Table,
@@ -51,6 +58,15 @@ export default function CategoryReports({ params }: CategoryProps) {
   const [result, setResult] = useState<any>(null);
   const [rows, setRows] = useState<any[]>([]);
   const [headers, setHeaders] = useState<string[]>([]);
+  const [colOrder, setColOrder] = useState<string[]>([]);
+  const [friendlyMap, setFriendlyMap] = useState<Record<string, string>>({});
+  const [totalsSummary, setTotalsSummary] = useState<{ amount?: number }>({});
+  const [employees, setEmployees] = useState<any[]>([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const [selectedEmployee, setSelectedEmployee] = useState<string>("");
+  const [selectedProject, setSelectedProject] = useState<string>("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
 
   useEffect(() => {
     // If URL contains query params, sync them
@@ -60,6 +76,28 @@ export default function CategoryReports({ params }: CategoryProps) {
     if (e) setEndDate(e);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search?.toString()]);
+
+  // fetch dropdown lists
+  useEffect(() => {
+    const fetchLists = async () => {
+      try {
+        const [pRes, eRes, cRes] = await Promise.all([
+          fetch("/api/projects"),
+          fetch("/api/employees"),
+          fetch("/api/expense-categories"),
+        ]);
+        const pJson = await pRes.json();
+        const eJson = await eRes.json();
+        const cJson = await cRes.json();
+        setProjects(pJson.projects || []);
+        setEmployees(eJson.employees || []);
+        setCategoriesList(cJson.categories || []);
+      } catch (err) {
+        // ignore list errors for now
+      }
+    };
+    fetchLists();
+  }, []);
 
   const applyPreset = (p: any) => {
     if (p.preset === "month") {
@@ -84,22 +122,29 @@ export default function CategoryReports({ params }: CategoryProps) {
       const params = new URLSearchParams();
       if (startDate) params.set("start_date", startDate);
       if (endDate) params.set("end_date", endDate);
+  if (selectedEmployee && selectedEmployee !== "all") params.set("employee_id", selectedEmployee);
+  if (selectedProject && selectedProject !== "all") params.set("project_id", selectedProject);
+  if (selectedCategory && selectedCategory !== "all") params.set("category_id", selectedCategory);
 
       switch (category) {
         case "incomes":
+          // incomes can be filtered by project
           url = `/api/incomes?${params.toString()}`;
           break;
         case "expenses":
+          // expenses can be filtered by project, category, employee
           url = `/api/expenses?${params.toString()}`;
           break;
         case "projects":
           url = `/api/projects?${params.toString()}`;
           break;
         case "employees":
-          url = `/api/employees?${params.toString()}`;
+          // employee page: show payments for selected employee
+          // we'll call salary-payments endpoint with employee_id
+          url = `/api/salary-payments?${params.toString()}`;
           break;
         case "salary-payments":
-          url = `/api/salary-payments?start_date=${startDate}&end_date=${endDate}`;
+          url = `/api/salary-payments?${params.toString()}`;
           break;
         default:
           throw new Error("Unknown report category");
@@ -130,11 +175,81 @@ export default function CategoryReports({ params }: CategoryProps) {
       }
 
       setRows(dataRows || []);
-      setHeaders(
-        dataRows && dataRows.length > 0
-          ? Object.keys(dataRows[0]).map((k) => k)
-          : []
-      );
+      const keys = dataRows && dataRows.length > 0 ? Object.keys(dataRows[0]) : [];
+      // choose column order and friendly labels depending on category
+      let order: string[] = [];
+      const map: Record<string, string> = {};
+      if (category === "incomes") {
+        order = ["payment_date", "project_name", "description", "amount", "payment_method", "payment_status", "invoice_number"];
+        Object.assign(map, {
+          payment_date: "Date",
+          project_name: "Project",
+          description: "Description",
+          amount: "Amount",
+          payment_method: "Method",
+          payment_status: "Status",
+          invoice_number: "Invoice",
+        });
+      } else if (category === "expenses") {
+        order = ["expense_date", "project_name", "category_name", "employee_name", "description", "amount"];
+        Object.assign(map, {
+          expense_date: "Date",
+          project_name: "Project",
+          category_name: "Category",
+          employee_name: "Employee",
+          description: "Description",
+          amount: "Amount",
+        });
+      } else if (category === "projects") {
+        order = ["id", "name", "client_name", "status", "start_date", "end_date", "estimated_budget"];
+        Object.assign(map, {
+          id: "ID",
+          name: "Project",
+          client_name: "Client",
+          status: "Status",
+          start_date: "Start",
+          end_date: "End",
+          estimated_budget: "Est. Budget",
+        });
+      } else if (category === "employees") {
+        // employees view uses salary payments endpoint results
+        order = ["payment_date", "employee_name", "employee_code", "project_name", "amount", "payment_type", "notes"];
+        Object.assign(map, {
+          payment_date: "Date",
+          employee_name: "Employee",
+          employee_code: "Employee Code",
+          project_name: "Project",
+          amount: "Amount",
+          payment_type: "Payment Type",
+          notes: "Notes",
+        });
+      } else if (category === "salary-payments") {
+        order = ["payment_date", "employee_name", "employee_code", "project_name", "amount", "payment_type", "notes"];
+        Object.assign(map, {
+          payment_date: "Date",
+          employee_name: "Employee",
+          employee_code: "Employee Code",
+          project_name: "Project",
+          amount: "Amount",
+          payment_type: "Payment Type",
+          notes: "Notes",
+        });
+      }
+
+      // final headers: use order intersect keys, else fallback to keys
+      const finalOrder = order.filter((k) => keys.includes(k)).concat(keys.filter((k) => !order.includes(k)));
+      setColOrder(finalOrder);
+      setFriendlyMap(map);
+      setHeaders(finalOrder.length ? finalOrder : keys);
+
+      // compute totals for amount-like column
+      const amountKey = finalOrder.find((k) => ["amount", "total", "estimated_budget"].includes(k)) || (keys.includes("amount") ? "amount" : undefined);
+      if (amountKey) {
+        const total = dataRows.reduce((acc: number, r: any) => acc + (Number(r[amountKey]) || 0), 0);
+        setTotalsSummary({ amount: total });
+      } else {
+        setTotalsSummary({});
+      }
     } catch (e: any) {
       setError(e.message || "Failed to load report data");
       setResult(null);
@@ -199,37 +314,79 @@ export default function CategoryReports({ params }: CategoryProps) {
         <CardContent className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="text-sm text-muted-foreground">
-                Start date
-              </label>
-              <Input
-                type="date"
-                value={startDate}
-                onChange={(e: any) => setStartDate(e.target.value)}
-              />
+              <label className="text-sm text-muted-foreground">Start date</label>
+              <Input type="date" value={startDate} onChange={(e: any) => setStartDate(e.target.value)} />
             </div>
             <div>
               <label className="text-sm text-muted-foreground">End date</label>
-              <Input
-                type="date"
-                value={endDate}
-                onChange={(e: any) => setEndDate(e.target.value)}
-              />
+              <Input type="date" value={endDate} onChange={(e: any) => setEndDate(e.target.value)} />
             </div>
             <div className="flex items-end gap-2">
-              <Button onClick={fetchData} disabled={loading}>
-                Generate
-              </Button>
+              <Button onClick={fetchData} disabled={loading}>Generate</Button>
               <Button
                 variant="secondary"
                 onClick={() => {
                   setStartDate("");
                   setEndDate("");
+                  setSelectedEmployee("");
+                  setSelectedProject("");
+                  setSelectedCategory("");
                   setResult(null);
                 }}
               >
                 Reset
               </Button>
+            </div>
+          </div>
+
+          {/* filters row: project / category / employee based on category */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {/* Project filter for incomes/expenses/projects */}
+            <div>
+              <label className="text-sm text-muted-foreground">Project</label>
+              <Select onValueChange={(v) => setSelectedProject(v)} value={selectedProject}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All projects" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {projects.map((p) => (
+                    <SelectItem key={p.id} value={String(p.id)}>{p.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Category filter for expenses */}
+            <div>
+              <label className="text-sm text-muted-foreground">Expense Category</label>
+              <Select onValueChange={(v) => setSelectedCategory(v)} value={selectedCategory}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {categoriesList.map((c) => (
+                    <SelectItem key={c.id} value={String(c.id)}>{c.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Employee filter - for employee-specific reports and expenses/payments */}
+            <div>
+              <label className="text-sm text-muted-foreground">Employee</label>
+              <Select onValueChange={(v) => setSelectedEmployee(v)} value={selectedEmployee}>
+                <SelectTrigger>
+                  <SelectValue placeholder="All employees" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All</SelectItem>
+                  {employees.map((emp) => (
+                    <SelectItem key={emp.id} value={String(emp.id)}>{emp.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
@@ -257,11 +414,11 @@ export default function CategoryReports({ params }: CategoryProps) {
           <Card>
             <CardContent>
               <div className="flex items-center justify-between mb-3">
-                <div className="text-sm text-muted-foreground">
-                  Showing {rows.length} records
-                  {startDate || endDate
-                    ? ` for ${startDate || "-"} to ${endDate || "-"}`
-                    : ""}
+                <div>
+                  <div className="text-sm text-muted-foreground">Showing {rows.length} records{startDate || endDate ? ` for ${startDate || "-"} to ${endDate || "-"}` : ""}</div>
+                  {totalsSummary.amount !== undefined && (
+                    <div className="text-lg font-semibold mt-1">Total: Rs.{Number(totalsSummary.amount).toLocaleString()}</div>
+                  )}
                 </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={downloadCsv}>
@@ -274,13 +431,9 @@ export default function CategoryReports({ params }: CategoryProps) {
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      {headers.length === 0
-                        ? Object.keys(rows[0] || {}).map((h) => (
-                            <TableHead key={h}>{h}</TableHead>
-                          ))
-                        : headers.map((h) => (
-                            <TableHead key={h}>{h}</TableHead>
-                          ))}
+                      {(headers.length === 0 ? Object.keys(rows[0] || {}) : headers).map((h) => (
+                        <TableHead key={h}>{friendlyMap[h] || h}</TableHead>
+                      ))}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
