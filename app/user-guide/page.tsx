@@ -10,7 +10,7 @@ export default function UserGuidePage() {
             <span className="inline-block text-2xl">📘</span> User Guide
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-6 text-base text-blue-900">
+        <CardContent className="space-y-6 text-base text-blue-900 max-h-[70vh] overflow-y-auto pr-2">
           <section>
             <h2 className="text-xl font-bold mb-2 text-blue-800">Welcome!</h2>
             <p>

@@ -12,17 +12,6 @@ const nextConfig = {
   // Performance optimizations
   reactStrictMode: true,
   swcMinify: true,
-  
-  // Optimize package imports for faster builds and smaller bundles
-  optimizePackageImports: [
-    'lucide-react',
-    '@radix-ui/react-dialog',
-    '@radix-ui/react-dropdown-menu',
-    '@radix-ui/react-select',
-    '@radix-ui/react-tabs',
-    'recharts',
-  ],
-  
   // Enable experimental features for better performance
   experimental: {
     optimizePackageImports: [
