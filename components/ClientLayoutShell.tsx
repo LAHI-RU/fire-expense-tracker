@@ -22,7 +22,7 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
       <NavigationProgress />
       {!hideNavAndFooter && <Navbar />}
       <main
-        className={`container p-responsive mt-20 md:mt-6 md:ml-56 flex-1 ${
+        className={`container p-responsive pt-8 md:mt-6 md:ml-56 flex-1 ${
           hideNavAndFooter ? "" : ""
         }`}
         style={{ minHeight: "calc(100vh - 160px)" }}
