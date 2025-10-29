@@ -9,12 +9,8 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
+  Legend,
   ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  LineChart,
-  Line,
 } from "recharts";
 
 interface AnalyticsChartsProps {
@@ -23,15 +19,7 @@ interface AnalyticsChartsProps {
   projectProfitability: any[];
 }
 
-const COLORS = [
-  "#164e63",
-  "#84cc16",
-  "#f59e0b",
-  "#ef4444",
-  "#8b5cf6",
-  "#06b6d4",
-  "#10b981",
-];
+// (Removed unused COLORS array — categories and projects cards were removed.)
 
 export const AnalyticsCharts = memo(function AnalyticsCharts({
   monthlyTrends,
@@ -47,50 +35,70 @@ export const AnalyticsCharts = memo(function AnalyticsCharts({
     ? projectProfitability
     : [];
 
-  // Process monthly trends data for chart
-  const processedTrends = safeMonthlyTrends.reduce((acc: any[], item) => {
-    const existingMonth = acc.find((m) => m.month === item.month);
-    if (existingMonth) {
-      existingMonth[item.type] = Number(item.amount);
-    } else {
-      acc.push({
-        month: item.month,
-        [item.type]: Number(item.amount),
+  // Build last 12 months (labels) and ensure both income & expense present for each month
+  const getLast12Months = () => {
+    const months: string[] = [];
+    const now = new Date();
+    for (let i = 11; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const label = d.toLocaleString(undefined, {
+        month: "short",
+        year: "numeric",
       });
+      months.push(label);
     }
-    return acc;
-  }, []);
+    return months;
+  };
 
-  // Process expense categories for pie chart - top 5 only
-  const processedCategories = safeExpenseCategories
-    .map((cat) => ({
-      name: cat.category || "Uncategorized",
-      value: Number(cat.total),
-      count: cat.count,
-    }))
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 5);
+  const monthLabels = getLast12Months();
 
-  // Process top 5 profitable projects
-  const topProjects = safeProjectProfitability.slice(0, 5).map((project) => ({
-    name:
-      project.name && project.name.length > 25
-        ? project.name.substring(0, 25) + "..."
-        : project.name,
-    profit: Number(project.profit),
-    expenses: Number(project.total_expenses),
-    income: Number(project.total_income),
+  // Normalize incoming monthly trends into a map keyed by "Mon YYYY" label
+  const trendsMap: Record<string, any> = {};
+  safeMonthlyTrends.forEach((item) => {
+    // item.month might be stored as '2025-10' or a label; try to parse
+    let label = item.month;
+    try {
+      // if month looks like YYYY-MM, convert to our short label
+      if (/^\d{4}-\d{1,2}$/.test(String(item.month))) {
+        const [y, m] = String(item.month).split("-");
+        const d = new Date(Number(y), Number(m) - 1, 1);
+        label = d.toLocaleString(undefined, {
+          month: "short",
+          year: "numeric",
+        });
+      }
+    } catch (e) {
+      // fallback: keep original
+    }
+
+    if (!trendsMap[label]) trendsMap[label] = { income: 0, expense: 0 };
+    const t = Number(item.amount) || 0;
+    if (item.type === "income")
+      trendsMap[label].income = (trendsMap[label].income || 0) + t;
+    else if (item.type === "expense")
+      trendsMap[label].expense = (trendsMap[label].expense || 0) + t;
+    else {
+      // unknown type, ignore
+    }
+  });
+
+  const processedTrends = monthLabels.map((label) => ({
+    month: label,
+    income: Number(trendsMap[label]?.income || 0),
+    expense: Number(trendsMap[label]?.expense || 0),
   }));
 
+  // Note: expense categories and project processing removed from UI, keep raw data available if needed.
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      {/* Monthly Financial Trends */}
-      <Card className="lg:col-span-2">
+    <div className="space-y-6">
+      {/* Monthly Financial Trends - full width */}
+      <Card>
         <CardHeader>
-          <CardTitle>Monthly Trends</CardTitle>
+          <CardTitle>Monthly Trends (Last 12 months)</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div className="flex flex-col items-center p-3 bg-green-50 rounded-lg">
               <span className="text-xs text-muted-foreground mb-1">
                 Total Income
@@ -137,126 +145,66 @@ export const AnalyticsCharts = memo(function AnalyticsCharts({
               </span>
             </div>
           </div>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={processedTrends}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip
-                formatter={(value, name) => [
-                  `Rs.${Number(value).toLocaleString()}`,
-                  name === "income" ? "Income" : "Expenses",
-                ]}
-              />
-              <Line
-                type="monotone"
-                dataKey="income"
-                stroke="#84cc16"
-                strokeWidth={2}
-                name="Income"
-              />
-              <Line
-                type="monotone"
-                dataKey="expense"
-                stroke="#ef4444"
-                strokeWidth={2}
-                name="Expenses"
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </CardContent>
-      </Card>
 
-      {/* Expense Categories */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 5 Expense Categories</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
-              <Pie
-                data={processedCategories}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={false}
-                outerRadius={90}
-                fill="#8884d8"
-                dataKey="value"
+          <div style={{ width: "100%", height: 380 }}>
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart
+                data={processedTrends}
+                margin={{ top: 10, right: 20, left: 80, bottom: 0 }}
               >
-                {processedCategories.map((entry, index) => (
-                  <Cell
-                    key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
-                  />
-                ))}
-              </Pie>
-              <Tooltip
-                formatter={(value) => [`Rs.${Number(value).toLocaleString()}`]}
-              />
-            </PieChart>
-          </ResponsiveContainer>
-
-          {/* Category Legend */}
-          <div className="mt-4 space-y-2">
-            {processedCategories.map((cat, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between p-2 bg-muted/30 rounded"
-              >
-                <div className="flex items-center gap-2">
-                  <div
-                    className="w-4 h-4 rounded"
-                    style={{ backgroundColor: COLORS[index % COLORS.length] }}
-                  ></div>
-                  <span className="font-medium text-sm">{cat.name}</span>
-                </div>
-                <span className="font-bold text-sm">
-                  Rs.{cat.value.toLocaleString()}
-                </span>
-              </div>
-            ))}
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="month" />
+                <YAxis
+                  width={92}
+                  tickFormatter={(value) => `Rs.${Number(value).toLocaleString()}`}
+                  tickCount={6}
+                  domain={[0, "dataMax"]}
+                  tick={{ fontSize: 12 }}
+                />
+                <Tooltip
+                  formatter={(value: any, name: any) => {
+                    const key = String(name || "").toLowerCase();
+                    const label = key.includes("income")
+                      ? "Income"
+                      : key.includes("expense")
+                      ? "Expenses"
+                      : String(name);
+                    return [`Rs.${Number(value).toLocaleString()}`, label];
+                  }}
+                />
+                <Legend
+                  formatter={(value: any, entry: any) => {
+                    const key = entry?.dataKey || String(value || "");
+                    return key === "income"
+                      ? "Income"
+                      : key === "expense"
+                      ? "Expenses"
+                      : value;
+                  }}
+                />
+                <Bar
+                  dataKey="income"
+                  name="Income"
+                  fill="#84cc16"
+                  barSize={18}
+                />
+                <Bar
+                  dataKey="expense"
+                  name="Expenses"
+                  fill="#ef4444"
+                  barSize={18}
+                />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </CardContent>
       </Card>
 
-      {/* Project Profitability */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Top 5 Most Profitable Projects</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            {topProjects.length === 0 ? (
-              <div className="text-center py-8 text-muted-foreground">
-                No projects
-              </div>
-            ) : (
-              topProjects.map((project, index) => (
-                <div
-                  key={index}
-                  className="flex items-center justify-between p-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition"
-                >
-                  <div className="font-medium text-sm truncate">
-                    {project.name}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={`font-bold text-lg ${
-                        project.profit >= 0 ? "text-green-600" : "text-red-600"
-                      }`}
-                    >
-                      {project.profit >= 0 ? "+" : ""}Rs.
-                      {project.profit.toLocaleString()}
-                    </span>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      {/* Removed: Top 5 Expense Categories and Top 5 Most Profitable Projects
+          These sections were removed from the dashboard per request so the
+          Monthly Trends chart is the primary focus. The data processing for
+          categories and projects is left intact in case you want to reintroduce
+          these cards elsewhere. */}
     </div>
   );
 });

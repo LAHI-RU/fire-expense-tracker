@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { AnalyticsCharts } from "@/components/analytics-charts";
 import DashboardStats from "@/components/dashboard-stats";
-import { RecentActivities } from "@/components/recent-activities";
 import { requireAuth } from "@/lib/auth-client";
 
 export default function DashboardPage() {
@@ -125,27 +124,14 @@ export default function DashboardPage() {
         </div>
 
         {/* Charts Section */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
-          <Card>
-            <CardContent className="pt-6">
-              <h2 className="text-lg md:text-xl font-semibold mb-4 text-blue-800">
-                Monthly Trends
-              </h2>
-              <AnalyticsCharts
-                monthlyTrends={data.monthlyTrends}
-                expenseCategories={data.expenseCategories}
-                projectProfitability={data.projectProfitability}
-              />
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="pt-6">
-              <h2 className="text-lg md:text-xl font-semibold mb-4 text-green-800">
-                Recent Activities
-              </h2>
-              <RecentActivities activities={data.recentActivities} />
-            </CardContent>
-          </Card>
+        <div className="grid grid-cols-1 gap-6 md:gap-8">
+          <div className="lg:col-span-2">
+            <AnalyticsCharts
+              monthlyTrends={data.monthlyTrends}
+              expenseCategories={data.expenseCategories}
+              projectProfitability={data.projectProfitability}
+            />
+          </div>
         </div>
       </div>
       {/* Floating Help & Guide Button */}
