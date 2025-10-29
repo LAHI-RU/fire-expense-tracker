@@ -156,7 +156,9 @@ export const AnalyticsCharts = memo(function AnalyticsCharts({
                 <XAxis dataKey="month" />
                 <YAxis
                   width={92}
-                  tickFormatter={(value) => `Rs.${Number(value).toLocaleString()}`}
+                  tickFormatter={(value) =>
+                    `Rs.${Number(value).toLocaleString()}`
+                  }
                   tickCount={6}
                   domain={[0, "dataMax"]}
                   tick={{ fontSize: 12 }}
