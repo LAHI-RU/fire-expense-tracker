@@ -9,8 +9,8 @@ import ClientLayoutShell from "../components/ClientLayoutShell";
 
 export const metadata: Metadata = {
   title: "North Central Engineering",
-  description: "Created with v0",
-  generator: "v0.app",
+  description: "",
+  generator: "",
 };
 
 export default function RootLayout({
