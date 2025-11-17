@@ -40,7 +40,7 @@ export default function Navbar() {
   const [jwtError, setJwtError] = useState("");
   const pathname = usePathname();
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [collapsed, setCollapsed] = useState(false); // Navbar collapse state
+  const [collapsed, setCollapsed] = useState(false);
 
   const profileRefDesktop = useRef<HTMLDivElement | null>(null);
   const profileRefMobile = useRef<HTMLDivElement | null>(null);
@@ -55,7 +55,6 @@ export default function Navbar() {
       if (!desktopContains && !mobileContains && !drawerContains)
         setProfileOpen(false);
     }
-
     if (profileOpen) document.addEventListener("mousedown", onDocClick);
     return () => document.removeEventListener("mousedown", onDocClick);
   }, [profileOpen]);
@@ -82,8 +81,6 @@ export default function Navbar() {
     } catch (error) {
       console.error("Logout error:", error);
     }
-
-    // Clear token cookie
     document.cookie = "token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT;";
     window.location.href = "/login";
   };
@@ -96,17 +93,18 @@ export default function Navbar() {
           collapsed ? "md:w-20" : "md:w-56"
         }`}
       >
-        {/* Collapse/Expand Button - Desktop only, placed at bottom for better UI */}
+        {/* Collapse Button */}
         <div className="hidden md:flex justify-end px-2 pb-2 mt-4">
           <button
             onClick={() => setCollapsed((c) => !c)}
-            className="p-2 rounded-full bg-blue-900 hover:bg-blue-700 focus:outline-none transition-colors"
+            className="p-2 rounded-full bg-blue-900 hover:bg-blue-700 transition-colors"
             title={collapsed ? "Expand navbar" : "Collapse navbar"}
             aria-label={collapsed ? "Expand navbar" : "Collapse navbar"}
           >
             {collapsed ? <ChevronRight size={22} /> : <ChevronLeft size={22} />}
           </button>
         </div>
+
         <div className={`flex flex-col items-center px-4 py-6 mt-4 relative`}>
           <img
             src="/logo.jpg"
@@ -222,7 +220,7 @@ export default function Navbar() {
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-3">
             <button onClick={() => setDrawerOpen(true)} className="text-white">
-              <Menu className="text-white" size={20} />
+              <Menu size={20} />
             </button>
             <Link href="/dashboard" className="flex items-center gap-2">
               <img
@@ -230,62 +228,11 @@ export default function Navbar() {
                 className="h-8 w-8 rounded-full"
                 alt="logo"
               />
-              <span className="font-semibold">NCE</span>
+              <span className="font-semibold">North Central Engineering </span>
             </Link>
           </div>
 
-          <div className="flex items-center gap-3" ref={profileRefMobile}>
-            <button
-              onClick={() => setProfileOpen((s) => !s)}
-              className="flex items-center gap-2 focus:outline-none"
-              title="Open profile menu"
-            >
-              <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center">
-                <User className="text-white" size={16} />
-              </div>
-              <div className="text-sm font-medium">
-                {user?.name || user?.email || "No user"}
-              </div>
-            </button>
-          </div>
         </div>
-
-        {profileOpen && (
-          <div className="md:hidden fixed right-4 top-16 z-50 w-48 bg-white text-gray-800 rounded shadow-lg border border-gray-200">
-            <div className="p-3 border-b">
-              <div className="font-semibold truncate text-sm">
-                {user?.name || user?.email || "No user"}
-              </div>
-              <div className="text-xs text-gray-500 truncate">
-                {user?.role || jwtError}
-              </div>
-            </div>
-            <div className="flex flex-col p-2">
-              <button
-                onClick={() => {
-                  setProfileOpen(false);
-                  window.location.href = "/profile";
-                }}
-                className="text-left px-3 py-2 rounded hover:bg-gray-100 text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <User size={14} /> Profile
-                </div>
-              </button>
-              <button
-                onClick={() => {
-                  setProfileOpen(false);
-                  handleLogout();
-                }}
-                className="text-left px-3 py-2 rounded text-red-600 hover:bg-gray-100 text-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <LogOut size={14} /> Logout
-                </div>
-              </button>
-            </div>
-          </div>
-        )}
       </header>
 
       {/* Mobile Drawer */}
@@ -304,9 +251,10 @@ export default function Navbar() {
               />
               <div className="font-bold">North Central Engineering</div>
               <button className="ml-auto" onClick={() => setDrawerOpen(false)}>
-                <X className="text-white" size={18} />
+                <X size={18} />
               </button>
             </div>
+
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => {
                 const Icon = item.icon as any;
@@ -326,6 +274,7 @@ export default function Navbar() {
                 );
               })}
             </nav>
+
             <div
               className="mt-6 border-t border-white/10 pt-4"
               ref={profileRefDrawer}

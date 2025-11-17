@@ -1,14 +1,23 @@
 import React from "react";
+import Link from "next/link";
+import { X } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
 export default function UserGuidePage() {
   return (
     <div className="container mx-auto py-10 max-w-2xl">
       <Card className="shadow-2xl border-0 bg-gradient-to-br from-blue-50 via-white to-cyan-50">
-        <CardHeader>
+        <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="flex items-center gap-2 text-blue-900 text-3xl font-extrabold">
             <span className="inline-block text-2xl">📘</span> User Guide
           </CardTitle>
+          <Link
+            href="/dashboard"
+            aria-label="Close"
+            className="rounded-full p-1 text-blue-700 hover:bg-blue-100 transition-colors"
+          >
+            <X className="h-6 w-6" />
+          </Link>
         </CardHeader>
         <CardContent className="space-y-6 text-base text-blue-900 max-h-[70vh] overflow-y-auto pr-2">
           <section>

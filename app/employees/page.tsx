@@ -1,7 +1,5 @@
 "use client";
 import { requireAuth } from "@/lib/auth-client";
-// Employees management page
-
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,12 +13,9 @@ import type { Employee, SalaryPayment } from "@/lib/mysql";
 export default function EmployeesPage() {
   useEffect(() => {
     const user = typeof window !== "undefined" ? requireAuth() : null;
-    if (!user) {
-      // Optionally show a loading spinner or message before redirect
-      // window.location.href = "/login"; // requireAuth already handles redirect
-      return;
-    }
+    if (!user) return;
   }, []);
+
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [filteredEmployees, setFilteredEmployees] = useState<Employee[]>([]);
   const [salaryPayments, setSalaryPayments] = useState<any[]>([]);
@@ -34,7 +29,7 @@ export default function EmployeesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(true);
 
-  // Fetch employees and salary payments
+  // Fetch data
   const fetchData = async () => {
     try {
       const [employeesRes, paymentsRes] = await Promise.all([
@@ -56,7 +51,7 @@ export default function EmployeesPage() {
     }
   };
 
-  // Filter employees based on search
+  // Search filter
   useEffect(() => {
     let filtered = employees;
 
@@ -78,15 +73,13 @@ export default function EmployeesPage() {
     fetchData();
   }, [showActiveOnly]);
 
-  // Open payment form if URL has params (dashboard quick action)
+  // Quick-action from dashboard
   useEffect(() => {
     if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     if (params.get("openPayment") === "1") {
       const empId = params.get("employeeId");
-      if (empId) {
-        setSelectedPaymentEmployeeId(Number(empId));
-      }
+      if (empId) setSelectedPaymentEmployeeId(Number(empId));
       setShowPaymentForm(true);
     }
   }, []);
@@ -127,38 +120,10 @@ export default function EmployeesPage() {
     }
   };
 
-  const handleDeactivateEmployee = async (employeeId: number) => {
-    if (!confirm("Are you sure you want to deactivate this employee?")) return;
-
-    try {
-      const response = await fetch(`/api/employees/${employeeId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error deactivating employee:", error);
-    }
-  };
-
   const handleDeleteEmployee = async (employeeId: number) => {
-    // Fetch the employee to determine active state for a clearer confirmation message
-    try {
-      const empRes = await fetch(`/api/employees/${employeeId}`);
-      const empJson = await empRes.json();
-      const isActive = empJson?.employee?.is_active ?? false;
-      const confirmMsg = isActive
-        ? "This will permanently delete the active employee. Continue?"
-        : "This will permanently delete the deactivated employee. Continue?";
+    if (!confirm("This will permanently delete the employee. Continue?"))
+      return;
 
-      if (!confirm(confirmMsg)) return;
-    } catch (err) {
-      // fallback confirmation if fetch fails
-      if (!confirm("This will permanently delete the employee. Continue?"))
-        return;
-    }
     try {
       const response = await fetch(`/api/employees/${employeeId}?force=true`, {
         method: "DELETE",
@@ -177,23 +142,18 @@ export default function EmployeesPage() {
       const response = await fetch("/api/salary-payments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...paymentData, created_by: 1 }), // TODO: Get from auth
+        body: JSON.stringify({ ...paymentData, created_by: 1 }),
       });
-
-      const result = await response.json();
 
       if (response.ok) {
         setShowPaymentForm(false);
         fetchData();
-      } else {
-        alert(result.message || "Failed to record payment");
       }
     } catch (error) {
       console.error("Error recording payment:", error);
     }
   };
 
-  // Get recent payments for an employee
   const getRecentPayments = (employeeId: number) => {
     return salaryPayments
       .filter((payment) => payment.employee_id === employeeId)
@@ -205,6 +165,7 @@ export default function EmployeesPage() {
       );
   };
 
+  // FORMS
   if (showEmployeeForm || editingEmployee) {
     return (
       <div className="container p-responsive">
@@ -241,7 +202,7 @@ export default function EmployeesPage() {
   }
 
   return (
-    <div className="container p-responsive space-y-6">
+    <div className="container p-responsive space-y-6 mt-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
@@ -252,6 +213,7 @@ export default function EmployeesPage() {
             Manage employees and salary payments
           </p>
         </div>
+
         <div className="flex gap-2 w-full sm:w-auto">
           <Button
             onClick={() => setShowEmployeeForm(true)}
@@ -265,7 +227,7 @@ export default function EmployeesPage() {
 
       {/* Summary */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="pt-6 px-4">
             <div className="text-xl sm:text-2xl font-semibold text-primary">
               {employees.filter((e) => e.is_active).length}
@@ -276,7 +238,7 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="pt-6 px-4">
             <div className="text-xl sm:text-2xl font-semibold text-green-600">
               Rs.
@@ -290,7 +252,7 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md">
           <CardContent className="pt-6 px-4">
             <div className="text-xl sm:text-2xl font-semibold text-amber-600">
               {
@@ -312,10 +274,10 @@ export default function EmployeesPage() {
         </Card>
       </div>
 
-      {/* Search and Filters */}
+      {/* Search / Filter */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <Input
             placeholder="Search employees..."
             value={searchTerm}
@@ -323,6 +285,7 @@ export default function EmployeesPage() {
             className="pl-10"
           />
         </div>
+
         <Button
           variant={showActiveOnly ? "default" : "outline"}
           onClick={() => setShowActiveOnly(!showActiveOnly)}
@@ -332,10 +295,13 @@ export default function EmployeesPage() {
         </Button>
       </div>
 
-      {/* Employees List */}
+      {/* Loading */}
       {isLoading ? (
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">Loading employees...</div>
+        <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
+          <span className="animate-spin text-4xl text-blue-700 mb-4">⏳</span>
+          <h2 className="text-lg sm:text-xl font-semibold text-muted-foreground">
+            Loading employees...
+          </h2>
         </div>
       ) : filteredEmployees.length === 0 ? (
         <Card>
@@ -347,13 +313,14 @@ export default function EmployeesPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
           {filteredEmployees.map((employee) => {
             const recentPayments = getRecentPayments(employee.id);
+
             return (
               <Card
                 key={employee.id}
-                className="hover:shadow-md transition-shadow"
+                className="transition-transform duration-200 hover:-translate-y-1 hover:shadow-md"
               >
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
@@ -361,7 +328,7 @@ export default function EmployeesPage() {
                       <CardTitle className="text-base">
                         {employee.full_name}
                       </CardTitle>
-                      <div className="flex items-center gap-2 mt-1">
+                      <div className="flex flex-wrap items-center gap-2 mt-1">
                         <Badge variant="secondary">
                           {employee.employee_code}
                         </Badge>
@@ -372,6 +339,7 @@ export default function EmployeesPage() {
                         </Badge>
                       </div>
                     </div>
+
                     <div className="flex gap-1">
                       <Button
                         variant="ghost"
@@ -381,7 +349,6 @@ export default function EmployeesPage() {
                           setShowPaymentForm(true);
                         }}
                         className="h-8 w-8 p-0"
-                        title="Record payment"
                       >
                         <Plus className="h-4 w-4" />
                       </Button>
@@ -391,7 +358,6 @@ export default function EmployeesPage() {
                         size="sm"
                         onClick={() => setEditingEmployee(employee)}
                         className="h-8 w-8 p-0"
-                        title="Edit employee"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -400,12 +366,7 @@ export default function EmployeesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDeleteEmployee(employee.id)}
-                        className="h-8 w-8 p-0 text-destructive hover:text-destructive"
-                        title={
-                          employee.is_active
-                            ? "Delete employee"
-                            : "Delete deactivated employee"
-                        }
+                        className="h-8 w-8 p-0 text-destructive"
                       >
                         <Trash className="h-4 w-4" />
                       </Button>
@@ -442,7 +403,7 @@ export default function EmployeesPage() {
                     )}
                   </div>
 
-                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
                     {employee.phone && (
                       <div className="flex items-center gap-1">
                         <Phone className="h-4 w-4" />
@@ -464,6 +425,7 @@ export default function EmployeesPage() {
                       <div className="text-xs text-muted-foreground mb-2">
                         Recent Payments
                       </div>
+
                       <div className="space-y-1">
                         {recentPayments.map((payment) => (
                           <div
@@ -476,6 +438,7 @@ export default function EmployeesPage() {
                               ).toLocaleDateString()}{" "}
                               - {payment.payment_type.replace(/_/g, " ")}
                             </span>
+
                             <span className="font-medium">
                               Rs.{Number(payment.amount).toLocaleString()}
                             </span>
