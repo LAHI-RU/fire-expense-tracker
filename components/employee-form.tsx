@@ -52,10 +52,11 @@ export function EmployeeForm({
       phone: formData.phone || undefined,
       position: formData.position || undefined,
     };
-    // Only include employee_code if editing
+
     if (employee?.employee_code) {
       (dataToSend as any).employee_code = employee.employee_code;
     }
+
     onSubmit(dataToSend);
   };
 
@@ -64,7 +65,7 @@ export function EmployeeForm({
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto px-4 sm:px-6">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-center">
           {employee ? "Edit Employee" : "Add New Employee"}
@@ -73,6 +74,8 @@ export function EmployeeForm({
 
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* Name & Code */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {employee?.employee_code && (
               <div className="space-y-2">
@@ -85,6 +88,7 @@ export function EmployeeForm({
                 />
               </div>
             )}
+
             <div className="space-y-2">
               <Label htmlFor="full_name">Full Name *</Label>
               <Input
@@ -97,6 +101,7 @@ export function EmployeeForm({
             </div>
           </div>
 
+          {/* Position */}
           <div className="space-y-2">
             <Label htmlFor="position">Position</Label>
             <Input
@@ -107,6 +112,7 @@ export function EmployeeForm({
             />
           </div>
 
+          {/* Salaries */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="daily_rate">Daily Rate (Rs.)</Label>
@@ -127,24 +133,24 @@ export function EmployeeForm({
                 type="number"
                 step="0.01"
                 value={formData.monthly_salary}
-                onChange={(e) => handleChange("monthly_salary", e.target.value)}
+                onChange={(e) =>
+                  handleChange("monthly_salary", e.target.value)
+                }
                 placeholder="40000.00"
               />
             </div>
           </div>
 
+          {/* Phone & Hire Date */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="phone">Phone *</Label>
               <Input
                 id="phone"
                 type="tel"
                 value={formData.phone}
                 onChange={(e) => {
-                  // Only allow digits, max 10
-                  const val = e.target.value
-                    .replace(/[^0-9]/g, "")
-                    .slice(0, 10);
+                  const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
                   handleChange("phone", val);
                 }}
                 placeholder="0771234567"
@@ -165,17 +171,19 @@ export function EmployeeForm({
             </div>
           </div>
 
+          {/* Address */}
           <div className="space-y-2">
             <Label htmlFor="address">Address</Label>
             <Textarea
               id="address"
               value={formData.address}
               onChange={(e) => handleChange("address", e.target.value)}
-              placeholder="123 Main Street, City, State, ZIP"
+              placeholder="123 Main Street, City"
               rows={2}
             />
           </div>
 
+          {/* Switch */}
           <div className="flex items-center space-x-2">
             <Switch
               id="is_active"
@@ -185,7 +193,8 @@ export function EmployeeForm({
             <Label htmlFor="is_active">Active Employee</Label>
           </div>
 
-          <div className="flex gap-3 pt-4">
+          {/* Buttons */}
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button type="submit" disabled={isLoading} className="flex-1">
               {isLoading
                 ? "Saving..."
@@ -193,15 +202,17 @@ export function EmployeeForm({
                 ? "Update Employee"
                 : "Add Employee"}
             </Button>
+
             <Button
               type="button"
               variant="outline"
               onClick={onCancel}
-              className="flex-1 bg-transparent"
+              className="flex-1"
             >
               Cancel
             </Button>
           </div>
+
         </form>
       </CardContent>
     </Card>

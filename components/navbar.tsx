@@ -244,12 +244,8 @@ export default function Navbar() {
           />
           <div className="absolute left-0 top-0 bottom-0 w-64 bg-gradient-to-b from-blue-800 via-blue-900 to-indigo-900 text-white p-4 overflow-auto">
             <div className="flex items-center gap-3 mb-6">
-              <img
-                src="/logo.jpg"
-                className="h-10 w-10 rounded-full"
-                alt="logo"
-              />
-              <div className="font-bold">North Central Engineering</div>
+             
+              
               <button className="ml-auto" onClick={() => setDrawerOpen(false)}>
                 <X size={18} />
               </button>
