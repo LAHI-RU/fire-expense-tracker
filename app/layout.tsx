@@ -11,6 +11,9 @@ export const metadata: Metadata = {
   title: "North Central Engineering",
   description: "",
   generator: "",
+  icons: {
+    icon: "/logo.jpg",
+  },
 };
 
 export default function RootLayout({
