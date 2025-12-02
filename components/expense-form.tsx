@@ -96,12 +96,9 @@ export function ExpenseForm({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">
+        <CardTitle className="text-xl text-center font-semibold">
           {expense ? "Edit Expense" : "Add New Expense"}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Fill out expense details
-        </p>
       </CardHeader>
 
       <CardContent>
