@@ -81,10 +81,9 @@ export function IncomeForm({
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold">
+        <CardTitle className="text-xl text-center font-semibold">
           {income ? "Edit Income" : "Add New Income"}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">Fill out income details</p>
       </CardHeader>
 
       <CardContent>

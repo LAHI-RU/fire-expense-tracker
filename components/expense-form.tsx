@@ -45,6 +45,7 @@ export function ExpenseForm({
   const [projects, setProjects] = useState<Project[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
+  const [showNewCategory, setShowNewCategory] = useState(false);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -75,7 +76,9 @@ export function ExpenseForm({
     e.preventDefault();
     onSubmit({
       ...formData,
-      project_id: Number.parseInt(formData.project_id),
+      project_id: formData.project_id
+        ? Number.parseInt(formData.project_id)
+        : undefined,
       category_id: formData.category_id
         ? Number.parseInt(formData.category_id)
         : undefined,
@@ -105,15 +108,18 @@ export function ExpenseForm({
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="project_id">Project *</Label>
+              <Label htmlFor="project_id">Project (optional)</Label>
               <Select
                 value={formData.project_id}
-                onValueChange={(value) => handleChange("project_id", value)}
+                onValueChange={(value) =>
+                  handleChange("project_id", value === "none" ? "" : value)
+                }
               >
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select project" />
+                  <SelectValue placeholder="No Project" />
                 </SelectTrigger>
                 <SelectContent className="w-full max-w-none">
+                  <SelectItem value="none">No Project</SelectItem>
                   {projects.map((project) => (
                     <SelectItem
                       key={project.id}
@@ -136,24 +142,37 @@ export function ExpenseForm({
 
             <div className="space-y-2">
               <Label htmlFor="category_id">Category</Label>
-              <Select
-                value={formData.category_id}
-                onValueChange={(value) => handleChange("category_id", value)}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {categories.map((category) => (
-                    <SelectItem
-                      key={category.id}
-                      value={category.id.toString()}
-                    >
-                      {category.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <Select
+                    value={formData.category_id}
+                    onValueChange={(value) =>
+                      handleChange("category_id", value)
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category.id}
+                          value={category.id.toString()}
+                        >
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  onClick={() => setShowNewCategory(true)}
+                >
+                  New
+                </Button>
+              </div>
             </div>
           </div>
 
@@ -226,13 +245,42 @@ export function ExpenseForm({
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="receipt_url">Receipt URL</Label>
-            <Input
-              id="receipt_url"
-              value={formData.receipt_url}
-              onChange={(e) => handleChange("receipt_url", e.target.value)}
-              placeholder="https://example.com/receipt.pdf"
-            />
+            <Label htmlFor="receipt_url">Receipt</Label>
+            <div className="grid gap-2 md:grid-cols-2">
+              <Input
+                id="receipt_url"
+                value={formData.receipt_url}
+                onChange={(e) => handleChange("receipt_url", e.target.value)}
+                placeholder="https://example.com/receipt.pdf"
+              />
+              <Input
+                type="file"
+                accept="application/pdf,image/png,image/jpeg,image/webp"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append("file", file);
+                  try {
+                    const res = await fetch("/api/uploads/receipts", {
+                      method: "POST",
+                      body: fd,
+                    });
+                    const data = await res.json();
+                    if (res.ok && data.url) {
+                      handleChange("receipt_url", data.url);
+                    } else {
+                      alert(data.error || "Failed to upload receipt");
+                    }
+                  } catch (err) {
+                    alert("Upload failed");
+                  }
+                }}
+              />
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Upload a PDF or image (max 5MB). Stored as URL only.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -265,6 +313,79 @@ export function ExpenseForm({
           </div>
         </form>
       </CardContent>
+      {/* New Category Dialog */}
+      {showNewCategory && (
+        <NewCategoryDialog
+          onClose={() => setShowNewCategory(false)}
+          onCreated={(cat) => {
+            setCategories((prev) => [...prev, cat]);
+            handleChange("category_id", cat.id.toString());
+          }}
+        />
+      )}
     </Card>
+  );
+}
+
+function NewCategoryDialog({
+  onClose,
+  onCreated,
+}: {
+  onClose: () => void;
+  onCreated: (c: any) => void;
+}) {
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [saving, setSaving] = useState(false);
+  return (
+    <div className="fixed inset-0 bg-black/20 flex items-center justify-center z-50">
+      <div className="bg-background rounded-md shadow-lg p-4 w-[90%] max-w-sm">
+        <h3 className="font-semibold mb-3">New Category</h3>
+        <div className="space-y-2">
+          <Label>Name</Label>
+          <Input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="e.g., Fuel"
+          />
+          <Label>Description (optional)</Label>
+          <Textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            rows={2}
+          />
+        </div>
+        <div className="flex gap-2 justify-end mt-4">
+          <Button variant="outline" onClick={onClose} disabled={saving}>
+            Cancel
+          </Button>
+          <Button
+            onClick={async () => {
+              if (!name.trim()) return;
+              setSaving(true);
+              try {
+                const res = await fetch("/api/expense-categories", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ name, description }),
+                });
+                const data = await res.json();
+                if (res.ok && data.category) {
+                  onCreated(data.category);
+                  onClose();
+                } else {
+                  alert(data.error || "Failed to create category");
+                }
+              } finally {
+                setSaving(false);
+              }
+            }}
+            disabled={saving}
+          >
+            {saving ? "Saving..." : "Create"}
+          </Button>
+        </div>
+      </div>
+    </div>
   );
 }
