@@ -139,20 +139,24 @@ export const AnalyticsCharts = memo(function AnalyticsCharts({
                 />
 
                 <Tooltip
-                  formatter={(value: any, name: any) => [
-                    `Rs.${Number(value).toLocaleString()}`,
-                    name === "income" ? "Income" : "Expenses",
-                  ]}
+                  formatter={(value: any, name: any) => {
+                    const label =
+                      String(name).toLowerCase() === "income"
+                        ? "Income"
+                        : String(name).toLowerCase() === "expense"
+                        ? "Expenses"
+                        : String(name);
+                    return [`Rs.${Number(value).toLocaleString()}`, label];
+                  }}
                 />
 
                 <Legend
-                  formatter={(value) =>
-                    value === "income"
-                      ? "Income"
-                      : value === "expense"
-                      ? "Expenses"
-                      : value
-                  }
+                  formatter={(value) => {
+                    const v = String(value);
+                    if (v.toLowerCase() === "income") return "Income";
+                    if (v.toLowerCase() === "expense") return "Expenses";
+                    return v;
+                  }}
                 />
 
                 <Bar
