@@ -33,6 +33,8 @@ import {
   Grid3X3,
   LayoutList,
   ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
   Download,
 } from "lucide-react";
 import { IncomeForm } from "@/components/income-form";
@@ -224,6 +226,25 @@ export default function IncomesPage() {
     }
   };
 
+  const renderSortHeader = (
+    column: "date" | "amount" | "project" | "status",
+    label: string
+  ) => {
+    const isActive = sortBy === column;
+    const Icon = !isActive
+      ? ArrowUpDown
+      : sortOrder === "asc"
+      ? ArrowUp
+      : ArrowDown;
+    const iconClass = isActive ? "text-foreground" : "text-muted-foreground";
+    return (
+      <div className="flex items-center gap-1 font-bold">
+        {label}
+        <Icon className={`h-3 w-3 ${iconClass}`} />
+      </div>
+    );
+  };
+
   const paymentMethodConfig = {
     cash: { label: "Cash", className: "bg-green-100 text-green-800" },
     bank_transfer: {
@@ -341,7 +362,7 @@ export default function IncomesPage() {
         </div>
       </div>
 
-      {/* Search and Controls */}
+      {/* Search and Filters */}
       <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -352,39 +373,42 @@ export default function IncomesPage() {
             className="pl-10"
           />
         </div>
-        {viewMode === "table" && (
-          <div className="grid grid-cols-2 gap-2">
-            <Select
-              value={filterStatus}
-              onValueChange={(value) =>
-                setFilterStatus(value as "all" | "pending" | "received")
-              }
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Show" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="received">Received</SelectItem>
-              </SelectContent>
-            </Select>
-            <Select
-              value={sortBy}
-              onValueChange={(value: any) => setSortBy(value)}
-            >
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder="Sort by" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="date">Date</SelectItem>
-                <SelectItem value="amount">Amount</SelectItem>
-                <SelectItem value="project">Project</SelectItem>
-                <SelectItem value="status">Status</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        )}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
+          <Select
+            value={filterStatus}
+            onValueChange={(value) =>
+              setFilterStatus(value as "all" | "pending" | "received")
+            }
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Show" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All</SelectItem>
+              <SelectItem value="pending">Pending</SelectItem>
+              <SelectItem value="received">Received</SelectItem>
+            </SelectContent>
+          </Select>
+
+          <Select
+            value={sortBy}
+            onValueChange={(value: any) => setSortBy(value)}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Sort by" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="date">Date</SelectItem>
+              <SelectItem value="amount">Amount</SelectItem>
+              <SelectItem value="project">Project</SelectItem>
+              <SelectItem value="status">Status</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Keep columns aligned with expenses by adding empty placeholders */}
+          <div className="hidden md:block" />
+          <div className="hidden md:block" />
+        </div>
       </div>
 
       {/* Income List */}
@@ -411,20 +435,28 @@ export default function IncomesPage() {
                     <TableHead
                       className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                       onClick={() => handleSort("date")}
+                      aria-sort={
+                        sortBy === "date"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      <div className="flex items-center gap-1 font-bold">
-                        Date
-                        <ArrowUpDown className="h-3 w-3" />
-                      </div>
+                      {renderSortHeader("date", "Date")}
                     </TableHead>
                     <TableHead
                       className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                       onClick={() => handleSort("project")}
+                      aria-sort={
+                        sortBy === "project"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      <div className="flex items-center gap-1 font-bold">
-                        Project
-                        <ArrowUpDown className="h-3 w-3" />
-                      </div>
+                      {renderSortHeader("project", "Project")}
                     </TableHead>
                     <TableHead className="font-bold border-r border-border/50">
                       Description
@@ -432,10 +464,16 @@ export default function IncomesPage() {
                     <TableHead
                       className="cursor-pointer hover:bg-muted/80 transition-colors text-right border-r border-border/50"
                       onClick={() => handleSort("amount")}
+                      aria-sort={
+                        sortBy === "amount"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
                       <div className="flex items-center gap-1 justify-end font-bold">
-                        Amount
-                        <ArrowUpDown className="h-3 w-3" />
+                        {renderSortHeader("amount", "Amount")}
                       </div>
                     </TableHead>
                     <TableHead className="font-bold border-r border-border/50">
@@ -444,11 +482,15 @@ export default function IncomesPage() {
                     <TableHead
                       className="cursor-pointer hover:bg-muted/80 transition-colors border-r border-border/50"
                       onClick={() => handleSort("status")}
+                      aria-sort={
+                        sortBy === "status"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      <div className="flex items-center gap-1 font-bold">
-                        Status
-                        <ArrowUpDown className="h-3 w-3" />
-                      </div>
+                      {renderSortHeader("status", "Status")}
                     </TableHead>
                     <TableHead className="font-bold border-r border-border/50">
                       Invoice

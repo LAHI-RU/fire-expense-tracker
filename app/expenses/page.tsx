@@ -17,9 +17,19 @@ import {
   DollarSign,
   Grid3X3,
   LayoutList,
+  ArrowUp,
+  ArrowDown,
+  ArrowUpDown,
 } from "lucide-react";
 import { ExpenseForm } from "@/components/expense-form";
 import type { Expense } from "@/lib/mysql";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function ExpensesPage() {
   const [viewMode, setViewMode] = useState<"table" | "cards">("table");
@@ -193,6 +203,30 @@ export default function ExpensesPage() {
     0
   );
 
+  const renderSortHeader = (
+    column: "date" | "amount" | "project" | "category" | "employee",
+    label: string,
+    alignRight: boolean = false
+  ) => {
+    const isActive = sortBy === column;
+    const Icon = !isActive
+      ? ArrowUpDown
+      : sortOrder === "asc"
+      ? ArrowUp
+      : ArrowDown;
+    const iconClass = isActive ? "text-foreground" : "text-muted-foreground";
+    return (
+      <div
+        className={`flex items-center gap-1 font-bold ${
+          alignRight ? "justify-end" : ""
+        }`}
+      >
+        {label}
+        <Icon className={`h-3 w-3 ${iconClass}`} />
+      </div>
+    );
+  };
+
   if (showForm || editingExpense) {
     return (
       <div className="container p-responsive">
@@ -299,61 +333,81 @@ export default function ExpensesPage() {
             className="pl-10"
           />
         </div>
-        <div className="grid grid-cols-2 md:flex gap-2">
-          <select
-            className="border rounded px-3 py-2 text-sm bg-background"
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 w-full md:w-auto">
+          <Select
             value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
+            onValueChange={(v) => setFilterCategory(v)}
           >
-            <option value="all">All Categories</option>
-            {[
-              ...new Set(expenses.map((e) => e.category_name).filter(Boolean)),
-            ].map((cat) => (
-              <option key={cat} value={cat}>
-                {cat}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border rounded px-3 py-2 text-sm bg-background"
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Categories" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Categories</SelectItem>
+              {[
+                ...new Set(
+                  expenses.map((e) => e.category_name).filter(Boolean)
+                ),
+              ].map((cat) => (
+                <SelectItem key={cat} value={cat}>
+                  {cat}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
             value={filterProject}
-            onChange={(e) => setFilterProject(e.target.value)}
+            onValueChange={(v) => setFilterProject(v)}
           >
-            <option value="all">All Projects</option>
-            {[
-              ...new Set(expenses.map((e) => e.project_name).filter(Boolean)),
-            ].map((proj) => (
-              <option key={proj} value={proj}>
-                {proj}
-              </option>
-            ))}
-          </select>
-          <select
-            className="border rounded px-3 py-2 text-sm bg-background"
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Projects" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Projects</SelectItem>
+              {[
+                ...new Set(expenses.map((e) => e.project_name).filter(Boolean)),
+              ].map((proj) => (
+                <SelectItem key={proj} value={proj}>
+                  {proj}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          <Select
             value={filterEmployee}
-            onChange={(e) => setFilterEmployee(e.target.value)}
+            onValueChange={(v) => setFilterEmployee(v)}
           >
-            <option value="all">All Employees</option>
-            {[
-              ...new Set(expenses.map((e) => e.employee_name).filter(Boolean)),
-            ].map((emp) => (
-              <option key={emp} value={emp}>
-                {emp}
-              </option>
-            ))}
-          </select>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="All Employees" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Employees</SelectItem>
+              {[
+                ...new Set(
+                  expenses.map((e) => e.employee_name).filter(Boolean)
+                ),
+              ].map((emp) => (
+                <SelectItem key={emp} value={emp}>
+                  {emp}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
           {viewMode === "table" && (
-            <select
-              className="border rounded px-3 py-2 text-sm bg-background"
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
-            >
-              <option value="date">Sort: Date</option>
-              <option value="amount">Sort: Amount</option>
-              <option value="project">Sort: Project</option>
-              <option value="category">Sort: Category</option>
-              <option value="employee">Sort: Employee</option>
-            </select>
+            <Select value={sortBy} onValueChange={(v: any) => setSortBy(v)}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Sort by" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="date">Date</SelectItem>
+                <SelectItem value="amount">Amount</SelectItem>
+                <SelectItem value="project">Project</SelectItem>
+                <SelectItem value="category">Category</SelectItem>
+                <SelectItem value="employee">Employee</SelectItem>
+              </SelectContent>
+            </Select>
           )}
         </div>
       </div>
@@ -385,8 +439,15 @@ export default function ExpensesPage() {
                         setSortBy("date");
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
+                      aria-sort={
+                        sortBy === "date"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      Date
+                      {renderSortHeader("date", "Date")}
                     </th>
                     <th
                       className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[150px] max-w-[200px]"
@@ -394,8 +455,15 @@ export default function ExpensesPage() {
                         setSortBy("project");
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
+                      aria-sort={
+                        sortBy === "project"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      Project
+                      {renderSortHeader("project", "Project")}
                     </th>
                     <th
                       className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
@@ -403,8 +471,15 @@ export default function ExpensesPage() {
                         setSortBy("category");
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
+                      aria-sort={
+                        sortBy === "category"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      Category
+                      {renderSortHeader("category", "Category")}
                     </th>
                     <th
                       className="cursor-pointer px-4 py-2 border-r border-border/50 min-w-[120px] max-w-[150px]"
@@ -412,8 +487,15 @@ export default function ExpensesPage() {
                         setSortBy("employee");
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
+                      aria-sort={
+                        sortBy === "employee"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      Employee
+                      {renderSortHeader("employee", "Employee")}
                     </th>
                     <th className="px-4 py-2 border-r border-border/50 min-w-[200px]">
                       Description
@@ -424,8 +506,15 @@ export default function ExpensesPage() {
                         setSortBy("amount");
                         setSortOrder(sortOrder === "asc" ? "desc" : "asc");
                       }}
+                      aria-sort={
+                        sortBy === "amount"
+                          ? sortOrder === "asc"
+                            ? "ascending"
+                            : "descending"
+                          : "none"
+                      }
                     >
-                      Amount
+                      {renderSortHeader("amount", "Amount", true)}
                     </th>
                     <th className="px-4 py-2 border-r border-border/50 min-w-[80px]">
                       Receipt
