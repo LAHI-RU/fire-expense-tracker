@@ -52,16 +52,33 @@ export async function POST(request: NextRequest) {
     const project_id = sanitize(body.project_id)
     const amount = sanitize(body.amount)
     const payment_date = sanitize(body.payment_date)
-    const payment_type = sanitize(body.payment_type)
+    const raw_payment_type = sanitize(body.payment_type)
+    const normalized_payment_type = typeof raw_payment_type === "string"
+      ? raw_payment_type.trim().toLowerCase().replace(/\s+/g, "_")
+      : raw_payment_type
     const notes = sanitize(body.notes)
     const created_by = sanitize(body.created_by)
+
+    // Validate payment_type against DB enum to avoid accidental values
+    const allowedTypes = new Set([
+      "monthly_salary",
+      "project_bonus",
+      "overtime",
+      "other",
+    ])
+    if (!allowedTypes.has(String(normalized_payment_type))) {
+      return NextResponse.json(
+        { error: "Invalid payment_type", message: "payment_type must be one of: monthly_salary | project_bonus | overtime | other" },
+        { status: 400 }
+      )
+    }
 
     const paymentDateObj = new Date(payment_date)
     const payment_month = paymentDateObj.getMonth() + 1
     const payment_year = paymentDateObj.getFullYear()
 
     // Check for duplicate monthly salary payment
-    if (payment_type === "monthly_salary") {
+    if (normalized_payment_type === "monthly_salary") {
       const existingPayments = await Database.query(
         "SELECT id FROM salary_payments WHERE employee_id = ? AND payment_month = ? AND payment_year = ? AND payment_type = 'monthly_salary'",
         [employee_id, payment_month, payment_year],
@@ -84,7 +101,7 @@ export async function POST(request: NextRequest) {
     const result = await Database.query(
       `INSERT INTO salary_payments (employee_id, project_id, amount, payment_date, payment_month, payment_year, payment_type, notes, created_by) 
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [employee_id, project_id, amount, payment_date, payment_month, payment_year, payment_type, notes, created_by],
+      [employee_id, project_id, amount, payment_date, payment_month, payment_year, normalized_payment_type, notes, created_by],
     )
 
     return NextResponse.json({
@@ -92,9 +109,9 @@ export async function POST(request: NextRequest) {
       paymentId: (result as any).insertId,
       message: "Salary payment recorded successfully",
     })
-  } catch (error) {
-    console.error("Error creating salary payment:", error)
-    if (error.code === "ER_DUP_ENTRY") {
+  } catch (err: any) {
+    console.error("Error creating salary payment:", err)
+    if (err?.code === "ER_DUP_ENTRY") {
       return NextResponse.json(
         {
           error: "Duplicate payment detected",

@@ -47,13 +47,12 @@ export function SalaryPaymentForm({
     null
   );
   const [duplicateWarning, setDuplicateWarning] = useState("");
-  const [paymentTypes, setPaymentTypes] = useState<string[]>([
+  const PAYMENT_TYPES = [
     "monthly_salary",
     "project_bonus",
     "overtime",
-  ]);
-  const [showAddTypeInput, setShowAddTypeInput] = useState(false);
-  const [newTypeValue, setNewTypeValue] = useState("");
+    "other",
+  ] as const;
 
   // Fetch dropdown data
   useEffect(() => {
@@ -254,54 +253,20 @@ export function SalaryPaymentForm({
               <Label htmlFor="payment_type">Payment Type</Label>
               <Select
                 value={formData.payment_type}
-                onValueChange={(value) => {
-                  handleChange("payment_type", value);
-                  // hide custom type input when switching away
-                  if (value !== "other") setShowAddTypeInput(false);
-                }}
+                onValueChange={(value) => handleChange("payment_type", value)}
               >
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  {paymentTypes.map((pt) => (
+                  {PAYMENT_TYPES.map((pt) => (
                     <SelectItem key={pt} value={pt}>
                       {pt.replace(/_/g, " ")}
                     </SelectItem>
                   ))}
-                  <SelectItem value="other">Other (add custom)</SelectItem>
                 </SelectContent>
               </Select>
-
-              {formData.payment_type === "other" && (
-                <div className="mt-2 flex gap-2">
-                  <Input
-                    placeholder="Enter custom payment type"
-                    value={newTypeValue}
-                    onChange={(e) => setNewTypeValue(e.target.value)}
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => {
-                      const normalized = newTypeValue
-                        .trim()
-                        .toLowerCase()
-                        .replace(/\s+/g, "_");
-                      if (!normalized) return;
-                      if (!paymentTypes.includes(normalized)) {
-                        setPaymentTypes((prev) => [...prev, normalized]);
-                      }
-                      setFormData((prev) => ({
-                        ...prev,
-                        payment_type: normalized,
-                      }));
-                      setNewTypeValue("");
-                    }}
-                  >
-                    Add
-                  </Button>
-                </div>
-              )}
+              {/* Restrict to DB enum only; no custom types */}
             </div>
           </div>
 

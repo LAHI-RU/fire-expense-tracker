@@ -126,7 +126,7 @@ export interface SalaryPayment {
   payment_date: Date
   payment_month: number
   payment_year: number
-  payment_type: "monthly_salary" | "project_bonus" | "overtime"
+  payment_type: "monthly_salary" | "project_bonus" | "overtime" | "other"
   notes?: string
   created_by: number
 }
