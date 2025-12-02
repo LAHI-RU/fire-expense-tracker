@@ -36,7 +36,6 @@ import {
   Download,
 } from "lucide-react";
 import { IncomeForm } from "@/components/income-form";
-import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Income } from "@/lib/mysql";
 
 export default function IncomesPage() {
@@ -247,9 +246,7 @@ export default function IncomesPage() {
   if (showForm || editingIncome) {
     return (
       <div className="container p-responsive">
-        <div className="flex justify-end mb-4">
-          <VoiceHelpDialog />
-        </div>
+        <div className="flex justify-end mb-4" />
         <IncomeForm
           income={editingIncome || undefined}
           onSubmit={editingIncome ? handleUpdateIncome : handleCreateIncome}
@@ -275,7 +272,6 @@ export default function IncomesPage() {
           </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <VoiceHelpDialog />
           <Button
             onClick={() => setShowForm(true)}
             className="gap-2 flex-1 sm:flex-initial"

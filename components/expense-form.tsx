@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VoiceInput } from "@/components/voice-input";
-import { VoiceTextarea } from "@/components/voice-textarea";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import type { Expense, Project } from "@/lib/mysql";
 
 interface ExpenseFormProps {
@@ -100,7 +100,7 @@ export function ExpenseForm({
           {expense ? "Edit Expense" : "Add New Expense"}
         </CardTitle>
         <p className="text-sm text-muted-foreground">
-          Use voice input for hands-free data entry
+          Fill out expense details
         </p>
       </CardHeader>
 
@@ -162,10 +162,10 @@ export function ExpenseForm({
 
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
-            <VoiceTextarea
+            <Textarea
               id="description"
               value={formData.description}
-              onChange={(value) => handleChange("description", value)}
+              onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Fire extinguisher purchase, labor cost, etc."
               required
               rows={2}
@@ -175,12 +175,12 @@ export function ExpenseForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount">Amount (Rs.) *</Label>
-              <VoiceInput
+              <Input
                 id="amount"
                 type="number"
                 step="0.01"
                 value={formData.amount}
-                onChange={(value) => handleChange("amount", value)}
+                onChange={(e) => handleChange("amount", e.target.value)}
                 placeholder="150.00"
                 required
               />
@@ -188,11 +188,11 @@ export function ExpenseForm({
 
             <div className="space-y-2">
               <Label htmlFor="expense_date">Expense Date *</Label>
-              <VoiceInput
+              <Input
                 id="expense_date"
                 type="date"
                 value={formData.expense_date}
-                onChange={(value) => handleChange("expense_date", value)}
+                onChange={(e) => handleChange("expense_date", e.target.value)}
                 required
               />
             </div>
@@ -230,20 +230,20 @@ export function ExpenseForm({
 
           <div className="space-y-2">
             <Label htmlFor="receipt_url">Receipt URL</Label>
-            <VoiceInput
+            <Input
               id="receipt_url"
               value={formData.receipt_url}
-              onChange={(value) => handleChange("receipt_url", value)}
+              onChange={(e) => handleChange("receipt_url", e.target.value)}
               placeholder="https://example.com/receipt.pdf"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
-            <VoiceTextarea
+            <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(value) => handleChange("notes", value)}
+              onChange={(e) => handleChange("notes", e.target.value)}
               placeholder="Additional notes about this expense..."
               rows={2}
             />

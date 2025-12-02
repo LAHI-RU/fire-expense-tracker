@@ -12,8 +12,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { VoiceInput } from "@/components/voice-input";
-import { VoiceTextarea } from "@/components/voice-textarea";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import type { Income, Project } from "@/lib/mysql";
 
 interface IncomeFormProps {
@@ -84,9 +84,7 @@ export function IncomeForm({
         <CardTitle className="text-xl font-semibold">
           {income ? "Edit Income" : "Add New Income"}
         </CardTitle>
-        <p className="text-sm text-muted-foreground">
-          Use voice input for hands-free data entry
-        </p>
+        <p className="text-sm text-muted-foreground">Fill out income details</p>
       </CardHeader>
 
       <CardContent>
@@ -124,10 +122,10 @@ export function IncomeForm({
 
           <div className="space-y-2">
             <Label htmlFor="description">Description *</Label>
-            <VoiceTextarea
+            <Textarea
               id="description"
               value={formData.description}
-              onChange={(value) => handleChange("description", value)}
+              onChange={(e) => handleChange("description", e.target.value)}
               placeholder="Project payment, advance payment, etc."
               required
               rows={2}
@@ -137,12 +135,12 @@ export function IncomeForm({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="amount">Amount (Rs.) *</Label>
-              <VoiceInput
+              <Input
                 id="amount"
                 type="number"
                 step="0.01"
                 value={formData.amount}
-                onChange={(value) => handleChange("amount", value)}
+                onChange={(e) => handleChange("amount", e.target.value)}
                 placeholder="5000.00"
                 required
               />
@@ -150,11 +148,11 @@ export function IncomeForm({
 
             <div className="space-y-2">
               <Label htmlFor="payment_date">Payment Date *</Label>
-              <VoiceInput
+              <Input
                 id="payment_date"
                 type="date"
                 value={formData.payment_date}
-                onChange={(value) => handleChange("payment_date", value)}
+                onChange={(e) => handleChange("payment_date", e.target.value)}
                 required
               />
             </div>
@@ -199,20 +197,20 @@ export function IncomeForm({
 
           <div className="space-y-2">
             <Label htmlFor="invoice_number">Invoice Number</Label>
-            <VoiceInput
+            <Input
               id="invoice_number"
               value={formData.invoice_number}
-              onChange={(value) => handleChange("invoice_number", value)}
+              onChange={(e) => handleChange("invoice_number", e.target.value)}
               placeholder="INV-2024-001"
             />
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="notes">Notes</Label>
-            <VoiceTextarea
+            <Textarea
               id="notes"
               value={formData.notes}
-              onChange={(value) => handleChange("notes", value)}
+              onChange={(e) => handleChange("notes", e.target.value)}
               placeholder="Additional notes about this income..."
               rows={2}
             />

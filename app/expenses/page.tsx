@@ -19,7 +19,6 @@ import {
   LayoutList,
 } from "lucide-react";
 import { ExpenseForm } from "@/components/expense-form";
-import { VoiceHelpDialog } from "@/components/voice-help-dialog";
 import type { Expense } from "@/lib/mysql";
 
 export default function ExpensesPage() {
@@ -197,9 +196,7 @@ export default function ExpensesPage() {
   if (showForm || editingExpense) {
     return (
       <div className="container p-responsive">
-        <div className="flex justify-end mb-4">
-          <VoiceHelpDialog />
-        </div>
+        <div className="flex justify-end mb-4" />
         <ExpenseForm
           expense={editingExpense || undefined}
           onSubmit={editingExpense ? handleUpdateExpense : handleCreateExpense}
@@ -225,7 +222,6 @@ export default function ExpensesPage() {
           </p>
         </div>
         <div className="flex gap-2 w-full sm:w-auto">
-          <VoiceHelpDialog />
           <Button
             onClick={() => setShowForm(true)}
             className="gap-2 flex-1 sm:flex-initial"
