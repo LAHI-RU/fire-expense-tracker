@@ -157,7 +157,7 @@ export default function EmployeesPage() {
   const getRecentPayments = (employeeId: number) => {
     return salaryPayments
       .filter((payment) => payment.employee_id === employeeId)
-      .slice(0, 3)
+      .slice(0, 5)
       .sort(
         (a, b) =>
           new Date(b.payment_date).getTime() -
