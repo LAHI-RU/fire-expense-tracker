@@ -14,7 +14,7 @@ export async function GET() {
       GROUP BY status
     `);
 
-    // Get financial overview
+    // Get financial overview (include salary payments as expenses)
     const financialOverview = await Database.query(`
       SELECT 
         'expenses' as type,
@@ -23,13 +23,19 @@ export async function GET() {
       FROM expenses
       UNION ALL
       SELECT 
+        'salary_payments' as type,
+        SUM(amount) as total,
+        COUNT(*) as count
+      FROM salary_payments
+      UNION ALL
+      SELECT 
         'incomes' as type,
         SUM(amount) as total,
         COUNT(*) as count
       FROM incomes
     `);
 
-    // Get monthly financial trends (last 12 months)
+    // Get monthly financial trends (last 12 months) — include salaries as expenses
     const monthlyTrends = await Database.query(`
       SELECT 
         DATE_FORMAT(expense_date, '%Y-%m') as month,
@@ -38,6 +44,16 @@ export async function GET() {
       FROM expenses 
       WHERE expense_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
       GROUP BY DATE_FORMAT(expense_date, '%Y-%m')
+      
+      UNION ALL
+      
+      SELECT 
+        DATE_FORMAT(payment_date, '%Y-%m') as month,
+        'expense' as type,
+        SUM(amount) as amount
+      FROM salary_payments 
+      WHERE payment_date >= DATE_SUB(CURDATE(), INTERVAL 12 MONTH)
+      GROUP BY DATE_FORMAT(payment_date, '%Y-%m')
       
       UNION ALL
       

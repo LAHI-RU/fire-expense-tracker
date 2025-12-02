@@ -33,8 +33,12 @@ export const DashboardStats = memo(function DashboardStats({
   const completedProjects =
     projectStats.find((stat) => stat.status === "completed")?.count || 0;
 
-  const totalExpenses =
+  const baseExpenses =
     financialOverview.find((item) => item.type === "expenses")?.total || 0;
+  const salaryExpenses =
+    financialOverview.find((item) => item.type === "salary_payments")?.total ||
+    0;
+  const totalExpenses = Number(baseExpenses) + Number(salaryExpenses);
   const totalIncome =
     financialOverview.find((item) => item.type === "incomes")?.total || 0;
 
@@ -102,7 +106,7 @@ export const DashboardStats = memo(function DashboardStats({
                 Total Expenses
               </div>
               <div className="text-[10px] sm:text-xs text-red-600 mt-1">
-                Business costs
+                Business costs (incl. salaries)
               </div>
             </div>
           </div>

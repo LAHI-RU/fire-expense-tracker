@@ -77,12 +77,21 @@ export default function DashboardPage() {
               financialOverview={data.financialOverview}
               employeeCount={data.employeeSalaries?.length || 0}
               totalProfit={
-                (data.financialOverview?.find(
-                  (item: any) => item.type === "incomes"
-                )?.total || 0) -
-                (data.financialOverview?.find(
-                  (item: any) => item.type === "expenses"
-                )?.total || 0)
+                Number(
+                  data.financialOverview?.find(
+                    (item: any) => item.type === "incomes"
+                  )?.total || 0
+                ) -
+                (Number(
+                  data.financialOverview?.find(
+                    (item: any) => item.type === "expenses"
+                  )?.total || 0
+                ) +
+                  Number(
+                    data.financialOverview?.find(
+                      (item: any) => item.type === "salary_payments"
+                    )?.total || 0
+                  ))
               }
             />
           </div>
