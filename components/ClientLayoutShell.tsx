@@ -34,7 +34,7 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
           <div className="container mx-auto px-4 py-4 flex flex-col items-center gap-2">
             <div className="flex items-center gap-4">
               <a
-                href="https://facebook.com/ldbsolutions"
+                href="https://facebook.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -49,7 +49,7 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
                 </svg>
               </a>
               <a
-                href="https://linkedin.com/company/ldb-solutions"
+                href="https://linkedin.com/company"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -64,7 +64,7 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
                 </svg>
               </a>
               <a
-                href="https://twitter.com/ldbsolutions"
+                href="https://twitter.com"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-gray-400 hover:text-gray-600 transition-colors duration-200"
@@ -82,7 +82,7 @@ const ClientLayoutShell = memo(function ClientLayoutShell({
 
             <div className="text-center">
               <span className="text-xs text-gray-400">
-                © {new Date().getFullYear()} LDB. All rights reserved.
+                © {new Date().getFullYear()} Jexiro. All rights reserved.
               </span>
             </div>
           </div>

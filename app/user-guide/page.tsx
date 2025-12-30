@@ -91,7 +91,7 @@ export default function UserGuidePage() {
               <li>
                 Email:{" "}
                 <a
-                  href="mailto:support@ldbsolutions.com"
+                  href="mailto:lahiiru.dananjaya@gmail.com"
                   className="underline text-blue-700"
                 >
                   lahiiru.dananjaya@gmail.com
@@ -106,7 +106,7 @@ export default function UserGuidePage() {
             </ul>
           </section>
           <div className="pt-4 text-center text-sm text-blue-600">
-            Thank you for choosing LDB Solutions. We’re committed to your
+            Thank you for choosing Jexiro. We’re committed to your
             success!
           </div>
         </CardContent>
