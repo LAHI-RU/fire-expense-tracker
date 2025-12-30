@@ -22,9 +22,15 @@ export default function EmployeesPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [showEmployeeForm, setShowEmployeeForm] = useState(false);
   const [showPaymentForm, setShowPaymentForm] = useState(false);
+  const [paymentFormMode, setPaymentFormMode] = useState<
+    "create" | "edit"
+  >("create");
   const [selectedPaymentEmployeeId, setSelectedPaymentEmployeeId] = useState<
     number | null
   >(null);
+  const [editingPayment, setEditingPayment] = useState<SalaryPayment | null>(
+    null
+  );
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(true);
@@ -80,6 +86,8 @@ export default function EmployeesPage() {
     if (params.get("openPayment") === "1") {
       const empId = params.get("employeeId");
       if (empId) setSelectedPaymentEmployeeId(Number(empId));
+      setPaymentFormMode("create");
+      setEditingPayment(null);
       setShowPaymentForm(true);
     }
   }, []);
@@ -137,33 +145,50 @@ export default function EmployeesPage() {
     }
   };
 
-  const handleRecordPayment = async (paymentData: Partial<SalaryPayment>) => {
+  const handleSavePayment = async (paymentData: Partial<SalaryPayment>) => {
     try {
-      const response = await fetch("/api/salary-payments", {
-        method: "POST",
+      const isEdit = Boolean(editingPayment?.id);
+      const endpoint = isEdit
+        ? `/api/salary-payments/${editingPayment?.id}`
+        : "/api/salary-payments";
+      const method = isEdit ? "PUT" : "POST";
+
+      const response = await fetch(endpoint, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...paymentData, created_by: 1 }),
       });
 
       if (response.ok) {
         setShowPaymentForm(false);
+        setEditingPayment(null);
+        setPaymentFormMode("create");
         fetchData();
       }
     } catch (error) {
-      console.error("Error recording payment:", error);
+      console.error("Error saving payment:", error);
     }
   };
 
-  const getRecentPayments = (employeeId: number) => {
+  const handleEditPayment = (payment: SalaryPayment) => {
+    setEditingPayment(payment);
+    setSelectedPaymentEmployeeId(payment.employee_id);
+    setPaymentFormMode("edit");
+    setShowPaymentForm(true);
+  };
+
+  const getPaymentsForEmployee = (employeeId: number) => {
     return salaryPayments
       .filter((payment) => payment.employee_id === employeeId)
-      .slice(0, 5)
       .sort(
         (a, b) =>
           new Date(b.payment_date).getTime() -
           new Date(a.payment_date).getTime()
       );
   };
+
+  const initialEmployeeIdForForm =
+    editingPayment?.employee_id ?? selectedPaymentEmployeeId ?? undefined;
 
   // FORMS
   if (showEmployeeForm || editingEmployee) {
@@ -187,15 +212,19 @@ export default function EmployeesPage() {
     return (
       <div className="container p-responsive">
         <SalaryPaymentForm
+          mode={paymentFormMode}
+          initialData={editingPayment || undefined}
           onSubmit={(data) => {
-            handleRecordPayment(data);
+            handleSavePayment(data);
             setSelectedPaymentEmployeeId(null);
           }}
           onCancel={() => {
             setShowPaymentForm(false);
             setSelectedPaymentEmployeeId(null);
+            setEditingPayment(null);
+            setPaymentFormMode("create");
           }}
-          initialEmployeeId={selectedPaymentEmployeeId || undefined}
+          initialEmployeeId={initialEmployeeIdForForm}
         />
       </div>
     );
@@ -315,7 +344,7 @@ export default function EmployeesPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
           {filteredEmployees.map((employee) => {
-            const recentPayments = getRecentPayments(employee.id);
+            const employeePayments = getPaymentsForEmployee(employee.id);
 
             return (
               <Card
@@ -345,6 +374,8 @@ export default function EmployeesPage() {
                         variant="ghost"
                         size="sm"
                         onClick={() => {
+                          setEditingPayment(null);
+                          setPaymentFormMode("create");
                           setSelectedPaymentEmployeeId(employee.id);
                           setShowPaymentForm(true);
                         }}
@@ -420,14 +451,14 @@ export default function EmployeesPage() {
                     )}
                   </div>
 
-                  {recentPayments.length > 0 && (
+                  {employeePayments.length > 0 && (
                     <div className="pt-2 border-t border-border">
                       <div className="text-xs text-muted-foreground mb-2">
-                        Recent Payments
+                        Payments
                       </div>
 
                       <div className="space-y-1">
-                        {recentPayments.map((payment) => {
+                        {employeePayments.map((payment) => {
                           const notes =
                             typeof payment.notes === "string"
                               ? payment.notes.trim()
@@ -440,18 +471,29 @@ export default function EmployeesPage() {
                           return (
                             <div
                               key={payment.id}
-                              className="flex justify-between text-xs"
+                              className="flex items-center justify-between text-xs gap-2"
                             >
-                              <span>
+                              <span className="flex-1">
                                 {new Date(
                                   payment.payment_date
                                 ).toLocaleDateString()}{" "}
                                 - {paymentLabel}
                               </span>
 
-                              <span className="font-medium">
-                                Rs.{Number(payment.amount).toLocaleString()}
-                              </span>
+                              <div className="flex items-center gap-1">
+                                <span className="font-medium">
+                                  Rs.{Number(payment.amount).toLocaleString()}
+                                </span>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 p-0"
+                                  onClick={() => handleEditPayment(payment)}
+                                  aria-label="Edit payment"
+                                >
+                                  <Edit className="h-3 w-3" />
+                                </Button>
+                              </div>
                             </div>
                           )
                         })}

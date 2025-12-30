@@ -24,6 +24,8 @@ interface SalaryPaymentFormProps {
   onCancel: () => void;
   isLoading?: boolean;
   initialEmployeeId?: number;
+  initialData?: Partial<SalaryPayment>;
+  mode?: "create" | "edit";
 }
 
 export function SalaryPaymentForm({
@@ -31,6 +33,8 @@ export function SalaryPaymentForm({
   onCancel,
   isLoading,
   initialEmployeeId,
+  initialData,
+  mode = "create",
 }: SalaryPaymentFormProps) {
   const [formData, setFormData] = useState({
     employee_id: "",
@@ -53,6 +57,8 @@ export function SalaryPaymentForm({
     "overtime",
     "other",
   ] as const;
+  const isEditMode = mode === "edit" || Boolean(initialData?.id);
+  const editingPaymentId = initialData?.id ? Number(initialData.id) : null;
 
   // Fetch dropdown data
   useEffect(() => {
@@ -90,6 +96,26 @@ export function SalaryPaymentForm({
     fetchData();
   }, []);
 
+  // Pre-fill form when editing a payment
+  useEffect(() => {
+    if (!initialData) return;
+
+    setFormData({
+      employee_id: initialData.employee_id
+        ? initialData.employee_id.toString()
+        : "",
+      project_id: initialData.project_id
+        ? initialData.project_id.toString()
+        : "",
+      amount: initialData.amount ? initialData.amount.toString() : "",
+      payment_date: initialData.payment_date
+        ? new Date(initialData.payment_date).toISOString().split("T")[0]
+        : new Date().toISOString().split("T")[0],
+      payment_type: initialData.payment_type || "monthly_salary",
+      notes: initialData.notes || "",
+    });
+  }, [initialData]);
+
   // Check for duplicate payments when employee or date changes
   useEffect(() => {
     const checkDuplicatePayment = async () => {
@@ -114,7 +140,9 @@ export function SalaryPaymentForm({
 
         const monthlyPayments =
           data.payments?.filter(
-            (p: any) => p.payment_type === "monthly_salary"
+            (p: any) =>
+              p.payment_type === "monthly_salary" &&
+              (!editingPaymentId || p.id !== editingPaymentId)
           ) || [];
 
         if (monthlyPayments.length > 0) {
@@ -136,7 +164,12 @@ export function SalaryPaymentForm({
     };
 
     checkDuplicatePayment();
-  }, [formData.employee_id, formData.payment_date, formData.payment_type]);
+  }, [
+    formData.employee_id,
+    formData.payment_date,
+    formData.payment_type,
+    editingPaymentId,
+  ]);
 
   // Update selected employee and auto-fill amount
   useEffect(() => {
@@ -149,7 +182,8 @@ export function SalaryPaymentForm({
       employee &&
       formData.payment_type === "monthly_salary" &&
       employee.monthly_salary !== undefined &&
-      employee.monthly_salary !== null
+      employee.monthly_salary !== null &&
+      (!isEditMode || formData.amount === "")
     ) {
       setFormData((prev) => ({
         ...prev,
@@ -170,6 +204,7 @@ export function SalaryPaymentForm({
 
     onSubmit({
       ...formData,
+      id: editingPaymentId || undefined,
       employee_id: Number.parseInt(formData.employee_id),
       project_id: formData.project_id
         ? Number.parseInt(formData.project_id)
@@ -188,7 +223,7 @@ export function SalaryPaymentForm({
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="text-xl font-semibold text-center">
-          Record Salary Payment
+          {isEditMode ? "Update Salary Payment" : "Record Salary Payment"}
         </CardTitle>
       </CardHeader>
 
@@ -366,7 +401,13 @@ export function SalaryPaymentForm({
 
           <div className="flex gap-3 pt-4">
             <Button type="submit" disabled={isLoading} className="flex-1">
-              {isLoading ? "Recording..." : "Record Payment"}
+              {isEditMode
+                ? isLoading
+                  ? "Saving..."
+                  : "Update Payment"
+                : isLoading
+                ? "Recording..."
+                : "Record Payment"}
             </Button>
             <Button
               type="button"
