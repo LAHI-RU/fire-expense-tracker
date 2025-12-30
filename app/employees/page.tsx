@@ -427,23 +427,34 @@ export default function EmployeesPage() {
                       </div>
 
                       <div className="space-y-1">
-                        {recentPayments.map((payment) => (
-                          <div
-                            key={payment.id}
-                            className="flex justify-between text-xs"
-                          >
-                            <span>
-                              {new Date(
-                                payment.payment_date
-                              ).toLocaleDateString()}{" "}
-                              - {payment.payment_type.replace(/_/g, " ")}
-                            </span>
+                        {recentPayments.map((payment) => {
+                          const notes =
+                            typeof payment.notes === "string"
+                              ? payment.notes.trim()
+                              : ""
+                          const paymentLabel =
+                            payment.payment_type === "other" && notes
+                              ? `other (${notes})`
+                              : String(payment.payment_type).replace(/_/g, " ")
 
-                            <span className="font-medium">
-                              Rs.{Number(payment.amount).toLocaleString()}
-                            </span>
-                          </div>
-                        ))}
+                          return (
+                            <div
+                              key={payment.id}
+                              className="flex justify-between text-xs"
+                            >
+                              <span>
+                                {new Date(
+                                  payment.payment_date
+                                ).toLocaleDateString()}{" "}
+                                - {paymentLabel}
+                              </span>
+
+                              <span className="font-medium">
+                                Rs.{Number(payment.amount).toLocaleString()}
+                              </span>
+                            </div>
+                          )
+                        })}
                       </div>
                     </div>
                   )}
