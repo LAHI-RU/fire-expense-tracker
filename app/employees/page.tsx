@@ -34,6 +34,9 @@ export default function EmployeesPage() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [showActiveOnly, setShowActiveOnly] = useState(true);
+  const [expandedPayments, setExpandedPayments] = useState<Record<number, boolean>>(
+    {}
+  );
 
   // Fetch data
   const fetchData = async () => {
@@ -185,6 +188,13 @@ export default function EmployeesPage() {
           new Date(b.payment_date).getTime() -
           new Date(a.payment_date).getTime()
       );
+  };
+
+  const togglePaymentsForEmployee = (employeeId: number) => {
+    setExpandedPayments((prev) => ({
+      ...prev,
+      [employeeId]: !prev[employeeId],
+    }));
   };
 
   const initialEmployeeIdForForm =
@@ -452,21 +462,34 @@ export default function EmployeesPage() {
                   </div>
 
                   {employeePayments.length > 0 && (
-                    <div className="pt-2 border-t border-border">
-                      <div className="text-xs text-muted-foreground mb-2">
-                        Payments
+                    <div className="pt-2 border-t border-border space-y-2">
+                      <div className="text-xs text-muted-foreground flex items-center justify-between">
+                        <span>Payments</span>
+                        {employeePayments.length > 5 && (
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            className="h-7 px-3 text-xs font-medium text-primary"
+                            onClick={() => togglePaymentsForEmployee(employee.id)}
+                          >
+                            {expandedPayments[employee.id] ? "Show less" : "Show all"}
+                          </Button>
+                        )}
                       </div>
 
                       <div className="space-y-1">
-                        {employeePayments.map((payment) => {
+                        {(expandedPayments[employee.id]
+                          ? employeePayments
+                          : employeePayments.slice(0, 5)
+                        ).map((payment) => {
                           const notes =
                             typeof payment.notes === "string"
                               ? payment.notes.trim()
-                              : ""
+                              : "";
                           const paymentLabel =
                             payment.payment_type === "other" && notes
                               ? `other (${notes})`
-                              : String(payment.payment_type).replace(/_/g, " ")
+                              : String(payment.payment_type).replace(/_/g, " ");
 
                           return (
                             <div
@@ -495,7 +518,7 @@ export default function EmployeesPage() {
                                 </Button>
                               </div>
                             </div>
-                          )
+                          );
                         })}
                       </div>
                     </div>
