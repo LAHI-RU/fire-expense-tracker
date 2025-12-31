@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Search, Edit, Trash, Phone, Calendar } from "lucide-react";
+import { Plus, Search, Edit, Phone, Calendar } from "lucide-react";
 import { EmployeeForm } from "@/components/employee-form";
 import { SalaryPaymentForm } from "@/components/salary-payment-form";
 import type { Employee, SalaryPayment } from "@/lib/mysql";
@@ -129,23 +129,6 @@ export default function EmployeesPage() {
       }
     } catch (error) {
       console.error("Error updating employee:", error);
-    }
-  };
-
-  const handleDeleteEmployee = async (employeeId: number) => {
-    if (!confirm("This will permanently delete the employee. Continue?"))
-      return;
-
-    try {
-      const response = await fetch(`/api/employees/${employeeId}?force=true`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        fetchData();
-      }
-    } catch (error) {
-      console.error("Error deleting employee:", error);
     }
   };
 
@@ -415,15 +398,6 @@ export default function EmployeesPage() {
                         className="h-8 w-8 p-0"
                       >
                         <Edit className="h-4 w-4" />
-                      </Button>
-
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDeleteEmployee(employee.id)}
-                        className="h-8 w-8 p-0 text-destructive"
-                      >
-                        <Trash className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
