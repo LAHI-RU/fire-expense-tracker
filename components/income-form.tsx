@@ -30,7 +30,7 @@ export function IncomeForm({
   isLoading,
 }: IncomeFormProps) {
   const [formData, setFormData] = useState({
-    project_id: income?.project_id?.toString() || "",
+    project_id: income?.project_id?.toString() || "none",
     description: income?.description || "",
     amount: income?.amount?.toString() || "",
     payment_date: income?.payment_date
@@ -95,7 +95,7 @@ export function IncomeForm({
               onValueChange={(value) => handleChange("project_id", value)}
             >
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Select project or 'No Project'" />
+                <SelectValue placeholder="No Project" />
               </SelectTrigger>
               <SelectContent className="w-full max-w-none">
                 <SelectItem value="none">No Project</SelectItem>
