@@ -2,6 +2,7 @@
 
 import type React from "react";
 import { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
@@ -46,6 +47,16 @@ export function ExpenseForm({
   const [categories, setCategories] = useState<any[]>([]);
   const [employees, setEmployees] = useState<any[]>([]);
   const [showNewCategory, setShowNewCategory] = useState(false);
+
+  // Prevent background scroll/jank while the new category modal is open
+  useEffect(() => {
+    if (!showNewCategory) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [showNewCategory]);
 
   // Fetch dropdown data
   useEffect(() => {
@@ -317,15 +328,18 @@ export function ExpenseForm({
         </form>
       </CardContent>
       {/* New Category Dialog */}
-      {showNewCategory && (
-        <NewCategoryDialog
-          onClose={() => setShowNewCategory(false)}
-          onCreated={(cat) => {
-            setCategories((prev) => [...prev, cat]);
-            handleChange("category_id", cat.id.toString());
-          }}
-        />
-      )}
+      {showNewCategory &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <NewCategoryDialog
+            onClose={() => setShowNewCategory(false)}
+            onCreated={(cat) => {
+              setCategories((prev) => [...prev, cat]);
+              handleChange("category_id", cat.id.toString());
+            }}
+          />,
+          document.body
+        )}
     </Card>
   );
 }
