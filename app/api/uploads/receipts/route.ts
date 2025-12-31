@@ -2,15 +2,19 @@ import { NextResponse } from "next/server"
 import { promises as fs } from "fs"
 import path from "path"
 
+export const runtime = "nodejs" // ensure fs writes are allowed
 export const dynamic = "force-dynamic" // ensure edge caching isn't applied
 
 const ACCEPTED = new Set([
   "application/pdf",
   "image/png",
   "image/jpeg",
+  "image/jpg",
   "image/webp",
+  "image/heic",
+  "image/heif",
 ])
-const MAX_SIZE_BYTES = 5 * 1024 * 1024 // 5MB
+const MAX_SIZE_BYTES = 10 * 1024 * 1024 // 10MB
 
 export async function POST(request: Request) {
   try {
@@ -41,13 +45,13 @@ export async function POST(request: Request) {
         : ".jpg"
 
     const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
-    const uploadsDir = path.join(process.cwd(), "public", "uploads", "receipts")
+    const uploadsDir = path.join(process.cwd(), "uploads", "receipts")
     await fs.mkdir(uploadsDir, { recursive: true })
 
     const fullPath = path.join(uploadsDir, safeName)
     await fs.writeFile(fullPath, buffer)
 
-    const url = `/uploads/receipts/${safeName}`
+    const url = `/api/uploads/receipts/${safeName}`
     return NextResponse.json({ success: true, url })
   } catch (error) {
     console.error("Receipt upload error:", error)

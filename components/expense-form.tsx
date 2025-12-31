@@ -255,7 +255,7 @@ export function ExpenseForm({
               />
               <Input
                 type="file"
-                accept="application/pdf,image/png,image/jpeg,image/webp"
+                accept="application/pdf,image/png,image/jpeg,image/jpg,image/webp,image/heic,image/heif"
                 onChange={async (e) => {
                   const file = e.target.files?.[0];
                   if (!file) return;
@@ -274,6 +274,9 @@ export function ExpenseForm({
                     }
                   } catch (err) {
                     alert("Upload failed");
+                  } finally {
+                    // Reset input so re-selecting the same file doesn't trigger form closure in some browsers
+                    e.target.value = "";
                   }
                 }}
               />
