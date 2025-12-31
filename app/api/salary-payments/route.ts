@@ -77,6 +77,17 @@ export async function POST(request: NextRequest) {
     const payment_month = paymentDateObj.getMonth() + 1
     const payment_year = paymentDateObj.getFullYear()
 
+    // Guard against DB constraint: payments must be from 2020 onwards
+    if (payment_year < 2020) {
+      return NextResponse.json(
+        {
+          error: "Invalid payment date",
+          message: "Payments before 2020 are not allowed. Please choose a date in 2020 or later.",
+        },
+        { status: 400 },
+      )
+    }
+
     // Check for duplicate monthly salary payment
     if (normalized_payment_type === "monthly_salary") {
       const existingPayments = await Database.query(
@@ -116,6 +127,15 @@ export async function POST(request: NextRequest) {
         {
           error: "Duplicate payment detected",
           message: "This monthly salary payment has already been recorded.",
+        },
+        { status: 400 },
+      )
+    }
+    if (err?.code === "ER_CHECK_CONSTRAINT_VIOLATED" && err?.sqlMessage?.includes("chk_salary_payments_year_valid")) {
+      return NextResponse.json(
+        {
+          error: "Invalid payment date",
+          message: "Payments before 2020 are not allowed. Please choose a date in 2020 or later.",
         },
         { status: 400 },
       )

@@ -26,6 +26,7 @@ interface SalaryPaymentFormProps {
   initialEmployeeId?: number;
   initialData?: Partial<SalaryPayment>;
   mode?: "create" | "edit";
+  errorMessage?: string;
 }
 
 export function SalaryPaymentForm({
@@ -35,6 +36,7 @@ export function SalaryPaymentForm({
   initialEmployeeId,
   initialData,
   mode = "create",
+  errorMessage,
 }: SalaryPaymentFormProps) {
   const [formData, setFormData] = useState({
     employee_id: "",
@@ -235,6 +237,12 @@ export function SalaryPaymentForm({
               <AlertDescription className="text-amber-800">
                 {duplicateWarning}
               </AlertDescription>
+            </Alert>
+          )}
+          {errorMessage && (
+            <Alert variant="destructive">
+              <AlertTriangle className="h-4 w-4" />
+              <AlertDescription>{errorMessage}</AlertDescription>
             </Alert>
           )}
 

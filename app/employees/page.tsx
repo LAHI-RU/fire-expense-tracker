@@ -37,6 +37,7 @@ export default function EmployeesPage() {
   const [expandedPayments, setExpandedPayments] = useState<Record<number, boolean>>(
     {}
   );
+  const [paymentError, setPaymentError] = useState("");
 
   // Fetch data
   const fetchData = async () => {
@@ -162,14 +163,25 @@ export default function EmployeesPage() {
         body: JSON.stringify({ ...paymentData, created_by: 1 }),
       });
 
-      if (response.ok) {
-        setShowPaymentForm(false);
-        setEditingPayment(null);
-        setPaymentFormMode("create");
-        fetchData();
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        setPaymentError(
+          data?.message ||
+            "Unable to save the payment. Please check the details and try again."
+        );
+        return;
       }
+
+      setPaymentError("");
+      setShowPaymentForm(false);
+      setEditingPayment(null);
+      setPaymentFormMode("create");
+      fetchData();
     } catch (error) {
       console.error("Error saving payment:", error);
+      setPaymentError(
+        "Something went wrong while saving the payment. Please try again."
+      );
     }
   };
 
@@ -233,8 +245,10 @@ export default function EmployeesPage() {
             setSelectedPaymentEmployeeId(null);
             setEditingPayment(null);
             setPaymentFormMode("create");
+            setPaymentError("");
           }}
           initialEmployeeId={initialEmployeeIdForForm}
+          errorMessage={paymentError}
         />
       </div>
     );
