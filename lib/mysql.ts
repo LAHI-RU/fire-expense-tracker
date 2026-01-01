@@ -12,6 +12,11 @@ const dbConfig = {
   connectionLimit: 10,
   queueLimit: 0,
   timezone: "+00:00",
+  // ADD THIS SSL BLOCK BELOW:
+  ssl: {
+    minVersion: "TLSv1.2",
+    rejectUnauthorized: true,
+  },
 }
 
 // Create connection pool for better performance
